@@ -8,6 +8,8 @@ import Footer from "./components/Footer";
 import Home from "./views/Home";
 import Profile from "./views/Profile";
 import Checklist from "./views/Checklist";
+import StudentOffers from "./views/StudentOffers";
+import ProfessorsTable from "./views/Professors";
 import ExternalApi from "./views/ExternalApi";
 import { useAuth0 } from "@auth0/auth0-react";
 import history from "./utils/history";
@@ -39,7 +41,9 @@ const App = () => {
             <Route path="/" exact component={Home} />
             <Route path="/profile" component={Profile} />
             <Route path="/external-api" component={ExternalApi} />
-            <Route path="/MyChecklist" component={Checklist} />
+            <Route path="/mychecklist" component={Checklist} />
+            <Route path="/studentoffers" component={StudentOffers} />
+            <Route path="/professors" component={ProfessorsTable}/>
           </Switch>
         </Container>
         <Footer />

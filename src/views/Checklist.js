@@ -3,48 +3,33 @@ import { Link } from "react-router-dom";
 import { CheckCircle, Circle } from "lucide-react";
 
 const tasks = [
-  <>
-    Consulta la oferta de convocatorias publicadas en la plataforma SPOPA{" "}
-    <Link to="/StudentOffers" className="text-blue-600 underline">
-      aquí
-    </Link>
+  <>Consulta la oferta de convocatorias publicadas en la plataforma SPOPA{" "}
+    <Link to="/StudentOffers" className="text-blue-600 underline">aquí</Link>
     . También puedes establecer contacto con empresas de tu interés para el desarrollo de la práctica.
   </>,
-  <>
-    Verifica en la Oficina de Prácticas y Pasantías de tu facultad la existencia del convenio de apoyo interinstitucional; de no existir, la oficina te brindará la información para adelantar el proceso. Indica el nombre de la empresa y su NIT. Puedes encontrar los correos de la oficina de tu facultad{" "}
-    <Link to="/SPOPAMails" className="text-blue-600 underline">
-      aquí
-    </Link>
-    .
+  
+  <>Verifica en la Oficina de Prácticas y Pasantías de tu facultad la existencia del convenio de apoyo interinstitucional;
+    de no existir, la oficina te brindará la información para adelantar el proceso. Indica el nombre de la empresa y su NIT.
+    Puedes ponerte en contacto con por medio del correo: <b>opp_fibog@unal.edu.co</b>.
   </>,
   "Solicita en la secretaría de tu programa curricular la carta de presentación con destino a la Empresa.",
   "Entra en contacto con la empresa de tu interes, y continua el proceso para que consideren tu candidatura a la posición de practicante.",
-  <>
-    Obtén el aval o acompañamiento de un docente tutor, con quien acordarás el plan de trabajo y los criterios de evaluación. Puedes encontrar un listado de los docentes con afiliación de área{" "}
-    <Link to="/Professors" className="text-blue-600 underline">
-      aquí
-    </Link>
-    .
+  <>Obtén el aval o acompañamiento de un docente tutor, con quien acordarás el plan de trabajo y los criterios de evaluación.
+    Puedes encontrar un listado de los docentes con afiliación de área{" "}
+    <Link to="/Professors" className="text-blue-600 underline">aquí</Link>.
   </>,
-  <>
-    Suscribe un contrato con la empresa, en el que se establezcan los términos de la pasantía:
-    <br />
-    <b>Fecha de inicio y terminación (que cubra el periodo académico), horario, cubrimiento de ARL, etc.</b>
-    <br />
-    <i>
-      Ten en cuenta que, de conformidad con el artículo 7, numeral 1 del Decreto 933 de 2003, las actividades desarrolladas por los estudiantes universitarios en calidad de pasantías que sean prerrequisito para la obtención del título correspondiente, "no constituyen contrato de aprendizaje”.
-    </i>
+  <>Suscribe un contrato con la empresa, en el que se establezcan los términos de la pasantía:<br />
+    <b>Fecha de inicio y terminación (que cubra el periodo académico), horario, cubrimiento de ARL, etc.</b><br />
+    <i>Ten en cuenta que, de conformidad con el artículo 7, numeral 1 del Decreto 933 de 2003,
+    las actividades desarrolladas por los estudiantes universitarios en calidad de pasantías que sean prerrequisito para
+    la obtención del título correspondiente, "no constituyen contrato de aprendizaje”.</i>
   </>,
-  <>
-    Diligencia el formato de inscripción para trabajo de grado. Descárgalo{" "}
-    <a
-      href="https://ingenieria.bogota.unal.edu.co/es/dependencias/secretaria-academica/formatos.html?download=2478:formato-inscripcion-pasantia-trabajo-de-grado"
+  <>Diligencia el formato de inscripción para trabajo de grado. Descárgalo{" "}
+    <a href="https://ingenieria.bogota.unal.edu.co/es/dependencias/secretaria-academica/formatos.html?download=2478:formato-inscripcion-pasantia-trabajo-de-grado"
       className="text-blue-600 underline"
       target="_blank"
-      rel="noopener noreferrer"
-    >
-      aquí
-    </a>
+      rel="noopener noreferrer">
+      aquí</a>
     .
   </>,
   <>
