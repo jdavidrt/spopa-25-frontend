@@ -12,7 +12,7 @@ const tasks = [
     de no existir, la oficina te brindará la información para adelantar el proceso. Indica el nombre de la empresa y su NIT.
     Puedes ponerte en contacto con por medio del correo: <b>opp_fibog@unal.edu.co</b>.
   </>,
-  "Solicita en la secretaría de tu programa curricular la carta de presentación con destino a la Empresa.",
+  "Solicita en la secretaría de tu programa curricular la carta de presentación con destino a la Empresa. [REEMPLAZAR ESTO CON EL GENERADOR DE CARTAS]",
   "Entra en contacto con la empresa de tu interes, y continua el proceso para que consideren tu candidatura a la posición de practicante.",
   <>Obtén el aval o acompañamiento de un docente tutor, con quien acordarás el plan de trabajo y los criterios de evaluación.
     Puedes encontrar un listado de los docentes con afiliación de área{" "}
