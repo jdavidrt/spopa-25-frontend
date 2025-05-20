@@ -13,6 +13,7 @@ import ProfessorsTable from "./views/Professors";
 import PasantForm from "./views/BusinessPortal";
 import AdminDashboard from "./views/AdminDashboard";
 import ExternalApi from "./views/ExternalApi";
+import Checklist from "./views/Checklist";
 import { useAuth0 } from "@auth0/auth0-react";
 import history from "./utils/history";
 
@@ -42,6 +43,8 @@ const App = () => {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/profile" component={Profile} />
+            <Route path="/MyChecklist" component={Checklist} />
+
             <Route path="/external-api" component={ExternalApi} />
             <Route path="/mychecklist" component={Checklist} />
             <Route path="/studentoffers" component={StudentOffers} />
