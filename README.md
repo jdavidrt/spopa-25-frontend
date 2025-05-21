@@ -2,11 +2,11 @@
 
 
 ## Team 1E
-- Juan David Ramírez Torres - jdramirezt@unal.edu.co
 - David Santiago Castañeda Venegas - dscastanedav@unal.edu.co
+- Gian Emanuel Morales González - gimoralesg@unal.edu.co
+- Juan David Ramírez Torres - jdramirezt@unal.edu.co 
 - Nicolas Machado Narvaez - nmachado@unal.edu.co
 - Sergio Ivan Motta Doncel - smottad@unal.edu.co
-- Gian Emanuel Morales González - gimoralesg@unal.edu.co
 
 
 Software Architecture.
