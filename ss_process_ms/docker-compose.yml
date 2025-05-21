@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: spopa
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: contraseña
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  process_ms:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+volumes:
+  pgdata:
