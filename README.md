@@ -1,16 +1,27 @@
-# Spopa
+#Project Artifact: SPOPA, Prototype #1.
 
-![Spopa Logo](https://i.imgur.com/tDGdNvW.png)
 
 ## Team 1E
-- Juan David Ramírez Torres
-- Full Name Student 2
-- Full Name Student 3
+- Juan David Ramírez Torres - jdramirezt@unal.edu.co
+- David Santiago Castañeda Venegas - dscastanedav@unal.edu.co
+- Nicolas Machado Narvaez - nmachado@unal.edu.co
+- Sergio Ivan Motta Doncel - smottad@unal.edu.co
+- Gian Emanuel Morales González - gimoralesg@unal.edu.co
 
-## Software System
 
-### Name
-Spopa
+Software Architecture.
+Engineering Faculty.
+2025-I
+National University of Colombia.
+![Unal Logo](https://lh4.googleusercontent.com/proxy/WNtyuTbDjnnITJFxg1dlI63L0jfIMRf0CIKg75VavFd3ameUuokpEiXIZvafO0UbA3rGKkhjDZ2HFtRWcGiPIn7Syd37PqnCrQuXFNHguRRPYm__safRJi9Q)
+
+
+---
+
+
+## Software System: SPOPA
+![Spopa Logo](https://i.imgur.com/tDGdNvW.png)
+
 
 ### Description
 Spopa is a distributed platform designed to connect university students with professional internship opportunities. The system allows companies to publish their internship offers and enables students to find opportunities that align with their academic and professional profiles. The platform offers advanced search functionalities, internship application processes, and selection process tracking, all built on a modern and scalable microservices architecture.
