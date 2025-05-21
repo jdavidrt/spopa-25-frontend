@@ -141,34 +141,42 @@ Spopa is a distributed platform designed to connect university students with pro
    - API Gateway ADMIN: http://localhost:8000
    - API Documentation (Swagger): http://localhost:8000/docs
 
-5. **Stop the Services**
-   ```bash
-   docker-compose down
-   ```
+To build and run the Docker image, run `exec.sh`, or `exec.ps1` on Windows.
 
-### Directory Structure
+### Run your tests
+
+```bash
+yarn run test
 ```
-prakticum-connect/
-├── fe/                    # Frontend
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-├── ss_admin_ms/           # Admin Microservice
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-├── ss_offers_ms/          # Offers Microservice (MongoDB)
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── app/
-├── ss_process_ms/         # Process Microservice
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-├── ss_routes_ms/          # Routes Microservice
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── app/
-├── docker-compose.yml
-└── README.md
-```
+
+## Frequently Asked Questions
+
+If you're having issues running the sample applications, including issues such as users not being authenticated on page refresh, please [check the auth0-react FAQ](https://github.com/auth0/auth0-react/blob/master/FAQ.md).
+
+## What is Auth0?
+
+Auth0 helps you to:
+
+* Add authentication with [multiple sources](https://auth0.com/docs/identityproviders), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML Identity Provider**.
+* Add authentication through more traditional **[username/password databases](https://auth0.com/docs/connections/database/custom-db)**.
+* Add support for **[linking different user accounts](https://auth0.com/docs/users/user-account-linking)** with the same user.
+* Support for generating signed [JSON Web Tokens](https://auth0.com/docs/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
+* Analytics of how, when, and where users are logging in.
+* Pull data from other sources and add it to the user profile through [JavaScript rules](https://auth0.com/docs/rules).
+
+## Create a Free Auth0 Account
+
+1. Go to [Auth0](https://auth0.com) and click **Sign Up**.
+2. Use Google, GitHub, or Microsoft Account to login.
+
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
+
+## Author
+
+[Auth0](https://auth0.com)
+
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](../LICENSE) file for more info.
