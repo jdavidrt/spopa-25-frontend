@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/var/www
     ports:
-      - "8000:9000"
+      - "8010:9000"
     depends_on:
       - db
     environment:

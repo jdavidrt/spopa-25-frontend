@@ -33,7 +33,7 @@ const Offers = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/offers`);
+        const response = await fetch(`http://localhost:8010/api/offers`);
         if (!response.ok) {
           throw new Error('Error al obtener las ofertas');
         }
