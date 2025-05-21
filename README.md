@@ -1,4 +1,4 @@
-#Project Artifact: SPOPA, Prototype #1.
+# Project Artifact: SPOPA, Prototype #1.
 
 
 ## Team 1E
@@ -13,6 +13,7 @@ Software Architecture.
 Engineering Faculty.
 2025-I
 National University of Colombia.
+
 ![Unal Logo](https://lh4.googleusercontent.com/proxy/WNtyuTbDjnnITJFxg1dlI63L0jfIMRf0CIKg75VavFd3ameUuokpEiXIZvafO0UbA3rGKkhjDZ2HFtRWcGiPIn7Syd37PqnCrQuXFNHguRRPYm__safRJi9Q)
 
 
