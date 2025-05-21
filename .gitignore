@@ -43,6 +43,10 @@ node_modules/
 jspm_packages/
 
 ss_admin_ms/app/__pycache__
+ss_admin_ms/controllers/__pycache__
+ss_admin_ms/models/__pycache__
+ss_admin_ms/repositories/__pycache__
+ss_admin_ms/services/__pycache__
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 # TypeScript cache
