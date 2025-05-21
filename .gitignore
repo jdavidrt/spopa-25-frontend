@@ -143,3 +143,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+ss_admin_ms/app/__pycache__/main.cpython-310.pyc
+ss_admin_ms/app/controllers/__pycache__/offer_controller.cpython-310.pyc
+ss_admin_ms/app/models/__pycache__/offer_model.cpython-310.pyc
+ss_admin_ms/app/repositories/__pycache__/offer_repository.cpython-310.pyc
