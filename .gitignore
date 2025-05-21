@@ -42,10 +42,9 @@ build/Release
 node_modules/
 jspm_packages/
 
-ss_admin_ms/app/_pycache_
+ss_admin_ms/app/__pycache__
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
-
 # TypeScript cache
 *.tsbuildinfo
 
