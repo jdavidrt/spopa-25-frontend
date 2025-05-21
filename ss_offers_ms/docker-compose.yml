@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: offers_ms
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    ports:
+      - "8010:9000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=oferta_DB
+      - DB_USERNAME=root
+      - DB_PASSWORD=1234
+
+  db:
+    image: mysql:8.0
+    container_name: oferta_DB
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: oferta_DB
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:

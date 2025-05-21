@@ -6,6 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*/*/*/*/__pycache__/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -42,9 +47,13 @@ build/Release
 node_modules/
 jspm_packages/
 
+ss_admin_ms/app/__pycache__
+ss_admin_ms/controllers/__pycache__
+ss_admin_ms/models/__pycache__
+ss_admin_ms/repositories/__pycache__
+ss_admin_ms/services/__pycache__
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
-
 # TypeScript cache
 *.tsbuildinfo
 
@@ -134,3 +143,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+ss_admin_ms/app/__pycache__/main.cpython-310.pyc
+ss_admin_ms/app/controllers/__pycache__/offer_controller.cpython-310.pyc
+ss_admin_ms/app/models/__pycache__/offer_model.cpython-310.pyc
+ss_admin_ms/app/repositories/__pycache__/offer_repository.cpython-310.pyc
