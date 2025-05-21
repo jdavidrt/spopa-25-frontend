@@ -42,12 +42,11 @@ const App = () => {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/profile" component={Profile} />
-            <Route path="/external-api" component={ExternalApi} />
             <Route path="/mychecklist" component={Checklist} />
             <Route path="/studentoffers" component={StudentOffers} />
-            <Route path="/professors" component={ProfessorsTable}/>
-            <Route path="/business" component={PasantForm}/>
-            <Route path="/admin" component={AdminDashboard}/>
+            <Route path="/professors" component={ProfessorsTable} />
+            <Route path="/business" component={PasantForm} />
+            <Route path="/admin" component={AdminDashboard} />
           </Switch>
         </Container>
         <Footer />
