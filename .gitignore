@@ -42,7 +42,7 @@ build/Release
 node_modules/
 jspm_packages/
 
-ss_admin_ss/_pycache_
+ss_admin_ss/app/_pycache_
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
