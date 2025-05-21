@@ -67,6 +67,16 @@ const NavBar = () => {
                   </NavLink>
                 </NavItem>
               )}
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/studentoffers"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Student Offers
+                </NavLink>
+              </NavItem>
             </Nav>
 
             <Nav className="d-none d-md-block" navbar>
@@ -82,6 +92,7 @@ const NavBar = () => {
                   </Button>
                 </NavItem>
               )}
+
               {isAuthenticated && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret id="profileDropDown">
