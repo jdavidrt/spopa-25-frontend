@@ -6,7 +6,7 @@ const Offers = () => {
 
   // Simulación de carga desde una API (reemplazar con fetch real)
   useEffect(() => {
-    const fetchData = async () => {
+    /* const fetchData = async () => {
       // Aquí deberías hacer una petición a tu backend, por ejemplo:
       // const response = await fetch('/api/ofertas');
       // const result = await response.json();
@@ -29,6 +29,32 @@ const Offers = () => {
         // Puedes agregar más datos aquí para pruebas
       ];
       setData(result);
+    }; */
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/offers`);
+        if (!response.ok) {
+          throw new Error('Error al obtener las ofertas');
+        }
+  
+        const result = await response.json();
+  
+        // Asegúrate que el backend devuelve el arreglo de objetos con los mismos campos esperados
+        const adaptedData = result.map((oferta) => ({
+          id: oferta.id,
+          "Nombre de la entidad": oferta.company.name,
+          "Cargo": oferta.position,
+          "Área": oferta.department,
+          "Modalidad": oferta.modality,
+          "Ciudad": oferta.company.city,
+          "Correo electrónico": oferta.company.email,
+        }));
+        
+        setData(adaptedData);
+      } catch (error) {
+        console.error("Error al obtener las ofertas:", error);
+      }
     };
 
     fetchData();
