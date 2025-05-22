@@ -11,7 +11,6 @@ import StudentOffers from "./views/StudentOffers";
 import ProfessorsTable from "./views/Professors";
 import PasantForm from "./views/BusinessPortal";
 import AdminDashboard from "./views/AdminDashboard";
-import ExternalApi from "./views/ExternalApi";
 import Checklist from "./views/Checklist";
 import { useAuth0 } from "@auth0/auth0-react";
 import history from "./utils/history";
@@ -45,10 +44,10 @@ const App = () => {
             <Route path="/profile" component={Profile} />
             <Route path="/mychecklist" component={Checklist} />
             <Route path="/studentoffers" component={StudentOffers} />
-            <Route path="/professors" component={ProfessorsTable}/>
-            <Route path="/business" component={PasantForm}/>
-            <Route path="/admin" component={AdminDashboard}/>
-            <Route path="/process" component={Process}/>
+            <Route path="/professors" component={ProfessorsTable} />
+            <Route path="/business" component={PasantForm} />
+            <Route path="/admin" component={AdminDashboard} />
+            <Route path="/process" component={Process} />
           </Switch>
         </Container>
         <Footer />

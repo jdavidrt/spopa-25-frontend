@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import logo from "../assets/SPOPALogo.png";
 import {
   Collapse,
   Container,
@@ -41,7 +41,7 @@ const NavBar = () => {
     <div className="nav-container">
       <Navbar color="light" light expand="md" container={false}>
         <Container>
-          <NavbarBrand className="logo" />
+          <img className="mb-3 app-logo" src={logo} alt="React logo" width="60" />
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
             <Nav className="mr-auto" navbar>
@@ -52,7 +52,7 @@ const NavBar = () => {
                   exact
                   activeClassName="router-link-exact-active"
                 >
-                  Home
+                  Inicio
                 </NavLink>
               </NavItem>
               {isAuthenticated && (
@@ -85,6 +85,26 @@ const NavBar = () => {
                   activeClassName="router-link-exact-active"
                 >
                   Process
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/professors"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Professors
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/mychecklist"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Mi Checklist
                 </NavLink>
               </NavItem>
             </Nav>
@@ -121,14 +141,13 @@ const NavBar = () => {
                       className="dropdown-profile"
                       activeClassName="router-link-exact-active"
                     >
-                      <FontAwesomeIcon icon="user" className="mr-3" /> Profile
+                      <FontAwesomeIcon icon="user" className="mr-3" /> Perfil
                     </DropdownItem>
                     <DropdownItem
                       id="qsLogoutBtn"
                       onClick={() => logoutWithRedirect()}
                     >
-                      <FontAwesomeIcon icon="power-off" className="mr-3" /> Log
-                      out
+                      <FontAwesomeIcon icon="power-off" className="mr-3" /> Cerrar Sesión
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -171,7 +190,7 @@ const NavBar = () => {
                     to="/profile"
                     activeClassName="router-link-exact-active"
                   >
-                    Profile
+                    Perfil
                   </RouterNavLink>
                 </NavItem>
                 <NavItem>
