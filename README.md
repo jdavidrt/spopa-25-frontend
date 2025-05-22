@@ -125,13 +125,18 @@ Spopa is a distributed platform designed to connect university students with pro
    ```bash
    docker-compose up -d
    ```
-
-3. **Verify the Deployment**
+   
+3. **Build and Start Administrator Service**
+   ```bash
+   docker-compose up --build -d
+   ```
+   
+4. **Verify the Deployment**
    ```bash
    docker-compose ps
    ```
 
-4. **Access the Services**
+5. **Access the Services**
    - Frontend: http://localhost:3000
    - API Gateway ADMIN: http://localhost:8000
    - API Documentation (Swagger): http://localhost:8000/docs
