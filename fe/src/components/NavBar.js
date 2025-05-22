@@ -32,9 +32,9 @@ const NavBar = () => {
 
   const logoutWithRedirect = () =>
     logout({
-        logoutParams: {
-          returnTo: window.location.origin,
-        }
+      logoutParams: {
+        returnTo: window.location.origin,
+      }
     });
 
   return (
@@ -59,15 +59,36 @@ const NavBar = () => {
                 <NavItem>
                   <NavLink
                     tag={RouterNavLink}
-                    to="/external-api"
+                    to="/admin"
                     exact
                     activeClassName="router-link-exact-active"
                   >
-                    External API
+                    Admin
                   </NavLink>
                 </NavItem>
               )}
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/studentoffers"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Student Offers
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/process"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Process
+                </NavLink>
+              </NavItem>
             </Nav>
+
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (
                 <NavItem>
@@ -81,6 +102,7 @@ const NavBar = () => {
                   </Button>
                 </NavItem>
               )}
+
               {isAuthenticated && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret id="profileDropDown">
