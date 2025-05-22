@@ -25,7 +25,7 @@ National University of Colombia.
 
 
 ### Description
-Spopa is a distributed platform designed to connect university students with professional internship opportunities. The system allows companies to publish their internship offers and enables students to find opportunities that align with their academic and professional profiles. The platform offers advanced search functionalities, internship application processes, and selection process tracking, all built on a modern and scalable microservices architecture.
+Spopa is a distributed platform designed to connect university students with professional internship opportunities. The system allows companies to publish their internship offers and enables students to find opportunities that align with their academic and professional profiles. The platform offers advanced search functionalities, and selection process tracking, all built on a modern and scalable microservices architecture.
 
 ## Architectural Structures
 
@@ -34,41 +34,45 @@ Spopa is a distributed platform designed to connect university students with pro
 #### C&C View
 
 ```
-┌─────────────────┐      ┌───────────────────┐      ┌────────────────────┐
-│                 │      │                   │      │                    │
-│  Web Frontend   │<────>│  API Gateway      │<────>│  Authentication    │
-│  (React.js)     │      │  (Node.js/Express)│      │  Microservice      │
-│                 │      │                   │      │  (Python/Flask)    │
-└─────────────────┘      └───────────────────┘      └────────────────────┘
-                                  ▲                           │
-                                  │                           │
-                                  │                           ▼
-                          ┌───────┴───────┐         ┌─────────────────────┐
-                          │               │         │                     │
-                          │  Service Bus  │<───────>│  Students           │
-                          │  (RabbitMQ)   │         │  Microservice       │
-                          │               │         │  (Node.js/Express)  │
-                          └───────┬───────┘         └─────────────────────┘
-                                  │                           │
-                                  │                           │
-                                  ▼                           ▼
-                         ┌────────────────────┐     ┌──────────────────────┐
-                         │                    │     │                      │
-                         │  Internships       │     │  SQL Database        │
-                         │  Microservice      │     │  (PostgreSQL)        │
-                         │  (Python/FastAPI)  │     │  [Students]          │
-                         │                    │     │                      │
-                         └────────┬───────────┘     └──────────────────────┘
-                                  │
-                                  │
-                                  ▼
-                         ┌────────────────────┐
-                         │                    │
-                         │  NoSQL Database    │
-                         │  (MongoDB)         │
-                         │  [Offers]          │
-                         │                    │
-                         └────────────────────┘
+                             ┌────────────────────┐
+                             │                    │
+                             │      User          │
+                             │                    │
+                             └─────────┬──────────┘
+                                       │
+                                       ▼
+                          ┌──────────────────────────┐
+                          │                          │
+                          │    Web Frontend (React)  │
+                          │    + Auth UI (Auth0)     │
+                          │                          │
+                          └─────────┬──────────┬─────┘
+                                    │          │
+                     ┌──────────────┘          └──────────────┐
+                     ▼                                        ▼
+         ┌─────────────────────────┐              ┌────────────────────────┐
+         │                         │              │                        │
+         │  Authentication (Auth0) │              │  API Requests Router   │
+         │                         │              │  (Handles routing to   │
+         └─────────────────────────┘              │   backend services)    │
+                                                  └─────────┬──────────────┘
+                                                            │
+               ┌──────────────────────┬─────────────────────┼────────────────────────┐
+               ▼                      ▼                     ▼                        ▼
+   ┌────────────────────┐  ┌──────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
+   │                    │  │                      │  │                    │  │                    │
+   │  Student Service   │  │ Business Service     │  │  Admin Service     │  │     Future APIs    │
+   │  (Node.js)         │  │ (Laravel)            │  │  (Python)          │  │  (Optional)        │
+   └─────────┬──────────┘  └─────────┬────────────┘  └──────────┬─────────┘  └────────────────────┘
+             │                       │                          │
+             ▼                       ▼                          ▼
+   ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────┐
+   │                    │   │                    │   │                    │
+   │  MongoDB Database  │   │   MySQL Database   │   │  MongoDB Database  │
+   │  [Students]        │   │   [Business Data]  │   │  [Admin Data]      │
+   │                    │   │                    │   │                    │
+   └────────────────────┘   └────────────────────┘   └────────────────────┘
+
 ```
 
 #### Description of Architectural Styles Used
