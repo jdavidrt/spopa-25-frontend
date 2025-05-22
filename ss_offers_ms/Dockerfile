@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# instalacion dependencias del sistema
+# Instalacion dependencias
 RUN apt-get update && apt-get install -y \
     zip unzip curl libpng-dev libonig-dev libxml2-dev \
     libzip-dev libpq-dev git mariadb-client \
@@ -9,18 +9,18 @@ RUN apt-get update && apt-get install -y \
 # Instalacion Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# directorio de trabajo
+# Directorio de trabajo
 WORKDIR /var/www
 
-# se copian todos los archivos del proyecto
+# Copia archivos del proyecto
 COPY . .
 
-# Instalacion dependencias de PHP
+# Instala dependencias de PHP (Laravel)
 RUN composer install
 
-# Cambio de permisos permisos
+# Permisos correctos
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www
 
-EXPOSE 9000
-CMD php artisan serve --host=0.0.0.0 --port=9000
+EXPOSE 8010
+CMD php artisan serve --host=0.0.0.0 --port=8010
