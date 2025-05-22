@@ -57,13 +57,13 @@ Spopa is a distributed platform designed to connect university students with pro
          └─────────────────────────┘              │   backend services)    │
                                                   └─────────┬──────────────┘
                                                             │
-               ┌──────────────────────┬─────────────────────┼────────────────────────┐
-               ▼                      ▼                     ▼                        ▼
-   ┌────────────────────┐  ┌──────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
-   │                    │  │                      │  │                    │  │                    │
-   │  Student Service   │  │ Business Service     │  │  Admin Service     │  │     Future APIs    │
-   │  (Node.js)         │  │ (Laravel)            │  │  (Python)          │  │  (Optional)        │
-   └─────────┬──────────┘  └─────────┬────────────┘  └──────────┬─────────┘  └────────────────────┘
+               ┌──────────────────────┬─────────────────────│
+               ▼                      ▼                     ▼                       
+   ┌────────────────────┐  ┌──────────────────────┐  ┌────────────────────┐
+   │                    │  │                      │  │                    │
+   │  Student Service   │  │ Business Service     │  │  Admin Service     │
+   │  (Node.js)         │  │ (Laravel)            │  │  (Python)          │
+   └─────────┬──────────┘  └─────────┬────────────┘  └──────────┬─────────┘ 
              │                       │                          │
              ▼                       ▼                          ▼
    ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────┐
@@ -85,12 +85,8 @@ Spopa is a distributed platform designed to connect university students with pro
    - An API Gateway is implemented as a single entry point for client requests.
    - The gateway manages authentication, routing, and orchestration of requests to the corresponding microservices.
 
-3. **Event-Driven Communication**:
-   - A Service Bus (RabbitMQ) is used to implement asynchronous communication between microservices.
-   - This approach improves system scalability and resilience.
-
 4. **Polyglot Persistence**:
-   - PostgreSQL (relational database) is used for structured data requiring ACID transactions.
+   - MySQL (relational database) is used for structured data requiring ACID transactions.
    - MongoDB (NoSQL database) is used for semi-structured data such as internship offers.
 
 #### Description of Architectural Elements and Relations
@@ -100,19 +96,14 @@ Spopa is a distributed platform designed to connect university students with pro
 
 **Logic Components**:
 - **API Gateway (Node.js/Express)**: Acts as a single entry point for client requests, handling routing and orchestration.
-- **Authentication Microservice (Python/Flask)**: Manages user authentication, JWT token generation, and permissions.
-- **Students Microservice (Node.js/Express)**: Manages student profiles, preferences, and applications.
-- **Internships Microservice (Python/FastAPI)**: Manages the creation, updating, and searching of internship offers.
-- **Service Bus (RabbitMQ)**: Facilitates asynchronous communication between microservices.
+- **Authentication Microservice (Auth0)**: Manages user authentication, JWT token generation, and permissions.
+- **Students Microservice (Node.js)**: Manages student profiles, preferences, and applications.
+- **Business Microservice (Laravel)**: Manages the creation, updating, and searching of internship offers.
+- **Administration Microservice (Python)**: Manages the creation, updating, and searching of internship offers/Users.
 
 **Data Components**:
 - **SQL Database (PostgreSQL)**: Stores data related to students, profiles, applications, and users.
 - **NoSQL Database (MongoDB)**: Stores data related to internship offers, allowing efficient searches.
-
-**Connectors**:
-- **REST API**: Used for synchronous communication between the frontend, API Gateway, and microservices.
-- **GraphQL API**: Implemented in the internships microservice for complex and efficient offer queries.
-- **Asynchronous Messaging**: Used for communication between microservices through the Service Bus.
 
 ## Prototype
 
