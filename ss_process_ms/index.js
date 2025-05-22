@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 
-const procesosRoutes = require("./routes/procesos");
+const procesosRoutes = require("./routes/process");
 
 const app = express();
 const port = process.env.PORT || 4000;

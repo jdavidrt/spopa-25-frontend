@@ -1,10 +1,10 @@
 // frontend/src/components/Procesos.js
 import React, { useEffect, useState } from "react";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000/api/procesos";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000/api/process";
 
 function Process() {
-  const [procesos, setProcesos] = useState([]);
+  const [process, setProcesos] = useState([]);
   const [nuevoProceso, setNuevoProceso] = useState({
     estudiante_id: "",
     oferta_id: "",
@@ -33,7 +33,7 @@ function Process() {
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setProcesos([...procesos, data]);
+      setProcesos([...process, data]);
       setMensaje("Proceso creado correctamente");
     } catch {
       setMensaje("Error al crear proceso");
@@ -51,7 +51,7 @@ function Process() {
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setProcesos(procesos.map(p => (p.id === id ? data : p)));
+      setProcesos(process.map(p => (p.id === id ? data : p)));
       setMensaje("Estado actualizado");
     } catch {
       setMensaje("Error al actualizar estado");
@@ -63,7 +63,7 @@ function Process() {
       <h2>Procesos de Inscripción</h2>
       {mensaje && <p>{mensaje}</p>}
       <ul>
-        {procesos.map((p) => (
+        {process.map((p) => (
           <li key={p.id}>
             Proceso #{p.id} - Estado: {p.estado}
             <button onClick={() => cambiarEstado(p.id, "iniciado")}>Iniciar</button>

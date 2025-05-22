@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const procesosController = require("../controllers/procesosController");
+const processController = require("../controllers/processController");
 
-router.get("/", procesosController.getProcesos);
-router.post("/", procesosController.createProceso);
-router.put("/:id/estado", procesosController.updateEstado);
+router.get("/", processController.getProcesos);
+router.post("/", processController.createProceso);
+router.put("/:id/estado", processController.updateEstado);
 
 module.exports = router;
