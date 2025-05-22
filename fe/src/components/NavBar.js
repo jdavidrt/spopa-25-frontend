@@ -77,6 +77,16 @@ const NavBar = () => {
                   Student Offers
                 </NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/process"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Process
+                </NavLink>
+              </NavItem>
             </Nav>
 
             <Nav className="d-none d-md-block" navbar>
