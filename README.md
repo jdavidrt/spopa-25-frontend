@@ -141,7 +141,7 @@ To build and run the Docker image, run `exec.sh`, or `exec.ps1` on Windows.
 ### Run your tests
 
 ```bash
-yarn run test
+npm run build
 ```
 
 ## Frequently Asked Questions
