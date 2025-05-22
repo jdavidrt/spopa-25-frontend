@@ -16,9 +16,9 @@ class Program extends Model
         'email'
     ];
 
-    //public function offers(){
-      //  return $this->hasMany(Offer::class);
-    //}
+    /* public function offers(){
+       return $this->hasMany(Offer::class);
+    } */
     protected $hidden = ['pivot'];
     public function offers()
     {

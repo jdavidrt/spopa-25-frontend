@@ -25,7 +25,7 @@ National University of Colombia.
 
 
 ### Description
-Spopa is a distributed platform designed to connect university students with professional internship opportunities. The system allows companies to publish their internship offers and enables students to find opportunities that align with their academic and professional profiles. The platform offers advanced search functionalities, internship application processes, and selection process tracking, all built on a modern and scalable microservices architecture.
+Spopa is a distributed platform designed to connect university students with professional internship opportunities. The system allows companies to publish their internship offers and enables students to find opportunities that align with their academic and professional profiles. The platform offers advanced search functionalities, and selection process tracking, all built on a modern and scalable microservices architecture.
 
 ## Architectural Structures
 
@@ -34,41 +34,45 @@ Spopa is a distributed platform designed to connect university students with pro
 #### C&C View
 
 ```
-┌─────────────────┐      ┌───────────────────┐      ┌────────────────────┐
-│                 │      │                   │      │                    │
-│  Web Frontend   │<────>│  API Gateway      │<────>│  Authentication    │
-│  (React.js)     │      │  (Node.js/Express)│      │  Microservice      │
-│                 │      │                   │      │  (Python/Flask)    │
-└─────────────────┘      └───────────────────┘      └────────────────────┘
-                                  ▲                           │
-                                  │                           │
-                                  │                           ▼
-                          ┌───────┴───────┐         ┌─────────────────────┐
-                          │               │         │                     │
-                          │  Service Bus  │<───────>│  Students           │
-                          │  (RabbitMQ)   │         │  Microservice       │
-                          │               │         │  (Node.js/Express)  │
-                          └───────┬───────┘         └─────────────────────┘
-                                  │                           │
-                                  │                           │
-                                  ▼                           ▼
-                         ┌────────────────────┐     ┌──────────────────────┐
-                         │                    │     │                      │
-                         │  Internships       │     │  SQL Database        │
-                         │  Microservice      │     │  (PostgreSQL)        │
-                         │  (Python/FastAPI)  │     │  [Students]          │
-                         │                    │     │                      │
-                         └────────┬───────────┘     └──────────────────────┘
-                                  │
-                                  │
-                                  ▼
-                         ┌────────────────────┐
-                         │                    │
-                         │  NoSQL Database    │
-                         │  (MongoDB)         │
-                         │  [Offers]          │
-                         │                    │
-                         └────────────────────┘
+                             ┌────────────────────┐
+                             │                    │
+                             │      User          │
+                             │                    │
+                             └─────────┬──────────┘
+                                       │
+                                       ▼
+                          ┌──────────────────────────┐
+                          │                          │
+                          │    Web Frontend (React)  │
+                          │    + Auth UI (Auth0)     │
+                          │                          │
+                          └─────────┬──────────┬─────┘
+                                    │          │
+                     ┌──────────────┘          │
+                     ▼                         │             
+         ┌─────────────────────────┐           │   
+         │                         │           │  
+         │  Authentication (Auth0) │           │ 
+         │                         │           │  
+         └─────────────────────────┘           │   
+                                               │  
+                                               │     
+               ┌──────────────────────┬─────────────────────┐
+               ▼                      ▼                     ▼                       
+   ┌────────────────────┐  ┌──────────────────────┐  ┌────────────────────┐
+   │                    │  │                      │  │                    │
+   │  Student Service   │  │ Business Service     │  │  Admin Service     │
+   │  (Node.js)         │  │ (Laravel)            │  │  (Python)          │
+   └─────────┬──────────┘  └─────────┬────────────┘  └──────────┬─────────┘ 
+             │                       │                          │
+             ▼                       ▼                          ▼
+   ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────┐
+   │                    │   │                    │   │                    │
+   │  MongoDB Database  │   │   MySQL Database   │   │  MongoDB Database  │
+   │  [Students]        │   │   [Business Data]  │   │  [Admin Data]      │
+   │                    │   │                    │   │                    │
+   └────────────────────┘   └────────────────────┘   └────────────────────┘
+
 ```
 
 #### Description of Architectural Styles Used
@@ -81,12 +85,8 @@ Spopa is a distributed platform designed to connect university students with pro
    - An API Gateway is implemented as a single entry point for client requests.
    - The gateway manages authentication, routing, and orchestration of requests to the corresponding microservices.
 
-3. **Event-Driven Communication**:
-   - A Service Bus (RabbitMQ) is used to implement asynchronous communication between microservices.
-   - This approach improves system scalability and resilience.
-
 4. **Polyglot Persistence**:
-   - PostgreSQL (relational database) is used for structured data requiring ACID transactions.
+   - MySQL (relational database) is used for structured data requiring ACID transactions.
    - MongoDB (NoSQL database) is used for semi-structured data such as internship offers.
 
 #### Description of Architectural Elements and Relations
@@ -96,19 +96,14 @@ Spopa is a distributed platform designed to connect university students with pro
 
 **Logic Components**:
 - **API Gateway (Node.js/Express)**: Acts as a single entry point for client requests, handling routing and orchestration.
-- **Authentication Microservice (Python/Flask)**: Manages user authentication, JWT token generation, and permissions.
-- **Students Microservice (Node.js/Express)**: Manages student profiles, preferences, and applications.
-- **Internships Microservice (Python/FastAPI)**: Manages the creation, updating, and searching of internship offers.
-- **Service Bus (RabbitMQ)**: Facilitates asynchronous communication between microservices.
+- **Authentication Microservice (Auth0)**: Manages user authentication, JWT token generation, and permissions.
+- **Students Microservice (Node.js)**: Manages student profiles, preferences, and applications.
+- **Business Microservice (Laravel)**: Manages the creation, updating, and searching of internship offers.
+- **Administration Microservice (Python)**: Manages the creation, updating, and searching of internship offers/Users.
 
 **Data Components**:
 - **SQL Database (PostgreSQL)**: Stores data related to students, profiles, applications, and users.
 - **NoSQL Database (MongoDB)**: Stores data related to internship offers, allowing efficient searches.
-
-**Connectors**:
-- **REST API**: Used for synchronous communication between the frontend, API Gateway, and microservices.
-- **GraphQL API**: Implemented in the internships microservice for complex and efficient offer queries.
-- **Asynchronous Messaging**: Used for communication between microservices through the Service Bus.
 
 ## Prototype
 
@@ -130,13 +125,18 @@ Spopa is a distributed platform designed to connect university students with pro
    ```bash
    docker-compose up -d
    ```
-
-3. **Verify the Deployment**
+   
+3. **Build and Start Administrator Service**
+   ```bash
+   docker-compose up --build -d
+   ```
+   
+4. **Verify the Deployment**
    ```bash
    docker-compose ps
    ```
 
-4. **Access the Services**
+5. **Access the Services**
    - Frontend: http://localhost:3000
    - API Gateway ADMIN: http://localhost:8000
    - API Documentation (Swagger): http://localhost:8000/docs
@@ -146,7 +146,7 @@ To build and run the Docker image, run `exec.sh`, or `exec.ps1` on Windows.
 ### Run your tests
 
 ```bash
-yarn run test
+npm run build
 ```
 
 ## Frequently Asked Questions

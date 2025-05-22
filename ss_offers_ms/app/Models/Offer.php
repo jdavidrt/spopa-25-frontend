@@ -33,9 +33,9 @@ class Offer extends Model
         return $this->belongsTo(Company::class);
     }
 
-    //public function programs(){
-      //  return $this->hasMany(Program::class);
-    //}
+    /* public function programs(){
+        return $this->hasMany(Program::class);
+    } */
     public function programs()
     {
         return $this->belongsToMany(Program::class, 'offer_program');
