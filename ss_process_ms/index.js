@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas para procesos de inscripción
-app.use("/api/procesos", procesosRoutes);
+app.use("/api/process", procesosRoutes);
 
 app.get("/", (req, res) => {
   res.send("Microservicio de procesos de inscripción activo");

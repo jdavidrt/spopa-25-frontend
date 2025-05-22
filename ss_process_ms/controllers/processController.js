@@ -2,10 +2,15 @@ const pool = require("../db");
 
 // Obtener todos los procesos de inscripción
 exports.getProcesos = async (req, res) => {
+  console.log("Entrando a getProcesos"); // <-- Agrega esto
   try {
+    console.log("Entrando a try"); // <-- Agrega esto
     const result = await pool.query("SELECT * FROM procesos_inscripcion");
     res.json(result.rows);
+    console.log("try finalizado"); // <-- Agrega esto
   } catch (err) {
+    console.log("Entrando a catch"); // <-- Agrega esto
+    console.error("Error en getProcesos:", err); // <--- Agrega esta línea
     res.status(500).json({ error: "Error al obtener procesos" });
   }
 };
