@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo from "../assets/SPOPALogo.png";
@@ -7,7 +7,6 @@ import {
   Container,
   Navbar,
   NavbarToggler,
-  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -20,6 +19,7 @@ import {
 
 import { useAuth0 } from "@auth0/auth0-react";
 
+
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {
@@ -29,13 +29,30 @@ const NavBar = () => {
     logout,
   } = useAuth0();
   const toggle = () => setIsOpen(!isOpen);
-
+  const [userType, setUserType] = useState(localStorage.getItem("userType"));
   const logoutWithRedirect = () =>
     logout({
       logoutParams: {
         returnTo: window.location.origin,
       }
     });
+
+  useEffect(() => {
+    const syncUserType = () => {
+      setUserType(localStorage.getItem("userType"));
+    };
+
+    // Evento personalizado para cambios locales
+    window.addEventListener("userTypeChange", syncUserType);
+
+    // Evento para sincronizar entre pestañas
+    window.addEventListener("storage", syncUserType);
+
+    return () => {
+      window.removeEventListener("userTypeChange", syncUserType);
+      window.removeEventListener("storage", syncUserType);
+    };
+  }, []);
 
   return (
     <div className="nav-container">
@@ -44,70 +61,80 @@ const NavBar = () => {
           <img className="mb-3 app-logo" src={logo} alt="React logo" width="60" />
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="mr-auto" navbar>
-              <NavItem>
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/"
-                  exact
-                  activeClassName="router-link-exact-active"
-                >
-                  Inicio
-                </NavLink>
-              </NavItem>
-              {isAuthenticated && (
+            <NavItem>
+              <NavLink
+                tag={RouterNavLink}
+                to="/"
+                exact
+                activeClassName="router-link-exact-active"
+              >
+                Inicio
+              </NavLink>
+            </NavItem>
+
+            {/* Rutas para Estudiante */}
+            {isAuthenticated && userType === "Estudiante" && (
+              <>
                 <NavItem>
                   <NavLink
                     tag={RouterNavLink}
-                    to="/admin"
+                    to="/studentoffers"
                     exact
                     activeClassName="router-link-exact-active"
                   >
-                    Admin
+                    Student Offers
                   </NavLink>
                 </NavItem>
-              )}
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/professors"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    Professors
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/mychecklist"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    Mi Checklist
+                  </NavLink>
+                </NavItem>
+              </>
+            )}
+
+            {/* Rutas para Administrativo */}
+            {isAuthenticated && userType === "Administrativo" && (
               <NavItem>
                 <NavLink
                   tag={RouterNavLink}
-                  to="/studentoffers"
+                  to="/admin"
                   exact
                   activeClassName="router-link-exact-active"
                 >
-                  Student Offers
+                  Admin Offers
                 </NavLink>
               </NavItem>
+            )}
+
+            {/* Rutas para Empresa */}
+            {isAuthenticated && userType === "Empresa" && (
               <NavItem>
                 <NavLink
                   tag={RouterNavLink}
-                  to="/process"
+                  to="/offers"
                   exact
                   activeClassName="router-link-exact-active"
                 >
-                  Process
+                  Offers
                 </NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/professors"
-                  exact
-                  activeClassName="router-link-exact-active"
-                >
-                  Professors
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/mychecklist"
-                  exact
-                  activeClassName="router-link-exact-active"
-                >
-                  Mi Checklist
-                </NavLink>
-              </NavItem>
-            </Nav>
+            )}
 
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (

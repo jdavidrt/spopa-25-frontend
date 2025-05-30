@@ -19,6 +19,9 @@ Route::post('/companies', [CompanyController::class, 'store']); // Crear empresa
 
 Route::get('/programs', [ProgramController::class, 'index']);//Obtener programas fun
 
+
+
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

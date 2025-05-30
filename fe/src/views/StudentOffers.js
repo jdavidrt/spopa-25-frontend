@@ -37,9 +37,9 @@ const Offers = () => {
         if (!response.ok) {
           throw new Error('Error al obtener las ofertas');
         }
-  
+
         const result = await response.json();
-  
+
         // Asegúrate que el backend devuelve el arreglo de objetos con los mismos campos esperados
         const adaptedData = result.map((oferta) => ({
           id: oferta.id,
@@ -50,7 +50,7 @@ const Offers = () => {
           "Ciudad": oferta.company.city,
           "Correo electrónico": oferta.company.email,
         }));
-        
+
         setData(adaptedData);
       } catch (error) {
         console.error("Error al obtener las ofertas:", error);
@@ -69,10 +69,106 @@ const Offers = () => {
     )
   );
 
+  const handleCreateCompany = async () => {
+    const name = prompt("Nombre de la empresa:");
+    const sector = prompt("Sector:");
+    const email = prompt("Correo electrónico:");
+    const city = prompt("Ciudad:");
+
+    if (!name || !sector || !email || !city) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8010/api/companies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, sector, email, city }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al crear la empresa");
+      }
+
+      alert("Empresa creada exitosamente");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al crear la empresa");
+    }
+  };
+
+  /* const handleCreateOffer = async () => {
+    const company_id = prompt("ID de la empresa:");
+    const title = prompt("Título de la oferta:");
+    const position = prompt("Cargo:");
+    const department = prompt("Área:");
+    const schedule = prompt("Horario (Ej: L-V 8am-5pm):");
+    const flex_schedule = prompt("¿Horario flexible?");
+    const modality = prompt("Modalidad (Remoto, Presencial):");
+    const contract_type = prompt("Tipo de contrato:");
+    const salary = prompt("Salario:");
+    const opening_date = prompt("Fecha de apertura (YYYY-MM-DD):");
+    const closing_date = prompt("Fecha de cierre (YYYY-MM-DD):");
+    const vacancies = prompt("Número de vacantes:");
+  
+    if (!company_id || !title || !position || !schedule || !modality || !opening_date || !closing_date || !vacancies) {
+      alert("Todos los campos obligatorios deben estar completos.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:8010/api/offers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          company_id,
+          title,
+          position,
+          department,
+          schedule,
+          flex_schedule,
+          modality,
+          contract_type,
+          salary,
+          opening_date,
+          closing_date,
+          vacancies: parseInt(vacancies),
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error al crear la oferta");
+      }
+  
+      alert("Oferta creada exitosamente");
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error al crear la oferta");
+      }
+    }; */
+
   return (
+
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Buscador de Convocatorias</h1>
-
+      <div className="flex gap-4 mb-4">
+        <button
+          className="bg-green-600 hover:bg-green-900 text-black font-semibold px-4 py-2 rounded-xl shadow"
+          onClick={handleCreateCompany}
+        >
+          Crear Empresa
+        </button>
+        <button
+          className="bg-blue-500 hover:bg-blue-900 text-black font-semibold px-4 py-2 rounded-xl shadow"
+        >
+          Crear Oferta
+        </button>
+      </div>
       <input
         type="text"
         placeholder="Buscar por entidad, cargo, ciudad..."
