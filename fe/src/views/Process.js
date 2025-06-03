@@ -27,10 +27,16 @@ function Process() {
     setMensaje("");
     try {
       const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevoProceso),
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    estudiante_id: parseInt(nuevoProceso.estudiante_id),
+    oferta_id: parseInt(nuevoProceso.oferta_id),
+    profesor_id: parseInt(nuevoProceso.profesor_id),
+    estado: nuevoProceso.estado,
+  }),
+});
+
       if (!res.ok) throw new Error();
       const data = await res.json();
       setProcesos([...procesos, data]);

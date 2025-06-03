@@ -18,6 +18,11 @@ exports.getProcesos = async (req, res) => {
 // Crear un nuevo proceso de inscripción
 exports.createProceso = async (req, res) => {
   const { estudiante_id, oferta_id, profesor_id, estado } = req.body;
+
+  if (!estudiante_id || !oferta_id || !profesor_id || !estado) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
+  }
+
   try {
     const result = await pool.query(
       `INSERT INTO procesos_inscripcion (estudiante_id, oferta_id, profesor_id, estado)
@@ -26,9 +31,11 @@ exports.createProceso = async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error("Error en createProceso:", err);
     res.status(500).json({ error: "Error al crear proceso" });
   }
 };
+
 
 // Cambiar el estado de un proceso de inscripción
 exports.updateEstado = async (req, res) => {
