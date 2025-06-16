@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// fe/src/components/NavBar.js
+import React, { useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo from "../assets/SPOPALogo.png";
@@ -18,124 +19,157 @@ import {
 } from "reactstrap";
 
 import { useAuth0 } from "@auth0/auth0-react";
-
+import { useSession } from "../utils/sessionManager";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {
     user,
-    isAuthenticated,
+    isAuthenticated: auth0Authenticated,
     loginWithRedirect,
-    logout,
+    logout: auth0Logout,
   } = useAuth0();
+
+  const {
+    session,
+    isAuthenticated: sessionAuthenticated,
+    destroySession
+  } = useSession();
+
   const toggle = () => setIsOpen(!isOpen);
-  const [userType, setUserType] = useState(localStorage.getItem("userType"));
-  const logoutWithRedirect = () =>
-    logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      }
-    });
 
-  useEffect(() => {
-    const syncUserType = () => {
-      setUserType(localStorage.getItem("userType"));
-    };
+  const logoutWithRedirect = async () => {
+    try {
+      // First destroy server session
+      await destroySession();
 
-    // Evento personalizado para cambios locales
-    window.addEventListener("userTypeChange", syncUserType);
+      // Then logout from Auth0
+      auth0Logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        }
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Fallback: logout from Auth0 even if session destruction fails
+      auth0Logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        }
+      });
+    }
+  };
 
-    // Evento para sincronizar entre pestañas
-    window.addEventListener("storage", syncUserType);
-
-    return () => {
-      window.removeEventListener("userTypeChange", syncUserType);
-      window.removeEventListener("storage", syncUserType);
-    };
-  }, []);
+  // Use session authentication state, fallback to Auth0 state
+  const isAuthenticated = sessionAuthenticated || auth0Authenticated;
+  const currentUser = session.user || user;
+  const userType = session.userType;
 
   return (
     <div className="nav-container">
       <Navbar color="light" light expand="md" container={false}>
         <Container>
-          <img className="mb-3 app-logo" src={logo} alt="React logo" width="60" />
+          <RouterNavLink to="/" className="navbar-brand d-flex align-items-center">
+            <img
+              className="app-logo me-2"
+              src={logo}
+              alt="SPOPA logo"
+              width="60"
+            />
+            <span className="fw-bold text-primary">SPOPA</span>
+          </RouterNavLink>
+
           <NavbarToggler onClick={toggle} />
+
           <Collapse isOpen={isOpen} navbar>
-            <NavItem>
-              <NavLink
-                tag={RouterNavLink}
-                to="/"
-                exact
-                activeClassName="router-link-exact-active"
-              >
-                Inicio
-              </NavLink>
-            </NavItem>
-
-            {/* Rutas para Estudiante */}
-            {isAuthenticated && userType === "Estudiante" && (
-              <>
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/studentoffers"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    Student Offers
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/professors"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    Professors
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/mychecklist"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    Mi Checklist
-                  </NavLink>
-                </NavItem>
-              </>
-            )}
-
-            {/* Rutas para Administrativo */}
-            {isAuthenticated && userType === "Administrativo" && (
+            <Nav className="me-auto" navbar>
               <NavItem>
                 <NavLink
                   tag={RouterNavLink}
-                  to="/admin"
+                  to="/"
                   exact
                   activeClassName="router-link-exact-active"
                 >
-                  Admin Offers
+                  Home
                 </NavLink>
               </NavItem>
-            )}
 
-            {/* Rutas para Empresa */}
-            {isAuthenticated && userType === "Empresa" && (
-              <NavItem>
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/offers"
-                  exact
-                  activeClassName="router-link-exact-active"
-                >
-                  Offers
-                </NavLink>
-              </NavItem>
-            )}
+              {/* Student Routes */}
+              {isAuthenticated && userType === "Estudiante" && (
+                <>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/studentoffers"
+                      exact
+                      activeClassName="router-link-exact-active"
+                    >
+                      Student Offers
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/professors"
+                      exact
+                      activeClassName="router-link-exact-active"
+                    >
+                      Professors
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/mychecklist"
+                      exact
+                      activeClassName="router-link-exact-active"
+                    >
+                      My Checklist
+                    </NavLink>
+                  </NavItem>
+                </>
+              )}
 
+              {/* Administrative Routes */}
+              {isAuthenticated && userType === "Administrativo" && (
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/admin"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    Admin Dashboard
+                  </NavLink>
+                </NavItem>
+              )}
+
+              {/* Business Routes */}
+              {isAuthenticated && userType === "Empresa" && (
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/business"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    Business Portal
+                  </NavLink>
+                </NavItem>
+              )}
+
+              {/* Show role selection hint if authenticated but no role selected */}
+              {isAuthenticated && !userType && (
+                <NavItem>
+                  <NavLink disabled className="text-warning">
+                    <FontAwesomeIcon icon="user" className="me-1" />
+                    Please select your role
+                  </NavLink>
+                </NavItem>
+              )}
+            </Nav>
+
+            {/* Desktop Navigation */}
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (
                 <NavItem>
@@ -150,36 +184,59 @@ const NavBar = () => {
                 </NavItem>
               )}
 
-              {isAuthenticated && (
+              {isAuthenticated && currentUser && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret id="profileDropDown">
                     <img
-                      src={user.picture}
+                      src={currentUser.picture}
                       alt="Profile"
-                      className="nav-user-profile rounded-circle"
-                      width="50"
+                      className="nav-user-profile rounded-circle me-2"
+                      width="40"
+                      height="40"
                     />
+                    <span className="d-none d-lg-inline">
+                      {currentUser.name}
+                    </span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem header>{user.name}</DropdownItem>
+                    <DropdownItem header>
+                      <div>
+                        <strong>{currentUser.name}</strong>
+                        <br />
+                        <small className="text-muted">{currentUser.email}</small>
+                        {userType && (
+                          <div>
+                            <span className="badge badge-primary mt-1">
+                              {userType}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </DropdownItem>
+                    <DropdownItem divider />
                     <DropdownItem
                       tag={RouterNavLink}
                       to="/profile"
                       className="dropdown-profile"
                       activeClassName="router-link-exact-active"
                     >
-                      <FontAwesomeIcon icon="user" className="mr-3" /> Perfil
+                      <FontAwesomeIcon icon="user" className="me-2" />
+                      Profile
                     </DropdownItem>
+                    <DropdownItem divider />
                     <DropdownItem
                       id="qsLogoutBtn"
-                      onClick={() => logoutWithRedirect()}
+                      onClick={logoutWithRedirect}
                     >
-                      <FontAwesomeIcon icon="power-off" className="mr-3" /> Cerrar Sesión
+                      <FontAwesomeIcon icon="power-off" className="me-2" />
+                      Logout
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
             </Nav>
+
+            {/* Mobile Navigation */}
             {!isAuthenticated && (
               <Nav className="d-md-none" navbar>
                 <NavItem>
@@ -187,48 +244,61 @@ const NavBar = () => {
                     id="qsLoginBtn"
                     color="primary"
                     block
-                    onClick={() => loginWithRedirect({})}
+                    onClick={() => loginWithRedirect()}
                   >
                     Log in
                   </Button>
                 </NavItem>
               </Nav>
             )}
-            {isAuthenticated && (
+
+            {isAuthenticated && currentUser && (
               <Nav
                 className="d-md-none justify-content-between"
                 navbar
                 style={{ minHeight: 170 }}
               >
                 <NavItem>
-                  <span className="user-info">
+                  <div className="user-info d-flex align-items-center">
                     <img
-                      src={user.picture}
+                      src={currentUser.picture}
                       alt="Profile"
-                      className="nav-user-profile d-inline-block rounded-circle mr-3"
+                      className="nav-user-profile rounded-circle me-3"
                       width="50"
+                      height="50"
                     />
-                    <h6 className="d-inline-block">{user.name}</h6>
-                  </span>
+                    <div>
+                      <h6 className="mb-0">{currentUser.name}</h6>
+                      <small className="text-muted">{currentUser.email}</small>
+                      {userType && (
+                        <div>
+                          <span className="badge badge-primary">
+                            {userType}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </NavItem>
                 <NavItem>
-                  <FontAwesomeIcon icon="user" className="mr-3" />
                   <RouterNavLink
                     to="/profile"
                     activeClassName="router-link-exact-active"
+                    className="d-flex align-items-center text-decoration-none"
                   >
-                    Perfil
+                    <FontAwesomeIcon icon="user" className="me-2" />
+                    Profile
                   </RouterNavLink>
                 </NavItem>
                 <NavItem>
-                  <FontAwesomeIcon icon="power-off" className="mr-3" />
-                  <RouterNavLink
-                    to="#"
+                  <button
+                    className="btn btn-link text-decoration-none d-flex align-items-center"
                     id="qsLogoutBtn"
-                    onClick={() => logoutWithRedirect()}
+                    onClick={logoutWithRedirect}
                   >
-                    Log out
-                  </RouterNavLink>
+                    <FontAwesomeIcon icon="power-off" className="me-2" />
+                    Logout
+                  </button>
                 </NavItem>
               </Nav>
             )}
