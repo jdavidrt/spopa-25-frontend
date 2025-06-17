@@ -7,7 +7,8 @@ RUN apt-get update && \
         zip unzip curl \
         libpng-dev libonig-dev libxml2-dev \
         libzip-dev libpq-dev \
-    && docker-php-ext-install \
+        docker-php-ext-install \
+        docker-php-ext-install sockets \
         pdo \
         pdo_mysql \
         zip \

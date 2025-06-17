@@ -25,14 +25,22 @@ async function connectToBroker(onMessage) {
   //Consumimos mensajes
   channel.consume(process.env.QUEUE, async (msg) => {
     if (!msg) return;
-    const content = JSON.parse(msg.content.toString());
 
+    let content;
     try {
-      await onMessage(content);            // Delegamos la lógica de negocio
-      channel.ack(msg);                    // Confirmamos al broker que fue procesado
-    } catch (err) {
-      console.error("Error procesando mensaje:", err);
-      // ➡️ No hacemos ack: RabbitMQ puede reenviarlo o enviarlo a una DLQ
+      // 1️⃣ Intentamos parsear
+      content = JSON.parse(msg.content.toString());
+    } catch (parseErr) {
+      console.error("⛔  Mensaje no válido JSON:", msg.content.toString());
+      channel.reject(msg, false);            // lo descartamos (o envia a DLQ)
+      return;                                // seguimos sin caernos
+    }
+      try {
+      await onMessage(content);              // 2️⃣  Lógica de negocio
+      channel.ack(msg);                      // 3️⃣  OK → confirmamos
+    } catch (bizErr) {
+      console.error("💥 Error procesando:", bizErr);
+      channel.nack(msg, false, true);        // lo re‑encolamos
     }
   });
 
