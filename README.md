@@ -70,6 +70,93 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ```
 
+#### LAYERED VIEW
+
+```
+[Presentation Layer]
+────────────────────────────────────────────
+┌────────────────┐      ┌───────────────────┐
+│ Web Frontend   │      │ Mobile Frontend   │
+│ (React + Auth0)│      │ (Flutter)         │
+└──────┬─────────┘      └──────┬────────────┘
+       │                     │
+       ▼                     ▼
+[Routing / Interface Layer]
+────────────────────────────────────────────
+┌────────────────────────────────┐   ┌────────────────────┐
+│ Server-Side Rendering (Next.js)│   │  API Gateway       │
+└────────────┬───────────────────┘   └────────┬───────────┘
+             │                                │
+             ▼                                ▼
+[Application Layer / Services]
+────────────────────────────────────────────
+┌────────────┐ ┌────────────────┐ ┌────────────┐
+│ Student    │ │ Business       │ │ Admin      │
+│ Service    │ │ Service        │ │ Service    │
+│ (Node.js)  │ │ (Laravel)      │ │ (Python)   │
+└─────┬──────┘ └──────┬─────────┘ └────┬───────┘
+      ▼              ▼                ▼
+[Infrastructure Layer / Storage & Brokers]
+────────────────────────────────────────────
+┌──────────┐ ┌────────────┐ ┌──────────────┐
+│ NGINX    │ │ MySQL DB   │ │ MongoDB DB   │
+│ [Proxy]  │ │ [Business] │ │ [Admin]      │
+└────┬─────┘ └─────┬──────┘ └──────┬───────┘
+     ▼             ▼              ▼
+┌────────────┐  ┌────────┐     ┌────────┐
+│ MongoDB DB │  │ Broker │     │ Broker │
+│ [Students] │  └────────┘     └────────┘
+└────────────┘
+```
+#### DEPLOY VIEW
+
+```
++-----------------------------+
+|         User Device        |
+| (Browser / Mobile App)     |
+|                             |
+| - Web Frontend (React)      |
+| - Mobile App (Flutter)      |
++-------------┬---------------+
+              |
+              ▼
++------------------------------------------+
+|              Public Network              |
++-------------------┬----------------------+
+                    |
+     ┌──────────────▼────────────────┐
+     │         Web Server            │
+     │ (Hosting Next.js SSR App)     │
+     └──────────────┬────────────────┘
+                    ▼
+     +----------------------------------+
+     |      Internal Network/API Zone   |
+     +---------------┬------------------+
+                     ▼
+   ┌─────────────────────────────────────────────┐
+   │               API Gateway Node              │
+   │      (Routing Mobile traffic to services)   │
+   └─────────────────┬───────────────────────────┘
+                     │
+         ┌───────────▼───────────┬────────────┬
+         ▼                       ▼            ▼            
++------------------+   +----------------+  +----------------+  
+| Student Service  |   | Business Svc   |  | Admin Service  |
+| (Node.js)        |   | (Laravel)      |  | (Python)       |
++--------┬---------+   +-------┬--------+  +--------┬--------+
+         ▼                     ▼                   ▼
++------------------+   +---------------+   +------------------+
+| NGINX Proxy      |   | MySQL DB      |   | MongoDB DB       |
+| (Student only)   |   | [Business]    |   | [Admin]          |
++--------┬---------+   +-------┬-------+   +--------┬---------+
+         ▼                     ▼                   ▼
++------------------+   +---------------+   +------------------+
+| MongoDB DB       |   | Broker        |   | Broker           |
+| [Students]       |   | (Queueing)    |   | (Queueing)       |
++------------------+   +---------------+   +------------------+
+
+```
+
 #### Description of Architectural Styles Used
 
 1. **Microservices Architecture**:
