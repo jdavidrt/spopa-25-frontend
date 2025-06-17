@@ -137,6 +137,7 @@ Spopa is a distributed platform designed to connect university students with pro
    ┌─────────────────────────────────────────────┐
    │               API Gateway Node              │
    │      (Routing Mobile traffic to services)   │
+   │      PORT:3002                              │
    └─────────────────┬───────────────────────────┘
                      │
          ┌───────────▼───────────┬────────────┬
@@ -144,16 +145,19 @@ Spopa is a distributed platform designed to connect university students with pro
 +------------------+   +----------------+  +----------------+  
 | ss_process_ms    |   | ss_offers_ms   |  | ss_admin_ms    |
 | (Node.js)        |   | (Laravel)      |  | (Python)       |
+| PORT: 8082       |   | PORT: 3030     |  | PORT:8000       |
 +--------┬---------+   +-------┬--------+  +--------┬--------+
          ▼                     ▼                   ▼
 +------------------+   +---------------+   +------------------+
 | process_ms       |   | MySQL DB      |   | MongoDB DB       |
 | (NGINX)          |   | [Business]    |   | [Admin]          |
+| PORT: 8080       |   | PORT: 3031    |   | PORT:2717          |
 +--------┬---------+   +-------┬-------+   +--------┬---------+
          ▼                     ▼                   ▼
 +------------------+   +---------------+   +------------------+
 | MongoDB DB       |   | Broker        |   | Broker           |
 | [Students]       |   | (Queueing)    |   | (Queueing)       |
+| PORT: 8084       |   | PORT: 3032    |   | PORT: 2719      |
 +------------------+   +---------------+   +------------------+
 
 ```
