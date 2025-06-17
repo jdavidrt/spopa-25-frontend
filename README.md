@@ -37,8 +37,8 @@ Spopa is a distributed platform designed to connect university students with pro
             ┌───────┐
             │ User  │
             └──┬────┘
-               │
-               │                                  
+               │──────────────────────────────────┐
+               │                                  |
       ┌────────▼────────────┐           ┌───────────────────┐
       │ Web Frontend        │           │ Mobile Frontend   │
       │ (React + Auth0)     │           │ (Flutter)         │
@@ -59,14 +59,14 @@ Spopa is a distributed platform designed to connect university students with pro
  └────┬───────┘  └──────┬────────┘   └────┬───────┘
       ▼                 ▼                 ▼
 ┌─────────────┐   ┌──────────────┐   ┌───────────────┐
-│ MongoDB DB  │   │ MySQL DB     │   │ MongoDB DB    │
-│ [Students]  │   │ [Business]   │   │ [Admin]       │
-└─────────────┘   └──────┬───────┘   └──────┬────────┘
-                         ▼                  ▼
-                     ┌────────┐        ┌────────┐
-                     │ Broker │        │ Broker │
-                     └────────┘        └────────┘
-
+│ NGINX       │   │ MySQL DB     │   │ MongoDB DB    │
+│ [Proxy]     │   │ [Business]   │   │ [Admin]       │
+└─────┬───────┘   └──────┬───────┘   └──────┬────────┘
+      ▼                  ▼                  ▼
+┌─────────────┐      ┌────────┐        ┌────────┐
+│ MongoDB DB  │      │ Broker │        │ Broker │
+│ [Students]  │      └────────┘        └────────┘
+└─────────────┘
 
 ```
 
