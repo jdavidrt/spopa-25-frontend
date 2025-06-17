@@ -145,19 +145,19 @@ Spopa is a distributed platform designed to connect university students with pro
 +------------------+   +----------------+  +----------------+  
 | ss_process_ms    |   | ss_offers_ms   |  | ss_admin_ms    |
 | (Node.js)        |   | (Laravel)      |  | (Python)       |
-| PORT: 8082       |   | PORT: 3030     |  | PORT:8000       |
+| PORT: 4000       |   | PORT: 8010     |  | PORT:8000       |
 +--------┬---------+   +-------┬--------+  +--------┬--------+
          ▼                     ▼                   ▼
 +------------------+   +---------------+   +------------------+
 | process_ms       |   | MySQL DB      |   | MongoDB DB       |
 | (NGINX)          |   | [Business]    |   | [Admin]          |
-| PORT: 8080       |   | PORT: 3031    |   | PORT:2717          |
+| PORT: 8080       |   | PORT: 3307    |   | PORT:27017       |
 +--------┬---------+   +-------┬-------+   +--------┬---------+
          ▼                     ▼                   ▼
 +------------------+   +---------------+   +------------------+
 | MongoDB DB       |   | Broker        |   | Broker           |
 | [Students]       |   | (Queueing)    |   | (Queueing)       |
-| PORT: 8084       |   | PORT: 3032    |   | PORT: 2719      |
+| PORT: 5432       |   | PORT: 5673    |   | PORT: 5678       |
 +------------------+   +---------------+   +------------------+
 
 ```
