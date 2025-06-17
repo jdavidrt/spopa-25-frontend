@@ -1,0 +1,37 @@
+services:
+  app:                                   # ← servicio “app” (igual que en tu ejemplo)
+    build:
+      context: .                         # usa el Dockerfile de esta carpeta
+    container_name: notification_ms
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app                  # monta el código para desarrollo local
+    env_file:
+      - .env                            # variables de entorno (RabbitMQ_URL, etc.)
+    ports:
+      - "4010:4010"                     # health‑check /debug
+    depends_on:
+      - rabbitmq                        # espera a que el broker esté listo
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq            # un solo broker para todos los microservicios
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5673:5672"                     # puerto AMQP
+      - "15673:15672"                   # consola de administración
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - microservices_network           #red para operar 
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  microservices_network:
+    external: true

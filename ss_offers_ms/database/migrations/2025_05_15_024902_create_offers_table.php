@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('offers', function (Blueprint $table) {
+        Schema::create('offers', function (Blueprint $table)     {
             $table->id();
             $table->timestamp('published_at')->nullable();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');

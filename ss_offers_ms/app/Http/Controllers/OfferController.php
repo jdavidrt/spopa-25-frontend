@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use finfo;
 use Illuminate\Http\Request;
 use App\Models\Offer;
+use App\Services\RabbitProducerService;
 
 class OfferController extends Controller
 {
@@ -64,8 +65,9 @@ class OfferController extends Controller
         return response()->json($offer);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, RabbitProducerService $producer)
     {
+        \Log::info('🔵 Store ejecutado');
         $validated = $request->validate([
             'published_at' => 'nullable|date',
             'company_id' => 'required|exists:companies,id',
@@ -96,6 +98,18 @@ class OfferController extends Controller
         if ($request->has('program_ids')) {
             $offer->programs()->sync($request->program_ids);
         }
+
+        \Log::info('🟡 A punto de publicar…'); 
+        $producer->publish('ofertas.creada',[
+            'evento'      => 'OfertaCreada',
+            'id'          => $offer->id, 
+            'titulo'      => $offer->title,
+            'empresa_id'  => $offer->company_id,
+            'fecha'       => now()->toIso8601String(),
+        ]);
+        \Log::info('🟢 Publicación terminada');
+
+        echo " Evento ofertas.creada publicado\n";
 
         return response()->json($offer, 201);
     }
