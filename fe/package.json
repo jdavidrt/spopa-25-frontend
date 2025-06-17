@@ -2,18 +2,13 @@
   "name": "auth0-react-sample",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "start": "npm-run-all --parallel spa api-server",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+   "scripts": {
+    "start": "npm-run-all --parallel spa session-server",
     "spa": "react-scripts start",
-    "server": "node server.js",
-    "server:dev": "nodemon server.js",
-    "api-server": "node api-server.js",
-    "api-server:dev": "nodemon api-server.js",
-    "dev": "npm-run-all --parallel spa api-server:dev",
-    "prod": "npm-run-all --parallel server api-server"
+    "session-server": "node api-session-server.js",
+    "session-server:dev": "nodemon api-session-server.js",
+    "dev": "npm-run-all --parallel spa session-server:dev api-server:dev",
+    "test-session": "curl http://localhost:3001/api/test"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.0",
@@ -24,11 +19,15 @@
     "@fortawesome/free-solid-svg-icons": "^5.8",
     "@fortawesome/react-fontawesome": "^0.2",
     "autoprefixer": "^10.4",
+    "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8",
     "express": "^4.18",
     "express-oauth2-jwt-bearer": "^1.6.0",
+    "express-session": "^1.18.1",
     "helmet": "^4.4",
     "highlight.js": "^10.0",
+    "http-proxy-middleware": "^2.0.9",
     "lucide-react": "^0.511.0",
     "morgan": "^1.9",
     "npm-run-all": "^4.1",
@@ -38,7 +37,8 @@
     "react-router-dom": "^5.3",
     "react-scripts": "^5.0",
     "reactstrap": "^9.2",
-    "typescript": "^4.9"
+    "typescript": "^4.9",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.17",

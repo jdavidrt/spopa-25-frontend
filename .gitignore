@@ -6,12 +6,21 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+**/package-lock.json
+
 __pycache__/
 */__pycache__/
 */*/__pycache__/
 */*/*/__pycache__/
 */*/*/*/__pycache__/
 */*/*/*/*/__pycache__/
+# Ignorar todos los archivos compilados de Python (.pyc)
+*.pyc
+
+
+# Ignorar todas las carpetas __pycache__ en cualquier parte del proyecto
+__pycache__/
+**/__pycache__/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
