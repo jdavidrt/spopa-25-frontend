@@ -1,102 +1,116 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { useSession } from '../lib/session-manager';
+import NavigationBar from '../components/navbar';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { user, isLoading } = useUser();
+  const { session, initializeSession, updateUserType, isLoading: sessionLoading } = useSession();
+  const [isInitializing, setIsInitializing] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const roles = ["Estudiante", "Administrativo", "Empresa"];
+
+  useEffect(() => {
+    const initSession = async () => {
+      if (user && !session.authenticated && !isInitializing) {
+        setIsInitializing(true);
+        try {
+          await initializeSession(user);
+        } catch (error) {
+          console.error('Failed to initialize session:', error);
+        } finally {
+          setIsInitializing(false);
+        }
+      }
+    };
+
+    if (!isLoading && !sessionLoading) {
+      initSession();
+    }
+  }, [user, session.authenticated, isLoading, sessionLoading, isInitializing, initializeSession]);
+
+  const handleRoleSelect = async (role: string) => {
+    try {
+      await updateUserType(role);
+    } catch (error) {
+      console.error('Failed to update user type:', error);
+    }
+  };
+
+  if (isLoading || sessionLoading || isInitializing) {
+    return (
+      <div className="d-flex flex-column min-vh-100">
+        <NavigationBar />
+        <div className="container flex-grow-1 d-flex justify-content-center align-items-center">
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading...</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="d-flex flex-column min-vh-100">
+      <NavigationBar />
+      <div className="container flex-grow-1 mt-5">
+        <div className="text-center my-5">
+          <h1 className="mb-4">SPOPA</h1>
+          <p className="lead text-muted">
+            Student Professional Opportunities Platform for Academia
+          </p>
+
+          {session.authenticated && !session.userType && (
+            <div className="mt-4">
+              <h5 className="mb-3 text-primary">Welcome, {session.user?.name}!</h5>
+              <h6 className="mb-3">Please select your role:</h6>
+              <div className="d-flex justify-content-center gap-3 mb-2 flex-wrap">
+                {roles.map((role) => (
+                  <button
+                    key={role}
+                    className="btn btn-outline-primary"
+                    onClick={() => handleRoleSelect(role)}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+              <small className="text-muted">
+                You can change your role later in your profile settings
+              </small>
+            </div>
+          )}
+
+          {session.authenticated && session.userType && (
+            <div className="alert alert-success mt-4" role="alert">
+              <p className="mb-1">
+                <strong>Welcome back, {session.user?.name}!</strong>
+              </p>
+              <p className="mb-0">
+                Current role: <span className="badge bg-primary">{session.userType}</span>
+              </p>
+            </div>
+          )}
+
+          {!session.authenticated && (
+            <div className="mt-4">
+              <p className="text-muted">
+                Please log in to access your dashboard and manage your internship process.
+              </p>
+              <a className="btn btn-primary" href="/api/auth/login">
+                Log In
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+      <footer className="bg-light p-3 text-center mt-auto">
+        <p className="mb-0">SPOPA - 25 - Grupo 1E</p>
       </footer>
     </div>
   );
