@@ -71,7 +71,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ```
 
-#### LAYERED VIEW
+#### Layered View
 
 ```
 [Presentation Layer]
@@ -109,7 +109,7 @@ Spopa is a distributed platform designed to connect university students with pro
 │ [Students] │  └────────┘     └────────┘
 └────────────┘
 ```
-#### DEPLOY VIEW
+#### Deployment View
 
 ```
 +-----------------------------+
@@ -157,7 +157,7 @@ Spopa is a distributed platform designed to connect university students with pro
 +------------------+   +---------------+   +------------------+
 
 ```
-#### DEPLOY VIEW
+#### Decomposition View
 
 ```
 System: Learning Platform (High-Level Decomposition)
