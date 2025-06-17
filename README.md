@@ -1,4 +1,4 @@
-# Project Artifact: SPOPA, Prototype #1.
+# Project Artifact: SPOPA, Prototype #2.
 
 
 ## Team 1E
@@ -157,36 +157,128 @@ Spopa is a distributed platform designed to connect university students with pro
 +------------------+   +---------------+   +------------------+
 
 ```
+#### DEPLOY VIEW
 
-#### Description of Architectural Styles Used
+```
+System: Learning Platform (High-Level Decomposition)
+─────────────────────────────────────────────────────
 
-1. **Microservices Architecture**:
-   - The system is designed following the microservices pattern, where each component has a single, well-defined responsibility.
-   - Services are independent and can be deployed, updated, and scaled individually.
+1. Web Frontend (React + Auth0)
+   ├─ UI Components (Forms, Dashboards, Course Views)
+   ├─ Auth Module (via Auth0 SDK)
+   └─ API Client (talks to Next.js SSR endpoints)
 
-2. **API Gateway Pattern**:
-   - An API Gateway is implemented as a single entry point for client requests.
-   - The gateway manages authentication, routing, and orchestration of requests to the corresponding microservices.
+2. Mobile Frontend (Flutter)
+   ├─ Cross-platform UI Widgets
+   ├─ Auth Module (via Auth0)
+   └─ API Client (via API Gateway)
 
-4. **Polyglot Persistence**:
-   - MySQL (relational database) is used for structured data requiring ACID transactions.
-   - MongoDB (NoSQL database) is used for semi-structured data such as internship offers.
+3. Server-Side Rendering (Next.js)
+   ├─ Routing & Middleware
+   ├─ SSR Pages & Components
+   ├─ Session Management
+   └─ Service Connector Layer
+        ├─ Connects to Student Service
+        ├─ Connects to Business Service
+        └─ Connects to Admin Service
 
-#### Description of Architectural Elements and Relations
+4. Student Service (Node.js)
+   ├─ API Routes (REST)
+   ├─ NGINX Proxy Integration
+   ├─ Student Logic (enrollment, profiles, etc.)
+   └─ MongoDB Handler (data access)
 
-**Presentation Components**:
-- **Web Frontend (React.js)**: Responsive user interface that allows students and companies to interact with the system based on their role.
+5. Business Service (Laravel)
+   ├─ Controller Layer (REST endpoints)
+   ├─ Business Logic (billing, course packages)
+   ├─ Database Models (MySQL ORM/Eloquent)
+   └─ Broker Publisher (event-based messages)
 
-**Logic Components**:
-- **API Gateway (Node.js/Express)**: Acts as a single entry point for client requests, handling routing and orchestration.
-- **Authentication Microservice (Auth0)**: Manages user authentication, JWT token generation, and permissions.
-- **Students Microservice (Node.js)**: Manages student profiles, preferences, and applications.
-- **Business Microservice (Laravel)**: Manages the creation, updating, and searching of internship offers.
-- **Administration Microservice (Python)**: Manages the creation, updating, and searching of internship offers/Users.
+6. Admin Service (Python)
+   ├─ REST API (e.g., Flask / FastAPI)
+   ├─ Admin Operations Logic (reporting, moderation)
+   ├─ MongoDB ORM Layer
+   └─ Broker Publisher (async tasks/events)
 
-**Data Components**:
-- **SQL Database (PostgreSQL)**: Stores data related to students, profiles, applications, and users.
-- **NoSQL Database (MongoDB)**: Stores data related to internship offers, allowing efficient searches.
+7. Brokers
+   ├─ Queues for async processing
+   └─ Receives events from Business/Admin services
+
+8. Databases
+   ├─ MongoDB [Students, Admin]
+   └─ MySQL [Business Data]
+```
+
+# System Architecture Overview
+
+## Architectural Styles Used
+
+### 1. Microservices Architecture
+- The system follows the microservices pattern, where each service encapsulates a specific business domain.
+- Services are independently deployable, scalable, and loosely coupled, with separate databases.
+
+### 2. API Gateway Pattern
+- An API Gateway serves as a single entry point for mobile clients, handling routing and orchestration.
+- For web clients, routing is handled by Server-Side Rendering (Next.js), which communicates directly with internal services.
+
+### 3. Polyglot Persistence
+- The system employs different database technologies to suit varying data needs:
+  - MySQL: Used by the Business Service for relational and transactional data.
+  - MongoDB: Used by the Student and Admin Services for flexible, semi-structured data.
+
+## Architectural Elements and Relations
+
+### Presentation Layer
+
+- **Web Frontend (React + Next.js)**
+  - Responsive user interface for students and companies.
+  - Uses Server-Side Rendering for performance and SEO.
+  - Auth0 is used for authentication and token handling.
+
+- **Mobile Frontend (Flutter)**
+  - Native-like experience.
+  - Communicates exclusively via the API Gateway.
+  - Secured using Auth0 tokens.
+
+### Interface / Gateway Layer
+
+- **API Gateway (Node.js / Express)**
+  - Single entry point for mobile traffic.
+  - Routes and orchestrates requests to the correct microservice (Student, Business, Admin).
+  - Handles token verification and basic access control.
+
+### Application Logic Layer (Microservices)
+
+- **Student Service (Node.js)**
+  - Manages student profiles, preferences, and applications.
+  - Exposes REST endpoints.
+  - Deployed behind an NGINX Proxy.
+  - Persists data in MongoDB.
+
+- **Business Service (Laravel / PHP)**
+  - Manages internship offers (create, update, search, delete).
+  - Uses MySQL for structured data.
+  - Publishes events to a Broker for async workflows.
+
+- **Admin Service (Python)**
+  - Handles admin features: user moderation, data curation, reporting.
+  - Uses MongoDB and communicates via a Broker for event-driven tasks.
+
+### Data Layer
+
+- **MongoDB [Students]**
+  - Stores student-related data (profiles, applications).
+
+- **MySQL [Business]**
+  - Stores relational data for internship offers and companies.
+
+- **MongoDB [Admin]**
+  - Stores admin metadata, logs, and system-level settings.
+
+- **Brokers (Queue/Message Bus)**
+  - Used by the Business and Admin Services.
+  - Enables asynchronous communication and background processing.
+
 
 ## Prototype
 
@@ -231,35 +323,3 @@ To build and run the Docker image, run `exec.sh`, or `exec.ps1` on Windows.
 ```bash
 npm run build
 ```
-
-## Frequently Asked Questions
-
-If you're having issues running the sample applications, including issues such as users not being authenticated on page refresh, please [check the auth0-react FAQ](https://github.com/auth0/auth0-react/blob/master/FAQ.md).
-
-## What is Auth0?
-
-Auth0 helps you to:
-
-* Add authentication with [multiple sources](https://auth0.com/docs/identityproviders), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML Identity Provider**.
-* Add authentication through more traditional **[username/password databases](https://auth0.com/docs/connections/database/custom-db)**.
-* Add support for **[linking different user accounts](https://auth0.com/docs/users/user-account-linking)** with the same user.
-* Support for generating signed [JSON Web Tokens](https://auth0.com/docs/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
-* Analytics of how, when, and where users are logging in.
-* Pull data from other sources and add it to the user profile through [JavaScript rules](https://auth0.com/docs/rules).
-
-## Create a Free Auth0 Account
-
-1. Go to [Auth0](https://auth0.com) and click **Sign Up**.
-2. Use Google, GitHub, or Microsoft Account to login.
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
-
-## Author
-
-[Auth0](https://auth0.com)
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](../LICENSE) file for more info.
