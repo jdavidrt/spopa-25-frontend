@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "912633018080",
+    "project_id": "front-x4pe6z",
+    "storage_bucket": "front-x4pe6z.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912633018080:android:52e275fdfd084fadf0c285",
+        "android_client_info": {
+          "package_name": "com.mycompany.front"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2baYK5qMG7VgYMce10wzpYw-R87tOmzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

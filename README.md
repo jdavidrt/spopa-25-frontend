@@ -1,105 +1,329 @@
-# Auth0 React SDK Sample Application
+# Project Artifact: SPOPA, Prototype #2.
 
-This sample demonstrates the integration of [Auth0 React SDK](https://github.com/auth0/auth0-react) into a React application created using [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html). The sample is a companion to the [Auth0 React SDK Quickstart](https://auth0.com/docs/quickstart/spa/react).
 
-This sample demonstrates the following use cases:
+## Team 1E
+## Repository link: https://github.com/jdavidrt/spopa-25-frontend/
+- David Santiago Castañeda Venegas - dscastanedav@unal.edu.co
+- Gian Emanuel Morales González - gimoralesg@unal.edu.co
+- Juan David Ramírez Torres - jdramirezt@unal.edu.co 
+- Nicolas Machado Narvaez - nmachado@unal.edu.co
+- Sergio Ivan Motta Doncel - smottad@unal.edu.co
 
-- [Login](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/components/NavBar.js#L72-L79)
-- [Logout](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/components/NavBar.js#L102-L108)
-- [Showing the user profile](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/views/Profile.js)
-- [Protecting routes](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/views/Profile.js#L33)
-- [Calling APIs](https://github.com/auth0-samples/auth0-react-samples/blob/master/Sample-01/src/views/ExternalApi.js)
 
-## Project setup
+Software Architecture.
+Engineering Faculty.
+2025-I
+National University of Colombia.
 
-Use `yarn` to install the project dependencies:
+![Unal Logo](https://lh4.googleusercontent.com/proxy/WNtyuTbDjnnITJFxg1dlI63L0jfIMRf0CIKg75VavFd3ameUuokpEiXIZvafO0UbA3rGKkhjDZ2HFtRWcGiPIn7Syd37PqnCrQuXFNHguRRPYm__safRJi9Q)
 
-```bash
-yarn install
+
+---
+
+
+## Software System: SPOPA
+![Spopa Logo](https://i.imgur.com/tDGdNvW.png)
+
+
+### Description
+Spopa is a distributed platform designed to connect university students with professional internship opportunities. The system allows companies to publish their internship offers and enables students to find opportunities that align with their academic and professional profiles. The platform offers advanced search functionalities, and selection process tracking, all built on a modern and scalable microservices architecture.
+
+## Architectural Structures
+
+### Component and Connector (C&C) Structure
+
+#### C&C View
+
+```
+            ┌───────┐
+            │ User  │
+            └──┬────┘
+               │──────────────────────────────────┐
+               │                                  |
+      ┌────────▼────────────┐           ┌───────────────────┐
+      │ fe                  │           │ fe_app            │
+      │ (React + Auth0)     │           │ (Flutter)         │
+      └────────┬────────────┘           └─────────┬─────────┘
+               │                                  │
+               ▼                                  ▼
+     ┌────────────────────────┐       ┌───────────────┐
+     │ fe_server              │  |───►┤  API Gateway  │
+     │ (Next.js)              │  |    └───────────────┘
+     └──────────────┬─────────┘  |      |
+                    |            |      ▼
+      ┌──────────────────┬─────────────────┐
+      ▼                  ▼                 ▼ 
+ ┌────────────┐  ┌───────────────┐   ┌────────────┐
+ │ ss_process │  │ ss_offers_ms  │   │ ss_admin_  │
+ │ _ms        │  │               │   │ ms         │
+ │ (Node.js)  │  │ (Laravel)     │   │ (Python)   │
+ └────┬───────┘  └──────┬────────┘   └────┬───────┘
+      ▼                 ▼                 ▼
+┌─────────────┐   ┌──────────────┐   ┌───────────────┐
+│ process_px  │   │ MySQL DB     │   │ MongoDB DB    │
+│ [NGINX]     │   │ [Business]   │   │ [Admin]       │
+└─────┬───────┘   └──────┬───────┘   └──────┬────────┘
+      ▼                  ▼                  ▼
+┌─────────────┐      ┌────────┐        ┌────────┐
+│ MongoDB DB  │      │ Broker │        │ Broker │
+│ [Students]  │      └────────┘        └────────┘
+└─────────────┘
+
 ```
 
-## Configuration
+#### Layered View
 
-### Create an API
+```
+[Presentation Layer]
+────────────────────────────────────────────
+┌────────────────┐      ┌───────────────────┐
+│ fe             │      │ fe_app            │
+│ (React + Auth0)│      │ (Flutter)         │
+└──────┬─────────┘      └──────┬────────────┘
+       │                     │
+       ▼                     ▼
+[Routing / Interface Layer]
+────────────────────────────────────────────
+┌────────────────────────────────┐   ┌────────────────────┐
+│ fe_server      (Next.js)       │   │  API Gateway       │
+└────────────┬───────────────────┘   └────────┬───────────┘
+             │                                │
+             ▼                                ▼
+[Application Layer / Services]
+────────────────────────────────────────────
+┌────────────┐ ┌────────────────┐ ┌────────────┐
+│ ss_process │ │ ss_offers_ms   │ │ ss_admin   │
+│ _ms        │ │                │ │ _ms        │
+│ (Node.js)  │ │ (Laravel)      │ │ (Python)   │
+└─────┬──────┘ └──────┬─────────┘ └────┬───────┘
+      ▼              ▼                ▼
+[Infrastructure Layer / Storage & Brokers]
+────────────────────────────────────────────
+┌──────────┐ ┌────────────┐ ┌──────────────┐
+│process_px│ │ MySQL DB   │ │ MongoDB DB   │
+│ [NGINX]  │ │ [Business] │ │ [Admin]      │
+└────┬─────┘ └─────┬──────┘ └──────┬───────┘
+     ▼             ▼              ▼
+┌────────────┐  ┌────────┐     ┌────────┐
+│ MongoDB DB │  │ Broker │     │ Broker │
+│ [Students] │  └────────┘     └────────┘
+└────────────┘
+```
+#### Deployment View
 
-For the ["call an API"](https://auth0.com/docs/quickstart/spa/react/02-calling-an-api) page to work, you will need to [create an API](https://auth0.com/docs/apis) using the [management dashboard](https://manage.auth0.com/#/apis). This will give you an API identifier that you can use in the `audience` configuration field below.
+```
++-----------------------------+
+|         User Device        |
+| (Browser / Mobile App)     |
+|                             |
+| - Web Frontend (React)      |
+| - Mobile App (Flutter)      |
++-------------┬---------------+
+              |
+              ▼
++------------------------------------------+
+|              Public Network              |
++-------------------┬----------------------+
+                    |
+     ┌──────────────▼────────────────┐
+     │         fe_server             │
+     │ (Hosting Next.js SSR App)     │
+     └──────────────┬────────────────┘
+                    ▼
+     +----------------------------------+
+     |      Internal Network/API Zone   |
+     +---------------┬------------------+
+                     ▼
+   ┌─────────────────────────────────────────────┐
+   │               API Gateway Node              │
+   │      (Routing Mobile traffic to services)   │
+   │      PORT:3002                              │
+   └─────────────────┬───────────────────────────┘
+                     │
+         ┌───────────▼───────────┬────────────┬
+         ▼                       ▼            ▼            
++------------------+   +----------------+  +----------------+  
+| ss_process_ms    |   | ss_offers_ms   |  | ss_admin_ms    |
+| (Node.js)        |   | (Laravel)      |  | (Python)       |
+| PORT: 4000       |   | PORT: 8010     |  | PORT:8000       |
++--------┬---------+   +-------┬--------+  +--------┬--------+
+         ▼                     ▼                   ▼
++------------------+   +---------------+   +------------------+
+| process_ms       |   | MySQL DB      |   | MongoDB DB       |
+| (NGINX)          |   | [Business]    |   | [Admin]          |
+| PORT: 8080       |   | PORT: 3307    |   | PORT:27017       |
++--------┬---------+   +-------┬-------+   +--------┬---------+
+         ▼                     ▼                   ▼
++------------------+   +---------------+   +------------------+
+| MongoDB DB       |   | Broker        |   | Broker           |
+| [Students]       |   | (Queueing)    |   | (Queueing)       |
+| PORT: 5432       |   | PORT: 5673    |   | PORT: 5678       |
++------------------+   +---------------+   +------------------+
 
-If you do not wish to use an API or observe the API call working, you should not specify the `audience` value in the next step. Otherwise, you will receive a "Service not found" error when trying to authenticate.
+```
+#### Decomposition View
 
-### Configure credentials
+```
+System: Learning Platform (High-Level Decomposition)
+─────────────────────────────────────────────────────
 
-The project needs to be configured with your Auth0 domain and client ID in order for the authentication flow to work.
+1. Web Frontend (React + Auth0)
+   ├─ UI Components (Forms, Dashboards, Course Views)
+   ├─ Auth Module (via Auth0 SDK)
+   └─ API Client (talks to Next.js SSR endpoints)
 
-To do this, first copy `src/auth_config.json.example` into a new file in the same folder called `src/auth_config.json`, and replace the values with your own Auth0 application credentials, and optionally the base URLs of your application and API:
+2. Mobile Frontend (Flutter)
+   ├─ Cross-platform UI Widgets
+   ├─ Auth Module (via Auth0)
+   └─ API Client (via API Gateway)
 
-```json
-{
-  "domain": "{YOUR AUTH0 DOMAIN}",
-  "clientId": "{YOUR AUTH0 CLIENT ID}",
-  "audience": "{YOUR AUTH0 API_IDENTIFIER}",
-  "appOrigin": "{OPTIONAL: THE BASE URL OF YOUR APPLICATION (default: http://localhost:3000)}",
-  "apiOrigin": "{OPTIONAL: THE BASE URL OF YOUR API (default: http://localhost:3001)}"
-}
+3. Server-Side Rendering (Next.js)
+   ├─ Routing & Middleware
+   ├─ SSR Pages & Components
+   ├─ Session Management
+   └─ Service Connector Layer
+        ├─ Connects to Student Service
+        ├─ Connects to Business Service
+        └─ Connects to Admin Service
+
+4. Student Service (Node.js)
+   ├─ API Routes (REST)
+   ├─ NGINX Proxy Integration
+   ├─ Student Logic (enrollment, profiles, etc.)
+   └─ MongoDB Handler (data access)
+
+5. Business Service (Laravel)
+   ├─ Controller Layer (REST endpoints)
+   ├─ Business Logic (billing, course packages)
+   ├─ Database Models (MySQL ORM/Eloquent)
+   └─ Broker Publisher (event-based messages)
+
+6. Admin Service (Python)
+   ├─ REST API (e.g., Flask / FastAPI)
+   ├─ Admin Operations Logic (reporting, moderation)
+   ├─ MongoDB ORM Layer
+   └─ Broker Publisher (async tasks/events)
+
+7. Brokers
+   ├─ Queues for async processing
+   └─ Receives events from Business/Admin services
+
+8. Databases
+   ├─ MongoDB [Students, Admin]
+   └─ MySQL [Business Data]
 ```
 
-**Note**: Do not specify a value for `audience` here if you do not wish to use the API part of the sample.
+# System Architecture Overview
 
-## Run the sample
+## Architectural Styles Used
 
-### Compile and hot-reload for development
+### 1. Microservices Architecture
+- The system follows the microservices pattern, where each service encapsulates a specific business domain.
+- Services are independently deployable, scalable, and loosely coupled, with separate databases.
 
-This compiles and serves the React app and starts the backend API server on port 3001.
+### 2. API Gateway Pattern
+- An API Gateway serves as a single entry point for mobile clients, handling routing and orchestration.
+- For web clients, routing is handled by Server-Side Rendering (Next.js), which communicates directly with internal services.
 
-```bash
-yarn run dev
-```
+### 3. Polyglot Persistence
+- The system employs different database technologies to suit varying data needs:
+  - MySQL: Used by the Business Service for relational and transactional data.
+  - MongoDB: Used by the Student and Admin Services for flexible, semi-structured data.
 
-## Deployment
+## Architectural Elements and Relations
 
-### Compiles and minifies for production
+### Presentation Layer
 
-```bash
-yarn run build
-```
+- **Web Frontend (React + Next.js)**
+  - Responsive user interface for students and companies.
+  - Uses Server-Side Rendering for performance and SEO.
+  - Auth0 is used for authentication and token handling.
 
-### Docker build
+- **Mobile Frontend (Flutter)**
+  - Native-like experience.
+  - Communicates exclusively via the API Gateway.
+  - Secured using Auth0 tokens.
+
+### Interface / Gateway Layer
+
+- **API Gateway (Node.js / Express)**
+  - Single entry point for mobile traffic.
+  - Routes and orchestrates requests to the correct microservice (Student, Business, Admin).
+  - Handles token verification and basic access control.
+
+### Application Logic Layer (Microservices)
+
+- **Student Service (Node.js)**
+  - Manages student profiles, preferences, and applications.
+  - Exposes REST endpoints.
+  - Deployed behind an NGINX Proxy.
+  - Persists data in MongoDB.
+
+- **Business Service (Laravel / PHP)**
+  - Manages internship offers (create, update, search, delete).
+  - Uses MySQL for structured data.
+  - Publishes events to a Broker for async workflows.
+
+- **Admin Service (Python)**
+  - Handles admin features: user moderation, data curation, reporting.
+  - Uses MongoDB and communicates via a Broker for event-driven tasks.
+
+### Data Layer
+
+- **MongoDB [Students]**
+  - Stores student-related data (profiles, applications).
+
+- **MySQL [Business]**
+  - Stores relational data for internship offers and companies.
+
+- **MongoDB [Admin]**
+  - Stores admin metadata, logs, and system-level settings.
+
+- **Brokers (Queue/Message Bus)**
+  - Used by the Business and Admin Services.
+  - Enables asynchronous communication and background processing.
+
+
+## Prototype
+
+### Instructions for Deploying the System Locally
+
+#### Prerequisites
+- Docker and Docker Compose installed
+- Git
+
+#### Deployment Steps
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/username/prakticum-connect.git
+   cd prakticum-connect
+   ```
+
+2. **Build and Start the Containers**
+   ```bash
+   docker-compose up -d
+   ```
+   
+3. **Build and Start Administrator Service**
+   ```bash
+   docker-compose up --build -d
+   ```
+   
+4. **Verify the Deployment**
+   ```bash
+   docker-compose ps
+   ```
+
+5. **Access the Services**
+   - Frontend: http://localhost:3000
+   - API Gateway ADMIN: http://localhost:8000
+   - API Documentation (Swagger): http://localhost:8000/docs
 
 To build and run the Docker image, run `exec.sh`, or `exec.ps1` on Windows.
 
 ### Run your tests
 
 ```bash
-yarn run test
+npm run build
 ```
-
-## Frequently Asked Questions
-
-If you're having issues running the sample applications, including issues such as users not being authenticated on page refresh, please [check the auth0-react FAQ](https://github.com/auth0/auth0-react/blob/master/FAQ.md).
-
-## What is Auth0?
-
-Auth0 helps you to:
-
-* Add authentication with [multiple sources](https://auth0.com/docs/identityproviders), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML Identity Provider**.
-* Add authentication through more traditional **[username/password databases](https://auth0.com/docs/connections/database/custom-db)**.
-* Add support for **[linking different user accounts](https://auth0.com/docs/users/user-account-linking)** with the same user.
-* Support for generating signed [JSON Web Tokens](https://auth0.com/docs/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
-* Analytics of how, when, and where users are logging in.
-* Pull data from other sources and add it to the user profile through [JavaScript rules](https://auth0.com/docs/rules).
-
-## Create a Free Auth0 Account
-
-1. Go to [Auth0](https://auth0.com) and click **Sign Up**.
-2. Use Google, GitHub, or Microsoft Account to login.
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
-
-## Author
-
-[Auth0](https://auth0.com)
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](../LICENSE) file for more info.
