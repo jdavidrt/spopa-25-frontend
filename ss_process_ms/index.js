@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas para procesos de inscripción
-app.use("/api/procesos", procesosRoutes);
+app.use("/api/process", procesosRoutes);
 
 app.get("/", (req, res) => {
   res.send("Microservicio de procesos de inscripción activo");
@@ -22,4 +22,9 @@ app.get("/", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Microservicio de procesos escuchando en el puerto ${port}`);
+});
+
+app.use((err, req, res, next) => {
+  console.error("Error no capturado:", err.stack);
+  res.status(500).send("Error del servidor");
 });

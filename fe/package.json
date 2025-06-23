@@ -2,7 +2,7 @@
   "name": "auth0-react-sample",
   "version": "0.1.0",
   "private": true,
-   "scripts": {
+  "scripts": {
     "start": "npm-run-all --parallel spa session-server",
     "spa": "react-scripts start",
     "session-server": "node api-session-server.js",

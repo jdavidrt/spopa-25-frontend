@@ -1,10 +1,10 @@
-// frontend/src/components/Procesos.js
+// frontend/src/components/Process.js
 import React, { useEffect, useState } from "react";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000/api/process";
 
 function Process() {
-  const [process, setProcesos] = useState([]);
+  const [procesos, setProcesos] = useState([]);
   const [nuevoProceso, setNuevoProceso] = useState({
     estudiante_id: "",
     oferta_id: "",
@@ -15,11 +15,11 @@ function Process() {
 
   // Obtener todos los procesos al cargar el componente
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then(setProcesos)
-      .catch(() => setMensaje("Error al cargar procesos"));
-  }, []);
+  fetch(API_URL)
+    .then((res) => res.json())
+    .then(data => setProcesos(Array.isArray(data) ? data : []))
+    .catch(() => setMensaje("Error al cargar procesos"));
+}, []);
 
   // Crear un nuevo proceso
   const handleSubmit = async (e) => {
@@ -27,13 +27,19 @@ function Process() {
     setMensaje("");
     try {
       const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevoProceso),
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    estudiante_id: parseInt(nuevoProceso.estudiante_id),
+    oferta_id: parseInt(nuevoProceso.oferta_id),
+    profesor_id: parseInt(nuevoProceso.profesor_id),
+    estado: nuevoProceso.estado,
+  }),
+});
+
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setProcesos([...process, data]);
+      setProcesos([...procesos, data]);
       setMensaje("Proceso creado correctamente");
     } catch {
       setMensaje("Error al crear proceso");
@@ -51,7 +57,7 @@ function Process() {
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setProcesos(process.map(p => (p.id === id ? data : p)));
+      setProcesos(procesos.map(p => (p.id === id ? data : p)));
       setMensaje("Estado actualizado");
     } catch {
       setMensaje("Error al actualizar estado");
@@ -63,7 +69,7 @@ function Process() {
       <h2>Procesos de Inscripción</h2>
       {mensaje && <p>{mensaje}</p>}
       <ul>
-        {process.map((p) => (
+        {procesos.map((p) => (
           <li key={p.id}>
             Proceso #{p.id} - Estado: {p.estado}
             <button onClick={() => cambiarEstado(p.id, "iniciado")}>Iniciar</button>

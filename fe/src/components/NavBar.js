@@ -126,7 +126,18 @@ const NavBar = () => {
                     >
                       My Checklist
                     </NavLink>
-                  </NavItem>
+                    
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/process"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+                    Process
+                  </NavLink>
+                </NavItem>
                 </>
               )}
 
