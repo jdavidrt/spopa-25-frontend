@@ -67,7 +67,7 @@ class OfferController extends Controller
 
     public function store(Request $request, RabbitProducerService $producer)
     {
-        \Log::info('🔵 Store ejecutado');
+        
         $validated = $request->validate([
             'published_at' => 'nullable|date',
             'company_id' => 'required|exists:companies,id',
@@ -99,7 +99,7 @@ class OfferController extends Controller
             $offer->programs()->sync($request->program_ids);
         }
 
-        \Log::info('🟡 A punto de publicar…'); 
+        
         $producer->publish('ofertas.creada',[
             'evento'      => 'OfertaCreada',
             'id'          => $offer->id, 
@@ -107,7 +107,7 @@ class OfferController extends Controller
             'empresa_id'  => $offer->company_id,
             'fecha'       => now()->toIso8601String(),
         ]);
-        \Log::info('🟢 Publicación terminada');
+        
 
         echo " Evento ofertas.creada publicado\n";
 

@@ -41,27 +41,27 @@ Spopa is a distributed platform designed to connect university students with pro
                │──────────────────────────────────┐
                │                                  |
       ┌────────▼────────────┐           ┌───────────────────┐
-      │ Web Frontend        │           │ Mobile Frontend   │
+      │ fe                  │           │ fe_app            │
       │ (React + Auth0)     │           │ (Flutter)         │
       └────────┬────────────┘           └─────────┬─────────┘
                │                                  │
                ▼                                  ▼
      ┌────────────────────────┐       ┌───────────────┐
-     │ Server-Side Rendering  │  |───►┤  API Gateway  │
+     │ fe_server              │  |───►┤  API Gateway  │
      │ (Next.js)              │  |    └───────────────┘
      └──────────────┬─────────┘  |      |
                     |            |      ▼
       ┌──────────────────┬─────────────────┐
       ▼                  ▼                 ▼ 
  ┌────────────┐  ┌───────────────┐   ┌────────────┐
- │ Student    │  │ Business      │   │ Admin      │
- │ Service    │  │ Service       │   │ Service    │
+ │ ss_process │  │ ss_offers_ms  │   │ ss_admin_  │
+ │ _ms        │  │               │   │ ms         │
  │ (Node.js)  │  │ (Laravel)     │   │ (Python)   │
  └────┬───────┘  └──────┬────────┘   └────┬───────┘
       ▼                 ▼                 ▼
 ┌─────────────┐   ┌──────────────┐   ┌───────────────┐
-│ NGINX       │   │ MySQL DB     │   │ MongoDB DB    │
-│ [Proxy]     │   │ [Business]   │   │ [Admin]       │
+│ process_px  │   │ MySQL DB     │   │ MongoDB DB    │
+│ [NGINX]     │   │ [Business]   │   │ [Admin]       │
 └─────┬───────┘   └──────┬───────┘   └──────┬────────┘
       ▼                  ▼                  ▼
 ┌─────────────┐      ┌────────┐        ┌────────┐
@@ -77,7 +77,7 @@ Spopa is a distributed platform designed to connect university students with pro
 [Presentation Layer]
 ────────────────────────────────────────────
 ┌────────────────┐      ┌───────────────────┐
-│ Web Frontend   │      │ Mobile Frontend   │
+│ fe             │      │ fe_app            │
 │ (React + Auth0)│      │ (Flutter)         │
 └──────┬─────────┘      └──────┬────────────┘
        │                     │
@@ -85,23 +85,23 @@ Spopa is a distributed platform designed to connect university students with pro
 [Routing / Interface Layer]
 ────────────────────────────────────────────
 ┌────────────────────────────────┐   ┌────────────────────┐
-│ Server-Side Rendering (Next.js)│   │  API Gateway       │
+│ fe_server      (Next.js)       │   │  API Gateway       │
 └────────────┬───────────────────┘   └────────┬───────────┘
              │                                │
              ▼                                ▼
 [Application Layer / Services]
 ────────────────────────────────────────────
 ┌────────────┐ ┌────────────────┐ ┌────────────┐
-│ Student    │ │ Business       │ │ Admin      │
-│ Service    │ │ Service        │ │ Service    │
+│ ss_process │ │ ss_offers_ms   │ │ ss_admin   │
+│ _ms        │ │                │ │ _ms        │
 │ (Node.js)  │ │ (Laravel)      │ │ (Python)   │
 └─────┬──────┘ └──────┬─────────┘ └────┬───────┘
       ▼              ▼                ▼
 [Infrastructure Layer / Storage & Brokers]
 ────────────────────────────────────────────
 ┌──────────┐ ┌────────────┐ ┌──────────────┐
-│ NGINX    │ │ MySQL DB   │ │ MongoDB DB   │
-│ [Proxy]  │ │ [Business] │ │ [Admin]      │
+│process_px│ │ MySQL DB   │ │ MongoDB DB   │
+│ [NGINX]  │ │ [Business] │ │ [Admin]      │
 └────┬─────┘ └─────┬──────┘ └──────┬───────┘
      ▼             ▼              ▼
 ┌────────────┐  ┌────────┐     ┌────────┐
@@ -126,7 +126,7 @@ Spopa is a distributed platform designed to connect university students with pro
 +-------------------┬----------------------+
                     |
      ┌──────────────▼────────────────┐
-     │         Web Server            │
+     │         fe_server             │
      │ (Hosting Next.js SSR App)     │
      └──────────────┬────────────────┘
                     ▼
@@ -137,23 +137,27 @@ Spopa is a distributed platform designed to connect university students with pro
    ┌─────────────────────────────────────────────┐
    │               API Gateway Node              │
    │      (Routing Mobile traffic to services)   │
+   │      PORT:3002                              │
    └─────────────────┬───────────────────────────┘
                      │
          ┌───────────▼───────────┬────────────┬
          ▼                       ▼            ▼            
 +------------------+   +----------------+  +----------------+  
-| Student Service  |   | Business Svc   |  | Admin Service  |
+| ss_process_ms    |   | ss_offers_ms   |  | ss_admin_ms    |
 | (Node.js)        |   | (Laravel)      |  | (Python)       |
+| PORT: 4000       |   | PORT: 8010     |  | PORT:8000       |
 +--------┬---------+   +-------┬--------+  +--------┬--------+
          ▼                     ▼                   ▼
 +------------------+   +---------------+   +------------------+
-| NGINX Proxy      |   | MySQL DB      |   | MongoDB DB       |
-| (Student only)   |   | [Business]    |   | [Admin]          |
+| process_ms       |   | MySQL DB      |   | MongoDB DB       |
+| (NGINX)          |   | [Business]    |   | [Admin]          |
+| PORT: 8080       |   | PORT: 3307    |   | PORT:27017       |
 +--------┬---------+   +-------┬-------+   +--------┬---------+
          ▼                     ▼                   ▼
 +------------------+   +---------------+   +------------------+
 | MongoDB DB       |   | Broker        |   | Broker           |
 | [Students]       |   | (Queueing)    |   | (Queueing)       |
+| PORT: 5432       |   | PORT: 5673    |   | PORT: 5678       |
 +------------------+   +---------------+   +------------------+
 
 ```

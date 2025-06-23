@@ -1,10 +1,18 @@
 FROM php:8.2-fpm
 
 # Instalacion dependencias
-RUN apt-get update && apt-get install -y \
-    zip unzip curl libpng-dev libonig-dev libxml2-dev \
-    libzip-dev libpq-dev git mariadb-client \
-    && docker-php-ext-install pdo pdo_mysql
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git mariadb-client \
+        zip unzip curl \
+        libpng-dev libonig-dev libxml2-dev \
+        libzip-dev libpq-dev \
+        docker-php-ext-install \
+        docker-php-ext-install sockets \
+        pdo \
+        pdo_mysql \
+        zip \
+        bcmath 
 
 # Instalacion Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
