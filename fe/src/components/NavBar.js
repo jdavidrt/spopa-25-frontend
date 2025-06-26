@@ -126,18 +126,7 @@ const NavBar = () => {
                     >
                       My Checklist
                     </NavLink>
-                    
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/process"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    Process
-                  </NavLink>
-                </NavItem>
+                  </NavItem>
                 </>
               )}
 
@@ -184,7 +173,14 @@ const NavBar = () => {
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (
                 <NavItem>
-                  <Button href="/api/auth/login">Login</Button>
+                  <Button
+                    id="qsLoginBtn"
+                    color="primary"
+                    className="btn-margin"
+                    onClick={() => loginWithRedirect()}
+                  >
+                    Log in
+                  </Button>
                 </NavItem>
               )}
 
@@ -244,7 +240,14 @@ const NavBar = () => {
             {!isAuthenticated && (
               <Nav className="d-md-none" navbar>
                 <NavItem>
-                  <Button href="/api/auth/login">Login</Button>
+                  <Button
+                    id="qsLoginBtn"
+                    color="primary"
+                    block
+                    onClick={() => loginWithRedirect()}
+                  >
+                    Log in
+                  </Button>
                 </NavItem>
               </Nav>
             )}
