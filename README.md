@@ -37,7 +37,6 @@ Spopa is a distributed platform designed to connect university students with pro
 ![image](https://github.com/user-attachments/assets/32647d1d-9c8c-4712-8a50-6ff1ea8e0b3d)
 
 #### COMPONENTS
-```
 
 | Conector        | Component                           |
 | --------------- | ----------------------------------- |
@@ -52,7 +51,6 @@ Spopa is a distributed platform designed to connect university students with pro
 | **MDBProtocol** | `ss_process_ms` ↔ `students_db`         |
 | **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db` |
 | **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`         |
-```
 
 #### Layered View
 
