@@ -34,9 +34,10 @@ Spopa is a distributed platform designed to connect university students with pro
 
 #### C&C View
 
-![image](https://github.com/user-attachments/assets/32647d1d-9c8c-4712-8a50-6ff1ea8e0b3d)
+![image](https://github.com/user-attachments/assets/72fbcbc3-4afe-462d-b624-a6faa20d4281)
 
-#### COMPONENTS
+
+#### Components
 
 | Conector        | Component                           |
 | --------------- | ----------------------------------- |
