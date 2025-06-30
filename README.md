@@ -34,41 +34,24 @@ Spopa is a distributed platform designed to connect university students with pro
 
 #### C&C View
 
-```
-            ┌───────┐
-            │ User  │
-            └──┬────┘
-               │──────────────────────────────────┐
-               │                                  |
-      ┌────────▼────────────┐           ┌───────────────────┐
-      │ fe                  │           │ fe_app            │
-      │ (React + Auth0)     │           │ (Flutter)         │
-      └────────┬────────────┘           └─────────┬─────────┘
-               │                                  │
-               ▼                                  ▼
-     ┌────────────────────────┐       ┌───────────────┐
-     │ fe_server              │  |───►┤  API Gateway  │
-     │ (Next.js)              │  |    └───────────────┘
-     └──────────────┬─────────┘  |      |
-                    |            |      ▼
-      ┌──────────────────┬─────────────────┐
-      ▼                  ▼                 ▼ 
- ┌────────────┐  ┌───────────────┐   ┌────────────┐
- │ ss_process │  │ ss_offers_ms  │   │ ss_admin_  │
- │ _ms        │  │               │   │ ms         │
- │ (Node.js)  │  │ (Laravel)     │   │ (Python)   │
- └────┬───────┘  └──────┬────────┘   └────┬───────┘
-      ▼                 ▼                 ▼
-┌─────────────┐   ┌──────────────┐   ┌───────────────┐
-│ process_px  │   │ MySQL DB     │   │ MongoDB DB    │
-│ [NGINX]     │   │ [Business]   │   │ [Admin]       │
-└─────┬───────┘   └──────┬───────┘   └──────┬────────┘
-      ▼                  ▼                  ▼
-┌─────────────┐      ┌────────┐        ┌────────┐
-│ MongoDB DB  │      │ Broker │        │ Broker │
-│ [Students]  │      └────────┘        └────────┘
-└─────────────┘
+![image](https://github.com/user-attachments/assets/32647d1d-9c8c-4712-8a50-6ff1ea8e0b3d)
 
+#### COMPONENTS
+```
+
+| Conector        | Component                           |
+| --------------- | ----------------------------------- |
+| **HTTP**        | `web browser` ↔ `fe`             |
+| **HTTP**     | `mobile app` ↔ `fe_app`                |
+| **SSR**     | `fe` ↔ `fe_server`                |
+| **GraphQL**     | `fe_app` ↔ `API Gateway`      |
+| **REST**        | `API Gateway` ↔ `process_px`            |
+| **REST**        | `API Gateway` ↔ `ss_offers_ms`           |
+| **REST**        | `API Gateway` ↔ `ss_admin_ms`           |
+| **HTTP**     | `process_px` ↔ `ss_process_ms`        |
+| **MDBProtocol** | `ss_process_ms` ↔ `students_db`         |
+| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db` |
+| **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`         |
 ```
 
 #### Layered View
