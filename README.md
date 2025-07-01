@@ -34,81 +34,45 @@ Spopa is a distributed platform designed to connect university students with pro
 
 #### C&C View
 
-```
-            ┌───────┐
-            │ User  │
-            └──┬────┘
-               │──────────────────────────────────┐
-               │                                  |
-      ┌────────▼────────────┐           ┌───────────────────┐
-      │ fe                  │           │ fe_app            │
-      │ (React + Auth0)     │           │ (Flutter)         │
-      └────────┬────────────┘           └─────────┬─────────┘
-               │                                  │
-               ▼                                  ▼
-     ┌────────────────────────┐       ┌───────────────┐
-     │ fe_server              │  |───►┤  API Gateway  │
-     │ (Next.js)              │  |    └───────────────┘
-     └──────────────┬─────────┘  |      |
-                    |            |      ▼
-      ┌──────────────────┬─────────────────┐
-      ▼                  ▼                 ▼ 
- ┌────────────┐  ┌───────────────┐   ┌────────────┐
- │ ss_process │  │ ss_offers_ms  │   │ ss_admin_  │
- │ _ms        │  │               │   │ ms         │
- │ (Node.js)  │  │ (Laravel)     │   │ (Python)   │
- └────┬───────┘  └──────┬────────┘   └────┬───────┘
-      ▼                 ▼                 ▼
-┌─────────────┐   ┌──────────────┐   ┌───────────────┐
-│ process_px  │   │ MySQL DB     │   │ MongoDB DB    │
-│ [NGINX]     │   │ [Business]   │   │ [Admin]       │
-└─────┬───────┘   └──────┬───────┘   └──────┬────────┘
-      ▼                  ▼                  ▼
-┌─────────────┐      ┌────────┐        ┌────────┐
-│ MongoDB DB  │      │ Broker │        │ Broker │
-│ [Students]  │      └────────┘        └────────┘
-└─────────────┘
+![image](https://github.com/user-attachments/assets/72fbcbc3-4afe-462d-b624-a6faa20d4281)
 
-```
+
+#### Components
+
+| Conector        | Component                           |
+| --------------- | ----------------------------------- |
+| **HTTP**        | `web browser` ↔ `fe`             |
+| **HTTP**     | `mobile app` ↔ `fe_app`                |
+| **SSR**     | `fe` ↔ `fe_server`                |
+| **GraphQL**     | `fe_app` ↔ `API Gateway`      |
+| **REST**        | `API Gateway` ↔ `process_px`            |
+| **REST**        | `API Gateway` ↔ `ss_offers_ms`           |
+| **REST**        | `API Gateway` ↔ `ss_admin_ms`           |
+| **HTTP**     | `process_px` ↔ `ss_process_ms`        |
+| **MDBProtocol** | `ss_process_ms` ↔ `students_db`         |
+| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db` |
+| **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`         |
+
+#### Architecute Styles:
+
+|Style  | Description|
+| -------- | -------------- |
+|Microservices|A distributed approach where the system is composed of small, independent services that communicate over a network and are responsible for a single business capability.|
+|Client-Server Architecture| A style where clients request services and servers provide responses, separating concerns between the user interface and data processing.|
+|Laeyered Architecture | A structure that organizes the system into layers, each with a distinct responsibility, typically including presentation, logic, and data access.|
+
+#### Architecture patterns:
+
+|Pattern | Description |
+| -------- | -------------- |
+|Api Gateway|A centralized entry point that manages and routes client requests to the appropriate backend services, often handling cross-cutting concerns like authentication and logging.|
+|Server Side Rendering | A technique where web page content is generated on the server and sent to the client, typically to improve performance and accessibility.|
+|Reverse Proxy|A proxy server that sits in front of one or more services, forwarding client requests and often providing security, load balancing, and caching.|
 
 #### Layered View
 
-```
-[Presentation Layer]
-────────────────────────────────────────────
-┌────────────────┐      ┌───────────────────┐
-│ fe             │      │ fe_app            │
-│ (React + Auth0)│      │ (Flutter)         │
-└──────┬─────────┘      └──────┬────────────┘
-       │                     │
-       ▼                     ▼
-[Routing / Interface Layer]
-────────────────────────────────────────────
-┌────────────────────────────────┐   ┌────────────────────┐
-│ fe_server      (Next.js)       │   │  API Gateway       │
-└────────────┬───────────────────┘   └────────┬───────────┘
-             │                                │
-             ▼                                ▼
-[Application Layer / Services]
-────────────────────────────────────────────
-┌────────────┐ ┌────────────────┐ ┌────────────┐
-│ ss_process │ │ ss_offers_ms   │ │ ss_admin   │
-│ _ms        │ │                │ │ _ms        │
-│ (Node.js)  │ │ (Laravel)      │ │ (Python)   │
-└─────┬──────┘ └──────┬─────────┘ └────┬───────┘
-      ▼              ▼                ▼
-[Infrastructure Layer / Storage & Brokers]
-────────────────────────────────────────────
-┌──────────┐ ┌────────────┐ ┌──────────────┐
-│process_px│ │ MySQL DB   │ │ MongoDB DB   │
-│ [NGINX]  │ │ [Business] │ │ [Admin]      │
-└────┬─────┘ └─────┬──────┘ └──────┬───────┘
-     ▼             ▼              ▼
-┌────────────┐  ┌────────┐     ┌────────┐
-│ MongoDB DB │  │ Broker │     │ Broker │
-│ [Students] │  └────────┘     └────────┘
-└────────────┘
-```
+![image](https://github.com/user-attachments/assets/f4ccb9ad-6663-42ef-a9ed-7fbc4d869ad2)
+
 #### Deployment View
 
 ```
