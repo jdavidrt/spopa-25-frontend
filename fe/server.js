@@ -1,4 +1,4 @@
-// fe/server.js
+// fe/server.js - Updated for Docker environment
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -11,39 +11,28 @@ const fs = require("fs");
 const app = express();
 const port = process.env.SERVER_PORT || 3001;
 
-// Import session configuration and API routes
-let sessionConfig;
-let sessionRoutes;
+// Environment configuration
+const isProduction = process.env.NODE_ENV === 'production';
+const API_GATEWAY_URL = process.env.API_GATEWAY_URL || 'http://localhost:8080';
+const ADMIN_SERVICE_URL = process.env.ADMIN_SERVICE_URL || 'http://localhost:8080/api/admin';
 
-try {
-  sessionConfig = require("./src/config/session");
-  console.log('✅ Session config loaded successfully');
-} catch (error) {
-  console.error('❌ Failed to load session config:', error.message);
-  // Fallback session config
-  sessionConfig = {
-    secret: process.env.SESSION_SECRET || 'fallback-secret-key-change-in-production',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      sameSite: 'lax'
-    },
-    name: 'spopa.session.id'
-  };
-}
+console.log(`🚀 Starting SPOPA Frontend Server`);
+console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`🔗 API Gateway: ${API_GATEWAY_URL}`);
 
-try {
-  const sessionModule = require("./src/api/session");
-  sessionRoutes = sessionModule.router;
-  console.log('✅ Session routes loaded successfully');
-} catch (error) {
-  console.error('❌ Failed to load session routes:', error.message);
-  console.error('Please ensure the file fe/src/api/session.js exists');
-  process.exit(1);
-}
+// Session configuration with fallback
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'spopa-development-secret-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: isProduction,
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: isProduction ? 'strict' : 'lax'
+  },
+  name: 'spopa.session.id'
+};
 
 // Trust proxy for production deployment
 app.set('trust proxy', 1);
@@ -56,23 +45,30 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.auth0.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://stackpath.bootstrapcdn.com", "https://cdn.auth0.com"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://dev-csthezp5ifz25yr6.us.auth0.com", "http://localhost:8000", "http://localhost:8010", "http://localhost:4000"]
+      connectSrc: [
+        "'self'",
+        "https://dev-csthezp5ifz25yr6.us.auth0.com",
+        API_GATEWAY_URL,
+        ADMIN_SERVICE_URL
+      ]
     }
   }
 }));
 
-// CORS configuration for development
+// CORS configuration
+const corsOrigins = isProduction
+  ? [process.env.FRONTEND_URL || 'https://spopa.com']
+  : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL
-    : ['http://localhost:3000', 'http://localhost:3001'],
+  origin: corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-User-Type']
 }));
 
 // Logging middleware
-app.use(morgan("dev"));
+app.use(morgan(isProduction ? "combined" : "dev"));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -84,20 +80,60 @@ app.use(cookieParser());
 // Session middleware
 app.use(session(sessionConfig));
 
+// Custom middleware to add API Gateway URL to requests
+app.use((req, res, next) => {
+  req.apiGateway = API_GATEWAY_URL;
+  req.adminService = ADMIN_SERVICE_URL;
+  next();
+});
+
 // Session debugging middleware (development only)
-if (process.env.NODE_ENV !== 'production') {
+if (!isProduction) {
   app.use((req, res, next) => {
     if (req.url.startsWith('/api/session')) {
       console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
       console.log('Session ID:', req.sessionID);
-      console.log('Session Data:', req.session);
     }
     next();
   });
 }
 
-// API routes for session management
-app.use('/api', sessionRoutes);
+// Session management routes
+app.post('/api/session/login', (req, res) => {
+  const { user, userType } = req.body;
+
+  if (!user || !userType) {
+    return res.status(400).json({ error: 'User and userType are required' });
+  }
+
+  req.session.user = user;
+  req.session.userType = userType;
+
+  res.json({
+    message: 'Session created successfully',
+    user: req.session.user,
+    userType: req.session.userType
+  });
+});
+
+app.post('/api/session/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to destroy session' });
+    }
+    res.clearCookie(sessionConfig.name);
+    res.json({ message: 'Session destroyed successfully' });
+  });
+});
+
+app.get('/api/session/status', (req, res) => {
+  res.json({
+    authenticated: !!req.session?.user,
+    user: req.session?.user || null,
+    userType: req.session?.userType || null,
+    sessionId: req.sessionID
+  });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -105,6 +141,7 @@ app.get('/api/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
+    apiGateway: API_GATEWAY_URL,
     session: {
       configured: !!sessionConfig,
       hasSessionId: !!req.sessionID,
@@ -116,11 +153,11 @@ app.get('/api/health', (req, res) => {
 // Test endpoint for debugging
 app.get('/api/test', (req, res) => {
   res.json({
-    message: 'API is working',
+    message: 'Frontend API is working',
     timestamp: new Date().toISOString(),
     sessionId: req.sessionID,
-    session: req.session,
-    headers: req.headers
+    apiGateway: API_GATEWAY_URL,
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -137,116 +174,120 @@ app.get('/api/protected', (req, res) => {
   });
 });
 
-// Serve static files from the React app build
-app.use(express.static(join(__dirname, "build")));
-
-// API proxy middleware for development
+// Proxy middleware for API Gateway communication
 if (process.env.NODE_ENV !== 'production') {
   try {
     const { createProxyMiddleware } = require('http-proxy-middleware');
 
-    // Proxy requests to backend services
-    app.use('/proxy/admin', createProxyMiddleware({
-      target: 'http://localhost:8000',
+    // Proxy requests to API Gateway
+    app.use('/api/gateway', createProxyMiddleware({
+      target: API_GATEWAY_URL,
       changeOrigin: true,
-      pathRewrite: { '^/proxy/admin': '' },
+      pathRewrite: { '^/api/gateway': '' },
+      onProxyReq: (proxyReq, req, res) => {
+        // Forward session information
+        if (req.session?.user) {
+          proxyReq.setHeader('X-User-Type', req.session.userType);
+          proxyReq.setHeader('X-User-ID', req.session.user.sub || req.session.user.id);
+        }
+      },
+      onError: (err, req, res) => {
+        console.error('API Gateway proxy error:', err.message);
+        res.status(502).json({ error: 'API Gateway unavailable' });
+      }
+    }));
+
+    // Direct proxy to admin service through gateway
+    app.use('/api/admin', createProxyMiddleware({
+      target: API_GATEWAY_URL,
+      changeOrigin: true,
+      pathRewrite: { '^/api/admin': '/api/admin' },
+      onProxyReq: (proxyReq, req, res) => {
+        if (req.session?.user) {
+          proxyReq.setHeader('X-User-Type', req.session.userType);
+        }
+      },
       onError: (err, req, res) => {
         console.error('Admin service proxy error:', err.message);
         res.status(502).json({ error: 'Admin service unavailable' });
       }
     }));
 
-    app.use('/proxy/business', createProxyMiddleware({
-      target: 'http://localhost:8010',
-      changeOrigin: true,
-      pathRewrite: { '^/proxy/business': '' },
-      onError: (err, req, res) => {
-        console.error('Business service proxy error:', err.message);
-        res.status(502).json({ error: 'Business service unavailable' });
-      }
-    }));
-
-    app.use('/proxy/process', createProxyMiddleware({
-      target: 'http://localhost:4000',
-      changeOrigin: true,
-      pathRewrite: { '^/proxy/process': '' },
-      onError: (err, req, res) => {
-        console.error('Process service proxy error:', err.message);
-        res.status(502).json({ error: 'Process service unavailable' });
-      }
-    }));
-
     console.log('✅ Proxy middleware configured successfully');
   } catch (error) {
     console.warn('⚠️  Proxy middleware not available:', error.message);
-    console.warn('Install http-proxy-middleware if you need proxy functionality');
   }
 }
 
-// Catch-all handler: send back React's index.html file for client-side routing
+// Serve static files from the React app build
+app.use(express.static(join(__dirname, "build")));
+
+// Catch-all handler for React Router
 app.get('*', (req, res) => {
-  // Add session data to the initial HTML for SSR preparation
-  const sessionData = {
-    authenticated: !!req.session.user,
-    user: req.session.user || null,
-    userType: req.session.userType || null
-  };
-
-  // Read the index.html file
-  const path = join(__dirname, 'build', 'index.html');
-
-  fs.readFile(path, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading index.html:', err);
-      return res.status(500).send('Internal Server Error');
-    }
-
-    // Inject session data into the HTML
-    const injectedData = data.replace(
-      '<div id="root"',
-      `<script>window.__INITIAL_SESSION__ = ${JSON.stringify(sessionData)};</script>
-       <div id="root"`
-    );
-
-    res.send(injectedData);
-  });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
-
-  if (err.code === 'EBADCSRFTOKEN') {
-    return res.status(403).json({ error: 'Invalid CSRF token' });
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
   }
 
+  const indexPath = join(__dirname, "build", "index.html");
+
+  if (fs.existsSync(indexPath)) {
+    // Add session data to the HTML for client-side hydration
+    let htmlContent = fs.readFileSync(indexPath, 'utf8');
+
+    const sessionData = {
+      authenticated: !!req.session?.user,
+      user: req.session?.user || null,
+      userType: req.session?.userType || null,
+      apiGateway: API_GATEWAY_URL
+    };
+
+    // Inject session data into HTML
+    htmlContent = htmlContent.replace(
+      '<head>',
+      `<head><script>window.__INITIAL_SESSION__ = ${JSON.stringify(sessionData)};</script>`
+    );
+
+    res.send(htmlContent);
+  } else {
+    // Fallback if build doesn't exist
+    res.json({
+      message: 'SPOPA Frontend Server',
+      note: 'React build not found. Run `npm run build` to generate static files.',
+      api: {
+        health: '/api/health',
+        test: '/api/test',
+        session: '/api/session/status'
+      }
+    });
+  }
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
   res.status(500).json({
-    error: process.env.NODE_ENV === 'production'
-      ? 'Internal server error'
-      : err.message
+    error: 'Internal server error',
+    message: isProduction ? 'Something went wrong' : err.message
   });
 });
 
-// Graceful shutdown handling
+// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Process terminated');
-  });
+  process.exit(0);
 });
 
-const server = app.listen(port, () => {
-  console.log(`🚀 SPOPA Server listening on port ${port}`);
-  console.log(`🔒 Session management enabled`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📋 Available endpoints:`);
-  console.log(`   - GET  /api/health`);
-  console.log(`   - GET  /api/test`);
-  console.log(`   - GET  /api/session`);
-  console.log(`   - POST /api/session/init`);
-  console.log(`   - PUT  /api/session/usertype`);
-  console.log(`   - DELETE /api/session`);
-  console.log(`   - GET  /api/session/test`);
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🎭 SPOPA Frontend Server listening on port ${port}`);
+  console.log(`🔗 API Gateway: ${API_GATEWAY_URL}`);
+  console.log(`🛡️  Admin Service: ${ADMIN_SERVICE_URL}`);
+  console.log(`📊 Health Check: http://localhost:${port}/api/health`);
 });
 
 module.exports = app;

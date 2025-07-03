@@ -1,56 +1,108 @@
-from fastapi import FastAPI # Importa la clase principal de FastAPI
-from fastapi.middleware.cors import CORSMiddleware # ¡Importación crucial para permitir la comunicación con el frontend!
-from app.controllers import offer_controller # Importa el router de ofertas desde el módulo de controladores
+# ss_admin_ms/app/main.py
+import logging
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from app.controllers import offer_controller
+from app.config import settings, get_database
 
-# Crea la instancia de la aplicación FastAPI.
-# Este es el punto de entrada principal para tu API.
+# Configure logging
+logging.basicConfig(
+    level=getattr(logging, settings.LOG_LEVEL),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# Create FastAPI application instance
 app = FastAPI(
-    title="Backfront de Admin", # Título para la documentación de la API (Swagger UI)
-    description="Una API para gestionar el back del componenete de admin.", # Descripción para la documentación
-    version="1.0.0", # Versión de la API
+    title="SPOPA Admin Service",
+    description="Administrative API for SPOPA Student Practices Management System",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
-# --- Configuración CORS (Cross-Origin Resource Sharing) ---
-# Esta configuración es esencial para permitir que el frontend (ej. React en localhost:3000)
-# pueda hacer solicitudes a el backend (FastAPI en localhost:8000).
-# Sin esto, el navegador bloquearía las solicitudes por seguridad.
-origins = [
-    "http://localhost:3000",  # Permite solicitudes desde  frontend React
-    # Si el frontend se despliega en otro dominio o puerto, toca añádirlo aquí:
-    # "http://otro-dominio.com",
-]
+# Add trusted host middleware for security
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]  # Configure appropriately for production
+)
 
+# Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # Lista de orígenes permitidos
-    allow_credentials=True,         # Permite cookies de origen cruzado
-    allow_methods=["*"],            # Permite todos los métodos HTTP (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],            # Permite todos los encabezados HTTP
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+    expose_headers=["X-Total-Count", "X-Service"]
 )
-# --- Fin Configuración CORS ---
 
-# Incluye el router de ofertas en la aplicación FastAPI.
-# - 'prefix="/api"': Todas las rutas definidas en 'offer_controller' tendrán el prefijo '/api'.
-#                    Ej. '/offers' se convierte en '/api/offers'.
-# - 'tags=["Offers"]': Agrupa las operaciones relacionadas con ofertas en la documentación (Swagger UI).
-app.include_router(offer_controller.router, prefix="/api", tags=["Offers"])
+# Include API routers
+app.include_router(
+    offer_controller.router, 
+    prefix=settings.API_PREFIX, 
+    tags=["Offers"]
+)
 
-@app.get("/", summary="Punto de entrada de la API")
+@app.get("/", summary="Service health check")
 async def root():
     """
-    Endpoint raíz de la API.
-    Retorna un mensaje de bienvenida.
+    Root endpoint that provides basic service information.
     """
-    return {"message": "Back API para administradores."}
+    return {
+        "service": "SPOPA Admin Service",
+        "version": "1.0.0",
+        "status": "operational",
+        "api_docs": "/docs"
+    }
 
-# Define un evento que se ejecuta cuando la aplicación FastAPI se cierra (shutdown).
+@app.get("/health", summary="Detailed health check")
+async def health_check():
+    """
+    Health check endpoint for monitoring and container orchestration.
+    """
+    try:
+        # Test database connection
+        db = await get_database()
+        await db.command("ping")
+        db_status = "healthy"
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        db_status = "unhealthy"
+    
+    return {
+        "status": "healthy" if db_status == "healthy" else "unhealthy",
+        "service": "SPOPA Admin Service",
+        "version": "1.0.0",
+        "database": db_status,
+        "environment": {
+            "debug": settings.DEBUG,
+            "mongo_host": settings.MONGO_HOST if hasattr(settings, 'MONGO_HOST') else "localhost"
+        }
+    }
+
+# Startup event
+@app.on_event("startup")
+async def startup_event():
+    """
+    Initialize database connection on application startup.
+    """
+    try:
+        await get_database()
+        logger.info("✅ Admin service started successfully")
+    except Exception as e:
+        logger.error(f"❌ Failed to start admin service: {e}")
+        raise e
+
+# Shutdown event
 @app.on_event("shutdown")
-async def shutdown_db_client():
+async def shutdown_event():
     """
-    Cierra la conexión con la base de datos MongoDB cuando la aplicación se apaga.
+    Clean up resources on application shutdown.
     """
-    # Importa _mongo_client directamente desde app.config para acceder a la instancia global del cliente.
     from app.config import _mongo_client
     if _mongo_client:
-        _mongo_client.close() # Cierra la conexión del cliente de MongoDB
-        print("Conexión a MongoDB cerrada.")
+        _mongo_client.close()
+        logger.info("📴 MongoDB connection closed")
+    logger.info("🛑 Admin service shutdown complete")

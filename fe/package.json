@@ -1,54 +1,67 @@
 {
-  "name": "auth0-react-sample",
-  "version": "0.1.0",
+  "name": "spopa-frontend",
+  "version": "1.0.0",
   "private": true,
-   "scripts": {
+  "scripts": {
     "start": "npm-run-all --parallel spa session-server",
-    "spa": "react-scripts start",
-    "session-server": "node api-session-server.js",
-    "session-server:dev": "nodemon api-session-server.js",
-    "dev": "npm-run-all --parallel spa session-server:dev api-server:dev",
-    "test-session": "curl http://localhost:3001/api/test"
+    "spa": "PORT=3000 react-scripts start",
+    "session-server": "node server.js",
+    "session-server:dev": "nodemon server.js",
+    "dev": "npm-run-all --parallel spa session-server:dev",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "eject": "react-scripts eject",
+    "docker:build": "docker build -t spopa-frontend .",
+    "docker:run": "docker run -p 3000:3000 -p 3001:3001 spopa-frontend",
+    "test-session": "curl http://localhost:3001/api/test",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^2.2.0",
-    "@babel/core": "^7.23",
-    "@babel/plugin-syntax-flow": "^7.23",
-    "@babel/plugin-transform-react-jsx": "^7.23",
-    "@fortawesome/fontawesome-svg-core": "^1.2",
-    "@fortawesome/free-solid-svg-icons": "^5.8",
-    "@fortawesome/react-fontawesome": "^0.2",
-    "autoprefixer": "^10.4",
+    "@auth0/auth0-react": "^2.2.4",
+    "@babel/core": "^7.23.6",
+    "@babel/plugin-syntax-flow": "^7.23.3",
+    "@babel/plugin-transform-react-jsx": "^7.23.4",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "autoprefixer": "^10.4.16",
     "connect-mongo": "^5.1.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8",
-    "express": "^4.18",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "express-oauth2-jwt-bearer": "^1.6.0",
-    "express-session": "^1.18.1",
-    "helmet": "^4.4",
-    "highlight.js": "^10.0",
-    "http-proxy-middleware": "^2.0.9",
-    "lucide-react": "^0.511.0",
-    "morgan": "^1.9",
-    "npm-run-all": "^4.1",
-    "postcss": "^8.4",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-router-dom": "^5.3",
-    "react-scripts": "^5.0",
-    "reactstrap": "^9.2",
-    "typescript": "^4.9",
-    "uuid": "^11.1.0"
+    "express-session": "^1.17.3",
+    "helmet": "^7.1.0",
+    "highlight.js": "^11.9.0",
+    "http-proxy-middleware": "^2.0.6",
+    "lucide-react": "^0.294.0",
+    "morgan": "^1.10.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.32",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1",
+    "react-scripts": "5.0.1",
+    "reactstrap": "^9.2.1",
+    "typescript": "^4.9.5",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.17",
-    "@testing-library/react": "^14.1",
-    "jest-environment-jsdom": "^27.0",
-    "jest-fetch-mock": "^3.0",
-    "nodemon": "^2.0"
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3",
+    "nodemon": "^3.0.2",
+    "web-vitals": "^3.5.0"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -61,5 +74,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

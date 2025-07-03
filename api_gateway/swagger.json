@@ -1,0 +1,314 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SPOPA API Gateway",
+    "description": "API Gateway for SPOPA Student Practices Management System",
+    "version": "1.0.0",
+    "contact": {
+      "name": "SPOPA Team",
+      "email": "support@spopa.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development server"
+    },
+    {
+      "url": "https://api.spopa.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Returns the health status of the API Gateway",
+        "responses": {
+          "200": {
+            "description": "Gateway is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "uptime": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "summary": "API status information",
+        "description": "Returns status information about the gateway and connected services",
+        "responses": {
+          "200": {
+            "description": "Status information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gateway": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    },
+                    "services": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/offers": {
+      "get": {
+        "summary": "Get all offers",
+        "description": "Retrieves all internship offers from the admin service",
+        "tags": ["Admin"],
+        "responses": {
+          "200": {
+            "description": "List of offers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Offer"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Admin service unavailable"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new offer",
+        "description": "Creates a new internship offer",
+        "tags": ["Admin"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Offer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Offer created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Offer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body"
+          }
+        }
+      }
+    },
+    "/api/admin/offers/{offerId}": {
+      "get": {
+        "summary": "Get offer by ID",
+        "description": "Retrieves a specific offer by its ID",
+        "tags": ["Admin"],
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Offer details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Offer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Offer not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update offer",
+        "description": "Updates an existing offer",
+        "tags": ["Admin"],
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Offer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Offer updated successfully"
+          },
+          "404": {
+            "description": "Offer not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete offer",
+        "description": "Deletes an offer",
+        "tags": ["Admin"],
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Offer deleted successfully"
+          },
+          "404": {
+            "description": "Offer not found"
+          }
+        }
+      }
+    },
+    "/api/test/admin/ping": {
+      "get": {
+        "summary": "Test admin service connectivity",
+        "description": "Tests connectivity to the admin service (for JMeter testing)",
+        "tags": ["Testing"],
+        "responses": {
+          "200": {
+            "description": "Admin service is reachable"
+          },
+          "503": {
+            "description": "Admin service is unreachable"
+          }
+        }
+      }
+    },
+    "/api/test/load/{requests}": {
+      "get": {
+        "summary": "Load testing endpoint",
+        "description": "Generates test responses for load testing (JMeter compatible)",
+        "tags": ["Testing"],
+        "parameters": [
+          {
+            "name": "requests",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test responses generated"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Offer": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Offer title"
+          },
+          "company": {
+            "type": "string",
+            "description": "Company name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Offer description"
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "type": "string"
+          },
+          "salary": {
+            "type": "number"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,137 @@
+services:
+  # MongoDB for Admin Service
+  mongo_admin:
+    image: mongo:6.0
+    container_name: spopa_mongo_admin
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: spopapassword2025
+      MONGO_INITDB_DATABASE: spopa_admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_admin_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - spopa_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/spopa_admin --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Admin Service (Python FastAPI)
+  ss_admin_ms:
+    build:
+      context: ./ss_admin_ms
+      dockerfile: Dockerfile
+    container_name: spopa_admin_service
+    environment:
+      - MONGO_HOST=mongo_admin
+      - MONGO_PORT=27017
+      - MONGO_DB=spopa_admin
+      - MONGO_USERNAME=admin
+      - MONGO_PASSWORD=spopapassword2025
+      - API_PORT=8000
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:8080
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongo_admin:
+        condition: service_healthy
+    networks:
+      - spopa_network
+    volumes:
+      - ./ss_admin_ms:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # API Gateway
+  api_gateway:
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    container_name: spopa_api_gateway
+    environment:
+      - PORT=8080
+      - ADMIN_SERVICE_URL=http://ss_admin_ms:8000
+      - FRONTEND_URL=http://fe_server:3001
+      - NODE_ENV=production
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+    ports:
+      - "8080:8080"
+    depends_on:
+      ss_admin_ms:
+        condition: service_healthy
+    networks:
+      - spopa_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Frontend Server (Express + React)
+  fe_server:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    container_name: spopa_frontend_server
+    environment:
+      - SERVER_PORT=3001
+      - NODE_ENV=production
+      - API_GATEWAY_URL=http://api_gateway:8080
+      - ADMIN_SERVICE_URL=http://api_gateway:8080/api/admin
+      - SESSION_SECRET=your_super_secret_session_key_change_in_production
+    ports:
+      - "3000:3000" # React App
+      - "3001:3001" # Express Server
+    depends_on:
+      api_gateway:
+        condition: service_healthy
+    networks:
+      - spopa_network
+    volumes:
+      - ./fe:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: spopa_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - fe_server
+      - api_gateway
+    networks:
+      - spopa_network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  spopa_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  mongo_admin_data:
+    driver: local

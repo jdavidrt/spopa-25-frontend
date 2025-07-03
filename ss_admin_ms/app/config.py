@@ -1,36 +1,65 @@
-# app/config.py
+# ss_admin_ms/app/config.py
+import os
 from motor.motor_asyncio import AsyncIOMotorClient
-import asyncio
 from typing import Optional
 
-_mongo_client: Optional[AsyncIOMotorClient] = None
-_db = None
+# MongoDB configuration
+MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
+MONGO_PORT = int(os.getenv("MONGO_PORT", "27017"))
+MONGO_DB = os.getenv("MONGO_DB", "spopa_admin")
+MONGO_USERNAME = os.getenv("MONGO_USERNAME", "admin")
+MONGO_PASSWORD = os.getenv("MONGO_PASSWORD", "spopapassword2025")
 
-async def get_mongo_client():
-    global _mongo_client
-    if _mongo_client is None:
-        max_retries = 10
-        retry_delay_seconds = 2
-        for i in range(max_retries):
-            try:
-                _mongo_client = AsyncIOMotorClient("mongodb://mongo:27017")
-                await _mongo_client.admin.command('ping')
-                print("Conexión a MongoDB exitosa.")
-                break
-            except Exception as e:
-                print(f"Intento {i+1}/{max_retries}: Falló la conexión a MongoDB. Reintentando en {retry_delay_seconds} segundos... Error: {e}")
-                await asyncio.sleep(retry_delay_seconds)
-        if _mongo_client is None:
-            raise ConnectionError("No se pudo conectar a MongoDB después de varios reintentos.")
-    return _mongo_client
+# Construct MongoDB connection URL
+if MONGO_USERNAME and MONGO_PASSWORD:
+    MONGO_URL = f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/{MONGO_DB}?authSource=admin"
+else:
+    MONGO_URL = f"mongodb://{MONGO_HOST}:{MONGO_PORT}/{MONGO_DB}"
+
+# Global MongoDB client
+_mongo_client: Optional[AsyncIOMotorClient] = None
 
 async def get_database():
-    global _db
-    if _db is None:
-        client = await get_mongo_client()
-        _db = client["job_offers_db"] # O el nombre de tu base de datos si es diferente
-    return _db
+    """
+    Returns a MongoDB database instance.
+    Creates a new connection if one doesn't exist.
+    """
+    global _mongo_client
+    
+    if _mongo_client is None:
+        try:
+            _mongo_client = AsyncIOMotorClient(
+                MONGO_URL,
+                serverSelectionTimeoutMS=5000,
+                maxPoolSize=50,
+                minPoolSize=5
+            )
+            # Test the connection
+            await _mongo_client.admin.command('ping')
+            print(f"✅ Successfully connected to MongoDB at {MONGO_HOST}:{MONGO_PORT}")
+        except Exception as e:
+            print(f"❌ Failed to connect to MongoDB: {e}")
+            raise e
+    
+    return _mongo_client[MONGO_DB]
 
-# Esta es la dependencia de FastAPI que se usará para inyectar la base de datos.
-async def get_database_dependency():
-    return await get_database()
+def get_database_dependency():
+    """
+    Dependency function for FastAPI to inject database instance.
+    """
+    return get_database()
+
+# Application configuration
+class Settings:
+    API_PORT = int(os.getenv("API_PORT", "8000"))
+    DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,http://localhost:8080").split(",")
+    
+    # Logging configuration
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    
+    # API settings
+    API_PREFIX = "/api"
+    API_VERSION = "v1"
+    
+settings = Settings()
