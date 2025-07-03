@@ -9,7 +9,9 @@ services:
       - USERS_SERVICE_URL=http://users-service:4001
       - INTERNSHIPS_SERVICE_URL=http://internships-service:4002
     depends_on:
-      - process-ms
+      - process-ms-1
+      - process-ms-2
+      - process-ms-3
       - process-db
     volumes:
       - ./routes:/app/routes
@@ -17,9 +19,9 @@ services:
     networks:
       - spopa-network
 
-  # Microservicio de procesos REAL
-  process-ms:
-    build: ../ss_process_ms  # Ruta a tu microservicio
+  # Microservicio de procesos - Instancia 1
+  process-ms-1:
+    build: ../ss_process_ms
     ports:
       - "4000:4000"
     environment:
@@ -27,6 +29,39 @@ services:
       - DB_USER=usuario
       - DB_PASS=contraseña
       - DB_NAME=spopa
+      - INSTANCE_ID=1
+    depends_on:
+      - process-db
+    networks:
+      - spopa-network
+
+  # Microservicio de procesos - Instancia 2
+  process-ms-2:
+    build: ../ss_process_ms
+    ports:
+      - "4001:4000"  # 👈 Puerto externo diferente
+    environment:
+      - DB_HOST=process-db
+      - DB_USER=usuario
+      - DB_PASS=contraseña
+      - DB_NAME=spopa
+      - INSTANCE_ID=2
+    depends_on:
+      - process-db
+    networks:
+      - spopa-network
+
+  # Microservicio de procesos - Instancia 3
+  process-ms-3:
+    build: ../ss_process_ms
+    ports:
+      - "4002:4000"  # 👈 Puerto externo diferente
+    environment:
+      - DB_HOST=process-db
+      - DB_USER=usuario
+      - DB_PASS=contraseña
+      - DB_NAME=spopa
+      - INSTANCE_ID=3
     depends_on:
       - process-db
     networks:
@@ -40,7 +75,7 @@ services:
       POSTGRES_USER: usuario
       POSTGRES_PASSWORD: contraseña
     ports:
-      - "5433:5432" 
+      - "5433:5432"
     volumes:
       - process_data:/var/lib/postgresql/data
       - ../ss_process_ms/db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -52,7 +87,7 @@ services:
     image: node:20-alpine
     command: sh -c "echo 'Users service running on port 4001' && sleep infinity"
     ports:
-      - "4001:4001"
+      - "4003:4001"  # 👈 Cambié puerto para evitar conflictos
     networks:
       - spopa-network
 
@@ -60,7 +95,7 @@ services:
     image: node:20-alpine
     command: sh -c "echo 'Internships service running on port 4002' && sleep infinity"
     ports:
-      - "4002:4002"
+      - "4004:4002"  # 👈 Cambié puerto para evitar conflictos
     networks:
       - spopa-network
 
