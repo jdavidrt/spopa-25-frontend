@@ -27,27 +27,55 @@ const services = {
   internships: ['http://internships-service:4002']
 };
 
-// 🔄 Algoritmo Round Robin
-const roundRobinCounters = {};
+// 🔄 Algoritmo Least Connections
+const connectionCounts = {};
 
-const getRoundRobinTarget = (serviceName) => {
+const getLeastConnectionsTarget = (serviceName) => {
   const targets = services[serviceName];
   if (!targets || targets.length === 0) {
     throw new Error(`No targets available for service: ${serviceName}`);
   }
   
-  // Inicializar contador si no existe
-  if (!roundRobinCounters[serviceName]) {
-    roundRobinCounters[serviceName] = 0;
+  // Inicializar contadores si no existen
+  if (!connectionCounts[serviceName]) {
+    connectionCounts[serviceName] = {};
+    targets.forEach(target => {
+      connectionCounts[serviceName][target] = 0;
+    });
   }
   
-  // Obtener target actual
-  const target = targets[roundRobinCounters[serviceName]];
+  // Encontrar el servidor con menos conexiones
+  let minConnections = Infinity;
+  let selectedTarget = targets[0];
   
-  // Incrementar contador para próxima petición
-  roundRobinCounters[serviceName] = (roundRobinCounters[serviceName] + 1) % targets.length;
+  targets.forEach(target => {
+    const connections = connectionCounts[serviceName][target];
+    if (connections < minConnections) {
+      minConnections = connections;
+      selectedTarget = target;
+    }
+  });
   
-  return target;
+  // Incrementar contador de conexiones
+  connectionCounts[serviceName][selectedTarget]++;
+  
+  return selectedTarget;
+};
+
+// Función para decrementar conexiones cuando termine la petición
+const decrementConnections = (serviceName, target) => {
+  if (connectionCounts[serviceName] && connectionCounts[serviceName][target] > 0) {
+    connectionCounts[serviceName][target]--;
+  }
+};
+
+// Función para obtener el target desde la URL del proxy
+const getTargetFromProxyReq = (proxyReq, serviceName) => {
+  const targets = services[serviceName];
+  return targets.find(target => {
+    const targetUrl = new URL(target);
+    return targetUrl.hostname === proxyReq.host || targetUrl.host === proxyReq.host;
+  });
 };
 
 // Health check endpoint
@@ -58,7 +86,8 @@ app.get('/health', (req, res) => {
     services: Object.keys(services).map(key => ({
       name: key,
       instances: services[key].length
-    }))
+    })),
+    connectionCounts: connectionCounts
   });
 });
 
@@ -66,14 +95,15 @@ app.get('/health', (req, res) => {
 app.use('/users', require('./routes/users'));
 app.use('/internships', require('./routes/internships'));
 
-// 🎯 Balanceador de carga con Round Robin
+// 🎯 Balanceador de carga con Least Connections
 app.use('/api/process', createProxyMiddleware({
   target: 'http://process-ms-1:4000', // Target inicial (será sobrescrito)
   changeOrigin: true,
   pathRewrite: { '^/api/process': '/api/process' },
   router: (req) => {
-    const target = getRoundRobinTarget('process');
-    console.log(`🔄 Round Robin: Balanceando hacia ${target}`);
+    const target = getLeastConnectionsTarget('process');
+    console.log(`🔄 Least Connections: Balanceando hacia ${target}`);
+    console.log(`📊 Conexiones actuales:`, connectionCounts.process);
     return target;
   },
   onProxyReq: (proxyReq, req, res) => {
@@ -81,9 +111,21 @@ app.use('/api/process', createProxyMiddleware({
   },
   onProxyRes: (proxyRes, req, res) => {
     console.log(`📥 Balanceador: Respuesta recibida - Status: ${proxyRes.statusCode}`);
+    // Decrementar conexiones al terminar la petición
+    const target = getTargetFromProxyReq(proxyRes.req, 'process');
+    if (target) {
+      decrementConnections('process', target);
+      console.log(`📉 Conexión terminada para ${target}`);
+    }
   },
   onError: (err, req, res) => {
     console.error('❌ Error en proceso:', err.message);
+    // Decrementar conexiones en caso de error también
+    const target = getTargetFromProxyReq(req, 'process');
+    if (target) {
+      decrementConnections('process', target);
+      console.log(`📉 Conexión terminada (error) para ${target}`);
+    }
     res.status(503).json({ error: 'Servicio no disponible' });
   }
 }));
@@ -155,7 +197,7 @@ const PORT = process.env.PORT || 3010;
 app.listen(PORT, () => {
   console.log(`🚀 API Gateway running on port ${PORT}`);
   console.log(`📊 Balanceando entre ${Object.keys(services).length} servicios`);
-  console.log(`🔄 Round Robin configurado para:`);
+  console.log(`🔄 Least Connections configurado para:`);
   Object.keys(services).forEach(service => {
     console.log(`   - ${service}: ${services[service].length} instancias`);
   });
