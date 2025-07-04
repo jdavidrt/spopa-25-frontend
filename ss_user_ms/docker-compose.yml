@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  user-service:
+    build: .
+    container_name: ss_user_ms_container
+    ports:
+      - "4010:4010"
+    env_file:
+      - .env
+    restart: unless-stopped
