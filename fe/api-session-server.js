@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const axios = require("axios");
 
 const app = express();
 const port = process.env.API_PORT || 3001;
@@ -112,11 +113,29 @@ app.post('/api/session/init', (req, res) => {
         };
 
         if (userType) {
-            req.session.userType = userType;
+            req.session.userType = userType || 'Estudiante';
         }
 
+        // Registrar/actualizar en ss_user_ms
+        const registerUser = async () => {
+            try {
+                const response = await axios.post('http://localhost:4010/api/users', {
+                    sub: user.sub,
+                    name: user.name,
+                    email: user.email,
+                    picture: user.picture,
+                    email_verified: user.email_verified,
+                    role: userType || 'Estudiante'
+                });
+
+                console.log('Usuario registrado/actualizado en microservicio', response.data);
+            } catch (err) {
+                console.error('Error al registrar usuario en microservicio:', err.message);
+            }
+        };
+
         // Save session
-        req.session.save((err) => {
+        req.session.save(async(err) => {
             if (err) {
                 console.error('Session save error:', err);
                 return res.status(500).json({
@@ -125,6 +144,8 @@ app.post('/api/session/init', (req, res) => {
             }
 
             console.log('✅ Session saved successfully');
+
+            await registerUser();
 
             res.json({
                 success: true,
