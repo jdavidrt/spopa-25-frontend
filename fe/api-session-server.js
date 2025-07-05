@@ -72,16 +72,29 @@ app.get('/api/test', (req, res) => {
 });
 
 // Get current session
-app.get('/api/session', (req, res) => {
+app.get('/api/session',async (req, res) => {
     console.log('GET /api/session - Session data:', req.session);
 
-    if (!req.session.user) {
+    /*if (!req.session.user) {
         return res.status(401).json({
             authenticated: false,
             message: 'No active session'
         });
-    }
+    }*/
 
+    try {
+        const response = await axios.get(`http://localhost:4010/api/users/${req.session.user.sub}`);
+        const userData = response.data;
+        return res.json({
+            authenticated: true,
+            user: req.session.user,
+            userType: req.session.userType,
+            sessionId: req.sessionID
+        });
+    } catch (error) {
+        console.error('Error fetching user', error.message);
+        return res.status(500).json({ error: 'Failed to fetch user info' });
+    }
     res.json({
         authenticated: true,
         user: req.session.user,
