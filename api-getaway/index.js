@@ -26,9 +26,10 @@ app.get('/health', (req, res) => {
 app.use('/users', require('./routes/users'));
 app.use('/internships', require('./routes/internships'));
 
+
 // 🎯 Proxy simple al microservicio independiente
 app.use('/api/process', createProxyMiddleware({
-  target: 'http://host.docker.internal:4000',  // 👈 Microservicio independiente
+  target: 'http://process-ms:4000',  // 👈 Nombre del servicio en la red
   changeOrigin: true,
   pathRewrite: { '^/api/process': '/api/process' },
   onProxyReq: (proxyReq, req, res) => {
