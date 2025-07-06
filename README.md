@@ -36,7 +36,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Components
 
-| Conector        | Component                           |Description                                         |
+| Connector       | Component                           |Description                                         |
 | --------------- | ----------------------------------- |----------------------------------------------------|
 | **HTTP**        | `web browser` ↔ `fe`                |Expected user contact device                        |
 | **HTTP**        | `mobile app` ↔ `fe_app`             |Expected user contact device                        |
@@ -51,16 +51,16 @@ Spopa is a distributed platform designed to connect university students with pro
 | **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db`    |Microservice communication with it's database       |
 | **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`          |Microservice communication with it's database       |
 
-###Connectors
+### Connectors
 
-|Conector        |Description|
-|----------------|-|
-|**HTTP**        |Standard communication protocol|
-|**GraphQL**     |Query communication protocol|
+|Connector       |Description                                                          |
+|----------------|---------------------------------------------------------------------|
+|**HTTP**        |Standard communication protocol                                      |
+|**GraphQL**     |Query communication protocol                                         |
 |**REST**        |Format of HTTP(S) request that process requests using RESTful principles (GET, POST, PUT, DELETE, etc.)|
 |**DB Protocol** |Low level protocol and format that varies depending on the database it communicates with.|
 
-#### Architecute Styles:
+### Architecute Styles:
 
 |Style  | Description|
 | -------- | -------------- |
@@ -68,7 +68,7 @@ Spopa is a distributed platform designed to connect university students with pro
 |Client-Server Architecture| A style where clients request services and servers provide responses, separating concerns between the user interface and data processing.|
 |Laeyered Architecture | A structure that organizes the system into layers, each with a distinct responsibility, typically including presentation, logic, and data access.|
 
-#### Architecture patterns:
+### Architecture patterns:
 
 |Pattern | Description |
 | -------- | -------------- |
@@ -76,11 +76,17 @@ Spopa is a distributed platform designed to connect university students with pro
 |Server Side Rendering | A technique where web page content is generated on the server and sent to the client, typically to improve performance and accessibility.|
 |Reverse Proxy|A proxy server that sits in front of one or more services, forwarding client requests and often providing security, load balancing, and caching.|
 
-#### Layered View
+### Layered View
 
-![image](https://github.com/user-attachments/assets/f4ccb9ad-6663-42ef-a9ed-7fbc4d869ad2)
+![image](https://github.com/user-attachments/assets/a0f2c70d-3033-415a-b130-1d6c380e5705)
 
-#### Deployment View
+|Client Side  |The interface users interact with. (web or mobile app)                      |
+|Presentation |Formats and displays data to the user and handles input/output interactions.|
+|Orchestration|Coordinates communication between services, APIs, and components.           |
+|Logic        |Contains the core business rules and application behavior.                  |
+|Storage      |Manages data persistence using databases or file systems.                   |
+
+### Deployment View
 
 ```
 +-----------------------------+
