@@ -1,4 +1,4 @@
-# Project Artifact: SPOPA, Prototype #2.
+# Project Artifact: SPOPA, Prototype #3.
 
 
 ## Team 1E
@@ -30,28 +30,26 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ## Architectural Structures
 
-### Component and Connector (C&C) Structure
+### Component and Connector View
 
-#### C&C View
+![image](https://github.com/user-attachments/assets/c3fc46fa-2106-4339-8df2-e04893f1a1a4)
 
-![image](https://github.com/user-attachments/assets/72fbcbc3-4afe-462d-b624-a6faa20d4281)
+### Components
 
-
-#### Components
-
-| Conector        | Component                           |
-| --------------- | ----------------------------------- |
-| **HTTP**        | `web browser` ↔ `fe`             |
-| **HTTP**     | `mobile app` ↔ `fe_app`                |
-| **SSR**     | `fe` ↔ `fe_server`                |
-| **GraphQL**     | `fe_app` ↔ `API Gateway`      |
-| **REST**        | `API Gateway` ↔ `process_px`            |
-| **REST**        | `API Gateway` ↔ `ss_offers_ms`           |
-| **REST**        | `API Gateway` ↔ `ss_admin_ms`           |
-| **HTTP**     | `process_px` ↔ `ss_process_ms`        |
-| **MDBProtocol** | `ss_process_ms` ↔ `students_db`         |
-| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db` |
-| **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`         |
+| Conector        | Component                           |Description                                         |
+| --------------- | ----------------------------------- |----------------------------------------------------|
+| **HTTP**        | `web browser` ↔ `fe`                |Expected user contact device                        |
+| **HTTP**        | `mobile app` ↔ `fe_app`             |Expected user contact device                        |
+| **SSR**         | `fe` ↔ `fe_server`                  |Web front end contact with server service           |
+| **GraphQL**     | `fe_app` ↔ `process_px`             |Proxy divider between public and private net        |
+| **HTTP**        | `fe_server` ↔ `process_px`          |Proxy divider between public and private net        |
+| **HTTP**        | `process_px` ↔ `API Gateway`        |Proxy divider between public and private net        |
+| **REST**        | `API Gateway` ↔ `process_px`        |API Gateway communication with backend microservices|
+| **REST**        | `API Gateway` ↔ `ss_offers_ms`      |API Gateway communication with backend microservices|
+| **REST**        | `API Gateway` ↔ `ss_admin_ms`       |API Gateway communication with backend microservices|
+| **MDBProtocol** | `ss_process_ms` ↔ `students_db`     |Microservice communication with it's database       |
+| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db`    |Microservice communication with it's database       |
+| **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`          |Microservice communication with it's database       |
 
 #### Architecute Styles:
 
