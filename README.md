@@ -90,56 +90,9 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Deployment View
 
-```
-+-----------------------------+
-|         User Device        |
-| (Browser / Mobile App)     |
-|                             |
-| - Web Frontend (React)      |
-| - Mobile App (Flutter)      |
-+-------------┬---------------+
-              |
-              ▼
-+------------------------------------------+
-|              Public Network              |
-+-------------------┬----------------------+
-                    |
-     ┌──────────────▼────────────────┐
-     │         fe_server             │
-     │ (Hosting Next.js SSR App)     │
-     └──────────────┬────────────────┘
-                    ▼
-     +----------------------------------+
-     |      Internal Network/API Zone   |
-     +---------------┬------------------+
-                     ▼
-   ┌─────────────────────────────────────────────┐
-   │               API Gateway Node              │
-   │      (Routing Mobile traffic to services)   │
-   │      PORT:3002                              │
-   └─────────────────┬───────────────────────────┘
-                     │
-         ┌───────────▼───────────┬────────────┬
-         ▼                       ▼            ▼            
-+------------------+   +----------------+  +----------------+  
-| ss_process_ms    |   | ss_offers_ms   |  | ss_admin_ms    |
-| (Node.js)        |   | (Laravel)      |  | (Python)       |
-| PORT: 4000       |   | PORT: 8010     |  | PORT:8000       |
-+--------┬---------+   +-------┬--------+  +--------┬--------+
-         ▼                     ▼                   ▼
-+------------------+   +---------------+   +------------------+
-| process_ms       |   | MySQL DB      |   | MongoDB DB       |
-| (NGINX)          |   | [Business]    |   | [Admin]          |
-| PORT: 8080       |   | PORT: 3307    |   | PORT:27017       |
-+--------┬---------+   +-------┬-------+   +--------┬---------+
-         ▼                     ▼                   ▼
-+------------------+   +---------------+   +------------------+
-| MongoDB DB       |   | Broker        |   | Broker           |
-| [Students]       |   | (Queueing)    |   | (Queueing)       |
-| PORT: 5432       |   | PORT: 5673    |   | PORT: 5678       |
-+------------------+   +---------------+   +------------------+
+![image](https://github.com/user-attachments/assets/893abe92-81ba-45b5-a247-a177d890d1a8)
 
-```
+
 #### Decomposition View
 
 ```
