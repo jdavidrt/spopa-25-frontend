@@ -80,6 +80,8 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ![image](https://github.com/user-attachments/assets/a0f2c70d-3033-415a-b130-1d6c380e5705)
 
+|Layer        |Description                                                                 |
+|-------------|----------------------------------------------------------------------------|
 |Client Side  |The interface users interact with. (web or mobile app)                      |
 |Presentation |Formats and displays data to the user and handles input/output interactions.|
 |Orchestration|Coordinates communication between services, APIs, and components.           |
