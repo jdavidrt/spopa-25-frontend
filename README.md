@@ -78,15 +78,15 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Layered View
 
-![image](https://github.com/user-attachments/assets/a0f2c70d-3033-415a-b130-1d6c380e5705)
+![image](https://github.com/user-attachments/assets/860d21d4-31a2-4ac0-92a5-851d62e360d4)
 
-|Layer        |Description                                                                 |
-|-------------|----------------------------------------------------------------------------|
-|Client Side  |The interface users interact with. (web or mobile app)                      |
-|Presentation |Formats and displays data to the user and handles input/output interactions.|
-|Orchestration|Coordinates communication between services, APIs, and components.           |
-|Logic        |Contains the core business rules and application behavior.                  |
-|Storage      |Manages data persistence using databases or file systems.                   |
+|Layer        |Description                                                                 |Elements|
+|-------------|----------------------------------------------------------------------------|-|
+|Client Side  |The interface users interact with. (web or mobile app)                      |Client web browser / App|
+|Presentation |Formats and displays data to the user and handles input/output interactions.|`fe`, `fe_app`, `fe_server`|
+|Orchestration|Coordinates communication between services, APIs, and components.           |`process_px`, API Gateway|
+|Logic        |Contains the core business rules and application behavior.                  |`ss_process_ms`, `ss_offers_ms`, `ss_admin_ms`|
+|Storage      |Manages data persistence using databases or file systems.                   |`ss_process_db`, `ss_offers_db`, `ss_admin_db`|
 
 ### Deployment View
 
