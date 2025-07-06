@@ -162,10 +162,18 @@ System: Learning Platform (High-Level Decomposition)
 
 ### Security
 #### Scenarios
+In scenario 1: the software system must implement the Secure Channel Pattern.
+In scenario 2: the software system must implement the Reverse Proxy Pattern.
+In scenario 3: the software system must implement the Network Segmentation Pattern.
+In scenario 4: the software system must implement a pattern deffined by the team.
+
 #### Applied patterns and tactics
 
 ### Performance and Scalability
 #### Scenarios
+In scenario 1: the software system must implement the Load Balancer Pattern.
+In scenario 2: the software system must implement a pattern deffined by the team.
+
 #### Applied patterns and tactics
 
 ## Testing (Analysis and Results)
