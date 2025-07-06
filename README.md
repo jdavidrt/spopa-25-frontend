@@ -106,7 +106,7 @@ Spopa is a distributed platform designed to connect university students with pro
 |`ss_admin_ms`  |Yes|Administration access for the management of accounts and data. Logic.      |4003|
 |`ss_admin_db`  |Yes|Administration access for the management of accounts and data. Storage.    |4013|
 
-#### Decomposition View
+### Decomposition View
 
 ```
 System: Learning Platform (High-Level Decomposition)
@@ -158,26 +158,38 @@ System: Learning Platform (High-Level Decomposition)
    └─ MySQL [Business Data]
 ```
 
-# System Architecture Overview
+## Quality Attributes
 
-## Architectural Styles Used
+### Security
+#### Scenarios
+#### Applied patterns and tactics
 
-### 1. Microservices Architecture
+### Performance and Scalability
+#### Scenarios
+#### Applied patterns and tactics
+
+## Testing (Analysis and Results)
+
+## System Architecture Overview
+
+### Architectural Styles Used
+
+#### 1. Microservices Architecture
 - The system follows the microservices pattern, where each service encapsulates a specific business domain.
 - Services are independently deployable, scalable, and loosely coupled, with separate databases.
 
-### 2. API Gateway Pattern
+#### 2. API Gateway Pattern
 - An API Gateway serves as a single entry point for mobile clients, handling routing and orchestration.
 - For web clients, routing is handled by Server-Side Rendering (Next.js), which communicates directly with internal services.
 
-### 3. Polyglot Persistence
+#### 3. Polyglot Persistence
 - The system employs different database technologies to suit varying data needs:
   - MySQL: Used by the Business Service for relational and transactional data.
   - MongoDB: Used by the Student and Admin Services for flexible, semi-structured data.
 
-## Architectural Elements and Relations
+### Architectural Elements and Relations
 
-### Presentation Layer
+#### Presentation Layer
 
 - **Web Frontend (React + Next.js)**
   - Responsive user interface for students and companies.
@@ -189,14 +201,14 @@ System: Learning Platform (High-Level Decomposition)
   - Communicates exclusively via the API Gateway.
   - Secured using Auth0 tokens.
 
-### Interface / Gateway Layer
+#### Interface / Gateway Layer
 
 - **API Gateway (Node.js / Express)**
   - Single entry point for mobile traffic.
   - Routes and orchestrates requests to the correct microservice (Student, Business, Admin).
   - Handles token verification and basic access control.
 
-### Application Logic Layer (Microservices)
+#### Application Logic Layer (Microservices)
 
 - **Student Service (Node.js)**
   - Manages student profiles, preferences, and applications.
@@ -213,7 +225,7 @@ System: Learning Platform (High-Level Decomposition)
   - Handles admin features: user moderation, data curation, reporting.
   - Uses MongoDB and communicates via a Broker for event-driven tasks.
 
-### Data Layer
+#### Data Layer
 
 - **MongoDB [Students]**
   - Stores student-related data (profiles, applications).
