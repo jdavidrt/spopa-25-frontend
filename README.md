@@ -32,7 +32,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Component and Connector View
 
-![image](https://github.com/user-attachments/assets/c3fc46fa-2106-4339-8df2-e04893f1a1a4)
+![image](https://github.com/user-attachments/assets/2bd62e8d-d200-4293-ad45-f3858c5ce585)
 
 ### Components
 
@@ -50,6 +50,15 @@ Spopa is a distributed platform designed to connect university students with pro
 | **MDBProtocol** | `ss_process_ms` ↔ `students_db`     |Microservice communication with it's database       |
 | **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db`    |Microservice communication with it's database       |
 | **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`          |Microservice communication with it's database       |
+
+###Connectors
+
+|Conector        |Description|
+|----------------|-|
+|**HTTP**        |Standard communication protocol|
+|**GraphQL**     |Query communication protocol|
+|**REST**        |Format of HTTP(S) request that process requests using RESTful principles (GET, POST, PUT, DELETE, etc.)|
+|**DB Protocol** |Low level protocol and format that varies depending on the database it communicates with.|
 
 #### Architecute Styles:
 
