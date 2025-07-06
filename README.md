@@ -90,8 +90,21 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Deployment View
 
-![image](https://github.com/user-attachments/assets/893abe92-81ba-45b5-a247-a177d890d1a8)
+![image](https://github.com/user-attachments/assets/5b67dd1a-1d9e-47f3-94dc-16d46900d9e0)
 
+|Container|In-Private Network?|Description|Port|
+|-|-|-|-|
+|`fe`           |No |Web browser user display.                  |-|
+|`fe_server`    |No |Web browser content rednerer.              |3000|
+|`fe_app`       |No |App user display.                          |3001|
+|`process_px`   |No |Network direction divider.                 |3002|
+|`api-gateway`  |Yes|Load balancer and microservice coordinator.|3010|
+|`ss_process_ms`|Yes|Student accounts, information, and internship application progress logic.  |4001|
+|`ss_process_db`|Yes|Student accounts, information, and internship application progress storage.|4011|
+|`ss_offers_ms` |Yes|Existing internship details, contacts, status, and other details logic.    |4002|
+|`ss_offers_db` |Yes|Existing internship details, contacts, status, and other details storage.  |4012|
+|`ss_admin_ms`  |Yes|Administration access for the management of accounts and data. Logic.      |4003|
+|`ss_admin_db`  |Yes|Administration access for the management of accounts and data. Storage.    |4013|
 
 #### Decomposition View
 
