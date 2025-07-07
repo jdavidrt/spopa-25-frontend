@@ -110,6 +110,14 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ![image](https://github.com/user-attachments/assets/be252b97-2b74-4063-bf18-73d28f32782c)
 
+|Function           |Elements|Description|
+|-|-|-|
+|User access        |User access for student, business, and administrative users.                    |Account and system access, and verification of the type of account and permissions of it.|
+|Manage Offers      |Display listing and, if authorized, provide editing tools for internship offers.|See and manage, if authorized, live internship offers registered to the SPOPA system.|
+|Administrator Tools|Manage registered students.                                                     |See and manage student accounts registered to the SPOPA system.|
+|Student Portal     |Toolbar for the use of students during their internship application process.    |The student portal reffers to the tools exclusively thought for the student to facilitate the process of their application. This includes to track the total progress and information of their specific application, a checklist with all the necessary steps to get faculty approval, and a defined set list of approved proffessors affiliated with the University.|
+
+
 ## Quality Attributes
 
 ### Security
