@@ -128,6 +128,20 @@ In scenario 3: the software system must implement the Network Segmentation Patte
 In scenario 4: the software system must implement a pattern deffined by the team.
 
 #### Applied patterns and tactics
+Patterns:
+|Pattern|Description|
+|-|-|
+|Secure channel|Usage of more secure communication protocols through HTTPS between components.|
+|API Gateway pattern|Central point of access for security and access enforcement.|
+|Reverse Proxy Net|All communications are filtered to public nets through a reverse proxy, keeping the private net isolated.|
+|Authorization pattern|Differing functionalities, services and views to student, business, and administrator depending on the role.|
+
+Tactics:
+|Tactic|Description|
+|-|-|
+|Authentication pattern|Use of OAuth for the managing of user accounts to ensure user identity.|
+|Input validation|Restrictions are applied to the worked information to avoid inadequate injections.|
+
 
 ### Performance and Scalability
 #### Scenarios
