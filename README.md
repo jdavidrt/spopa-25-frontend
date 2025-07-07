@@ -123,9 +123,13 @@ Spopa is a distributed platform designed to connect university students with pro
 ### Security
 #### Scenarios
 #### Scenario 1: the software system must implement the Secure Channel Pattern.
+Codification using the HTTPS (Hypertext Transfer Protocol Secure) protocol is carried out during communication of components to ensure safe traffic.
 #### Scenario 2: the software system must implement the Reverse Proxy Pattern.
+Using `NGINX` the project divides the nets of operation between a private and public net using a reverse proxy that bridges the two.
 #### Scenario 3: the software system must implement the Network Segmentation Pattern.
-#### Scenario 4: the software system must implement a pattern deffined by the team.
+The structure of the project divides the services it allows access to by the role of the user, protecting the functions between user types, as well as protecting the system in the case of the compromise or failure of any individual microservice.
+#### Scenario 4: the software system must implement the API Gateway Pattern for security purposes.
+The architecture integrates an API Gateway as the single entry point for all external client requests. The gateway enforces authentication and authorization, input validation, and rate limiting before forwarding requests to internal services. This centralization of security responsibilities helps prevent unauthorized access, mitigates denial-of-service attacks, and shields internal microservices from direct exposure.
 
 #### Applied patterns and tactics
 Patterns:
@@ -134,7 +138,7 @@ Patterns:
 |Secure channel|Usage of more secure communication protocols through HTTPS between components.|
 |API Gateway pattern|Central point of access for security and access enforcement.|
 |Reverse Proxy Net|All communications are filtered to public nets through a reverse proxy, keeping the private net isolated.|
-|Authorization pattern|Differing functionalities, services and views to student, business, and administrator depending on the role.|
+|Authorization pattern / Network segmentation|Differing functionalities, services and views to student, business, and administrator depending on the role. This protects the system both to the spread of unauthorized access to all of the system, as well as control functionality access.|
 
 Tactics:
 |Tactic|Description|
@@ -146,9 +150,10 @@ Tactics:
 ### Performance and Scalability
 #### Scenarios:
 #### Scenario 1: the software system must implement the Load Balancer Pattern.
-The project uses a load balancing pattern using the [a] algorithm within the API Gateway component of the structure, taking care of [something].
+To ensure optimal performance and system scalability under high traffic, the project uses a load balancer that distributes incoming client requests across multiple service instances. This reduces individual server load, minimizes response times, and allows the system to scale horizontally by adding or removing service nodes dynamically as demand changes.
 
-#### Scenario 2: the software system must implement a pattern deffined by the team.
+#### Scenario 2: the software system must implement Horizontal Scaling.
+To handle increased demand and ensure system availability, the architecture supports horizontal scaling by deploying multiple instances of key services. These instances can be distributed across containers or virtual machines and are managed by an orchestrator , allowing the system to dynamically add or remove nodes based on resource usage and traffic volume without downtime.
 
 #### Applied patterns and tactics
 
