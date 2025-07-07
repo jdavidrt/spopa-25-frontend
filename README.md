@@ -165,7 +165,8 @@ To handle increased demand and ensure system availability, the architecture supp
 
 |Tactic|Description|
 |-|-|
-|a|a|
+|Statelessness|The services do not store session or user-specific state locally, meaning that new service instances can be added or removed without worrying about where the state lives.|
+|Batching| The API Gateway, as a load balancer, groups multiple operations or requests together and process them as a single unit, which reduces the overhead of repeated operations, minimizing latency and improving throughput.|
 
 ## Testing (Analysis and Results)
 
