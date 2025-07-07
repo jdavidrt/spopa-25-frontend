@@ -9,7 +9,7 @@ const Offers = () => {
   // Move fetchData outside of useEffect so it can be reused
   const fetchData = async () => {
     try {
-      const response = await fetch(`http://localhost:8010/api/offers`);
+      const response = await fetch(`https://localhost:8010/api/offers`);
       if (!response.ok) {
         throw new Error('Error al obtener las ofertas');
       }
