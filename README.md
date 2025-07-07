@@ -90,7 +90,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Deployment View
 
-![image](https://github.com/user-attachments/assets/5b67dd1a-1d9e-47f3-94dc-16d46900d9e0)
+![image](https://github.com/user-attachments/assets/4c8c2791-2dcf-4798-93ae-28eb8d4bd1e1)
 
 |Container|In-Private Network?|Description|Port|
 |-|-|-|-|
