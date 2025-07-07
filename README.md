@@ -90,7 +90,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Deployment View
 
-![image](https://github.com/user-attachments/assets/5b67dd1a-1d9e-47f3-94dc-16d46900d9e0)
+![image](https://github.com/user-attachments/assets/4c8c2791-2dcf-4798-93ae-28eb8d4bd1e1)
 
 |Container|In-Private Network?|Description|Port|
 |-|-|-|-|
@@ -122,19 +122,51 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Security
 #### Scenarios
-In scenario 1: the software system must implement the Secure Channel Pattern.
-In scenario 2: the software system must implement the Reverse Proxy Pattern.
-In scenario 3: the software system must implement the Network Segmentation Pattern.
-In scenario 4: the software system must implement a pattern deffined by the team.
+#### Scenario 1: the software system must implement the Secure Channel Pattern.
+Codification using the HTTPS (Hypertext Transfer Protocol Secure) protocol is carried out during communication of components to ensure safe traffic.
+#### Scenario 2: the software system must implement the Reverse Proxy Pattern.
+Using `NGINX` the project divides the nets of operation between a private and public net using a reverse proxy that bridges the two.
+#### Scenario 3: the software system must implement the Network Segmentation Pattern.
+The structure of the project divides the services it allows access to by the role of the user, protecting the functions between user types, as well as protecting the system in the case of the compromise or failure of any individual microservice.
+#### Scenario 4: the software system must implement the API Gateway Pattern for security purposes.
+The architecture integrates an API Gateway as the single entry point for all external client requests. The gateway enforces authentication and authorization, input validation, and rate limiting before forwarding requests to internal services. This centralization of security responsibilities helps prevent unauthorized access, mitigates denial-of-service attacks, and shields internal microservices from direct exposure.
 
 #### Applied patterns and tactics
+Patterns:
+|Pattern|Description|
+|-|-|
+|Secure channel|Usage of more secure communication protocols through HTTPS between components.|
+|API Gateway pattern|Central point of access for security and access enforcement.|
+|Reverse Proxy Net|All communications are filtered to public nets through a reverse proxy, keeping the private net isolated.|
+|Authorization pattern / Network segmentation|Differing functionalities, services and views to student, business, and administrator depending on the role. This protects the system both to the spread of unauthorized access to all of the system, as well as control functionality access.|
+
+Tactics:
+|Tactic|Description|
+|-|-|
+|Authentication pattern|Use of OAuth for the managing of user accounts to ensure user identity.|
+|Input validation|Restrictions are applied to the worked information to avoid inadequate injections.|
+
 
 ### Performance and Scalability
-#### Scenarios
-In scenario 1: the software system must implement the Load Balancer Pattern.
-In scenario 2: the software system must implement a pattern deffined by the team.
+#### Scenarios:
+#### Scenario 1: the software system must implement the Load Balancer Pattern.
+To ensure optimal performance and system scalability under high traffic, the project uses a load balancer that distributes incoming client requests across multiple service instances. This reduces individual server load, minimizes response times, and allows the system to scale horizontally by adding or removing service nodes dynamically as demand changes.
+
+#### Scenario 2: the software system must implement Horizontal Scaling.
+To handle increased demand and ensure system availability, the architecture supports horizontal scaling by deploying multiple instances of key services. These instances can be distributed across containers or virtual machines and are managed by an orchestrator , allowing the system to dynamically add or remove nodes based on resource usage and traffic volume without downtime.
 
 #### Applied patterns and tactics
+
+|Pattern|Description|
+|-|-|
+|Load Balancing Pattern|With the use of the API Gateway, as well with the slight amount of support provided by the reverse proxy, the requests that are handled within the private net are distributed as best as the components allow.|
+|Bulkhead Pattern|The separation of services allows for components of the system to continue operating for certain roles in the case of maintnance or failure in any given microservice.|
+|Horizontal scaling|With the division of services defined to the roles of users we expect, were it needed to contemplate a new whole role it is possible to add another branch upon the API Gateway, or to include more services for specific roles.|
+
+|Tactic|Description|
+|-|-|
+|Statelessness|The services do not store session or user-specific state locally, meaning that new service instances can be added or removed without worrying about where the state lives.|
+|Batching| The API Gateway, as a load balancer, groups multiple operations or requests together and process them as a single unit, which reduces the overhead of repeated operations, minimizing latency and improving throughput.|
 
 ## Testing (Analysis and Results)
 
