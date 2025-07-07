@@ -122,10 +122,10 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Security
 #### Scenarios
-In scenario 1: the software system must implement the Secure Channel Pattern.
-In scenario 2: the software system must implement the Reverse Proxy Pattern.
-In scenario 3: the software system must implement the Network Segmentation Pattern.
-In scenario 4: the software system must implement a pattern deffined by the team.
+#### Scenario 1: the software system must implement the Secure Channel Pattern.
+#### Scenario 2: the software system must implement the Reverse Proxy Pattern.
+#### Scenario 3: the software system must implement the Network Segmentation Pattern.
+#### Scenario 4: the software system must implement a pattern deffined by the team.
 
 #### Applied patterns and tactics
 Patterns:
@@ -144,11 +144,23 @@ Tactics:
 
 
 ### Performance and Scalability
-#### Scenarios
-In scenario 1: the software system must implement the Load Balancer Pattern.
-In scenario 2: the software system must implement a pattern deffined by the team.
+#### Scenarios:
+#### Scenario 1: the software system must implement the Load Balancer Pattern.
+The project uses a load balancing pattern using the [a] algorithm within the API Gateway component of the structure, taking care of [something].
+
+#### Scenario 2: the software system must implement a pattern deffined by the team.
 
 #### Applied patterns and tactics
+
+|Pattern|Description|
+|-|-|
+|Load Balancing Pattern|With the use of the API Gateway, as well with the slight amount of support provided by the reverse proxy, the requests that are handled within the private net are distributed as best as the components allow.|
+|Bulkhead Pattern|The separation of services allows for components of the system to continue operating for certain roles in the case of maintnance or failure in any given microservice.|
+|Horizontal scaling|With the division of services defined to the roles of users we expect, were it needed to contemplate a new whole role it is possible to add another branch upon the API Gateway, or to include more services for specific roles.|
+
+|Tactic|Description|
+|-|-|
+|a|a|
 
 ## Testing (Analysis and Results)
 
