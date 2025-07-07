@@ -108,55 +108,15 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Decomposition View
 
-```
-System: Learning Platform (High-Level Decomposition)
-─────────────────────────────────────────────────────
+![image](https://github.com/user-attachments/assets/be252b97-2b74-4063-bf18-73d28f32782c)
 
-1. Web Frontend (React + Auth0)
-   ├─ UI Components (Forms, Dashboards, Course Views)
-   ├─ Auth Module (via Auth0 SDK)
-   └─ API Client (talks to Next.js SSR endpoints)
+|Function           |Elements|Description|
+|-|-|-|
+|User access        |User access for student, business, and administrative users.                    |Account and system access, and verification of the type of account and permissions of it.|
+|Manage Offers      |Display listing and, if authorized, provide editing tools for internship offers.|See and manage, if authorized, live internship offers registered to the SPOPA system.|
+|Administrator Tools|Manage registered students.                                                     |See and manage student accounts registered to the SPOPA system.|
+|Student Portal     |Toolbar for the use of students during their internship application process.    |The student portal reffers to the tools exclusively thought for the student to facilitate the process of their application. This includes to track the total progress and information of their specific application, a checklist with all the necessary steps to get faculty approval, and a defined set list of approved proffessors affiliated with the University.|
 
-2. Mobile Frontend (Flutter)
-   ├─ Cross-platform UI Widgets
-   ├─ Auth Module (via Auth0)
-   └─ API Client (via API Gateway)
-
-3. Server-Side Rendering (Next.js)
-   ├─ Routing & Middleware
-   ├─ SSR Pages & Components
-   ├─ Session Management
-   └─ Service Connector Layer
-        ├─ Connects to Student Service
-        ├─ Connects to Business Service
-        └─ Connects to Admin Service
-
-4. Student Service (Node.js)
-   ├─ API Routes (REST)
-   ├─ NGINX Proxy Integration
-   ├─ Student Logic (enrollment, profiles, etc.)
-   └─ MongoDB Handler (data access)
-
-5. Business Service (Laravel)
-   ├─ Controller Layer (REST endpoints)
-   ├─ Business Logic (billing, course packages)
-   ├─ Database Models (MySQL ORM/Eloquent)
-   └─ Broker Publisher (event-based messages)
-
-6. Admin Service (Python)
-   ├─ REST API (e.g., Flask / FastAPI)
-   ├─ Admin Operations Logic (reporting, moderation)
-   ├─ MongoDB ORM Layer
-   └─ Broker Publisher (async tasks/events)
-
-7. Brokers
-   ├─ Queues for async processing
-   └─ Receives events from Business/Admin services
-
-8. Databases
-   ├─ MongoDB [Students, Admin]
-   └─ MySQL [Business Data]
-```
 
 ## Quality Attributes
 
