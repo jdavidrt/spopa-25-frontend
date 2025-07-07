@@ -1,4 +1,4 @@
-# Project Artifact: SPOPA, Prototype #2.
+# Project Artifact: SPOPA, Prototype #3.
 
 
 ## Team 1E
@@ -30,30 +30,37 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ## Architectural Structures
 
-### Component and Connector (C&C) Structure
+### Component and Connector View
 
-#### C&C View
+![image](https://github.com/user-attachments/assets/2bd62e8d-d200-4293-ad45-f3858c5ce585)
 
-![image](https://github.com/user-attachments/assets/72fbcbc3-4afe-462d-b624-a6faa20d4281)
+### Components
 
+| Connector       | Component                           |Description                                         |
+| --------------- | ----------------------------------- |----------------------------------------------------|
+| **HTTP**        | `web browser` ↔ `fe`                |Expected user contact device                        |
+| **HTTP**        | `mobile app` ↔ `fe_app`             |Expected user contact device                        |
+| **SSR**         | `fe` ↔ `fe_server`                  |Web front end contact with server service           |
+| **GraphQL**     | `fe_app` ↔ `process_px`             |Proxy divider between public and private net        |
+| **HTTP**        | `fe_server` ↔ `process_px`          |Proxy divider between public and private net        |
+| **HTTP**        | `process_px` ↔ `API Gateway`        |Proxy divider between public and private net        |
+| **REST**        | `API Gateway` ↔ `process_px`        |API Gateway communication with backend microservices|
+| **REST**        | `API Gateway` ↔ `ss_offers_ms`      |API Gateway communication with backend microservices|
+| **REST**        | `API Gateway` ↔ `ss_admin_ms`       |API Gateway communication with backend microservices|
+| **MDBProtocol** | `ss_process_ms` ↔ `students_db`     |Microservice communication with it's database       |
+| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db`    |Microservice communication with it's database       |
+| **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`          |Microservice communication with it's database       |
 
-#### Components
+### Connectors
 
-| Conector        | Component                           |
-| --------------- | ----------------------------------- |
-| **HTTP**        | `web browser` ↔ `fe`             |
-| **HTTP**     | `mobile app` ↔ `fe_app`                |
-| **SSR**     | `fe` ↔ `fe_server`                |
-| **GraphQL**     | `fe_app` ↔ `API Gateway`      |
-| **REST**        | `API Gateway` ↔ `process_px`            |
-| **REST**        | `API Gateway` ↔ `ss_offers_ms`           |
-| **REST**        | `API Gateway` ↔ `ss_admin_ms`           |
-| **HTTP**     | `process_px` ↔ `ss_process_ms`        |
-| **MDBProtocol** | `ss_process_ms` ↔ `students_db`         |
-| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db` |
-| **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`         |
+|Connector       |Description                                                          |
+|----------------|---------------------------------------------------------------------|
+|**HTTP**        |Standard communication protocol                                      |
+|**GraphQL**     |Query communication protocol                                         |
+|**REST**        |Format of HTTP(S) request that process requests using RESTful principles (GET, POST, PUT, DELETE, etc.)|
+|**DB Protocol** |Low level protocol and format that varies depending on the database it communicates with.|
 
-#### Architecute Styles:
+### Architecute Styles:
 
 |Style  | Description|
 | -------- | -------------- |
@@ -61,7 +68,7 @@ Spopa is a distributed platform designed to connect university students with pro
 |Client-Server Architecture| A style where clients request services and servers provide responses, separating concerns between the user interface and data processing.|
 |Laeyered Architecture | A structure that organizes the system into layers, each with a distinct responsibility, typically including presentation, logic, and data access.|
 
-#### Architecture patterns:
+### Architecture patterns:
 
 |Pattern | Description |
 | -------- | -------------- |
@@ -69,134 +76,88 @@ Spopa is a distributed platform designed to connect university students with pro
 |Server Side Rendering | A technique where web page content is generated on the server and sent to the client, typically to improve performance and accessibility.|
 |Reverse Proxy|A proxy server that sits in front of one or more services, forwarding client requests and often providing security, load balancing, and caching.|
 
-#### Layered View
+### Layered View
 
-![image](https://github.com/user-attachments/assets/f4ccb9ad-6663-42ef-a9ed-7fbc4d869ad2)
+![image](https://github.com/user-attachments/assets/860d21d4-31a2-4ac0-92a5-851d62e360d4)
 
-#### Deployment View
+|Layer        |Description                                                                 |Elements|
+|-------------|----------------------------------------------------------------------------|-|
+|Client Side  |The interface users interact with. (web or mobile app)                      |Client web browser / App|
+|Presentation |Formats and displays data to the user and handles input/output interactions.|`fe`, `fe_app`, `fe_server`|
+|Orchestration|Coordinates communication between services, APIs, and components.           |`process_px`, API Gateway|
+|Logic        |Contains the core business rules and application behavior.                  |`ss_process_ms`, `ss_offers_ms`, `ss_admin_ms`|
+|Storage      |Manages data persistence using databases or file systems.                   |`ss_process_db`, `ss_offers_db`, `ss_admin_db`|
 
-```
-+-----------------------------+
-|         User Device        |
-| (Browser / Mobile App)     |
-|                             |
-| - Web Frontend (React)      |
-| - Mobile App (Flutter)      |
-+-------------┬---------------+
-              |
-              ▼
-+------------------------------------------+
-|              Public Network              |
-+-------------------┬----------------------+
-                    |
-     ┌──────────────▼────────────────┐
-     │         fe_server             │
-     │ (Hosting Next.js SSR App)     │
-     └──────────────┬────────────────┘
-                    ▼
-     +----------------------------------+
-     |      Internal Network/API Zone   |
-     +---------------┬------------------+
-                     ▼
-   ┌─────────────────────────────────────────────┐
-   │               API Gateway Node              │
-   │      (Routing Mobile traffic to services)   │
-   │      PORT:3002                              │
-   └─────────────────┬───────────────────────────┘
-                     │
-         ┌───────────▼───────────┬────────────┬
-         ▼                       ▼            ▼            
-+------------------+   +----------------+  +----------------+  
-| ss_process_ms    |   | ss_offers_ms   |  | ss_admin_ms    |
-| (Node.js)        |   | (Laravel)      |  | (Python)       |
-| PORT: 4000       |   | PORT: 8010     |  | PORT:8000       |
-+--------┬---------+   +-------┬--------+  +--------┬--------+
-         ▼                     ▼                   ▼
-+------------------+   +---------------+   +------------------+
-| process_ms       |   | MySQL DB      |   | MongoDB DB       |
-| (NGINX)          |   | [Business]    |   | [Admin]          |
-| PORT: 8080       |   | PORT: 3307    |   | PORT:27017       |
-+--------┬---------+   +-------┬-------+   +--------┬---------+
-         ▼                     ▼                   ▼
-+------------------+   +---------------+   +------------------+
-| MongoDB DB       |   | Broker        |   | Broker           |
-| [Students]       |   | (Queueing)    |   | (Queueing)       |
-| PORT: 5432       |   | PORT: 5673    |   | PORT: 5678       |
-+------------------+   +---------------+   +------------------+
+### Deployment View
 
-```
-#### Decomposition View
+![image](https://github.com/user-attachments/assets/5b67dd1a-1d9e-47f3-94dc-16d46900d9e0)
 
-```
-System: Learning Platform (High-Level Decomposition)
-─────────────────────────────────────────────────────
+|Container|In-Private Network?|Description|Port|
+|-|-|-|-|
+|`fe`           |No |Web browser user display.                  |-|
+|`fe_server`    |No |Web browser content rednerer.              |3000|
+|`fe_app`       |No |App user display.                          |3001|
+|`process_px`   |No |Network direction divider.                 |3002|
+|`api-gateway`  |Yes|Load balancer and microservice coordinator.|3010|
+|`ss_process_ms`|Yes|Student accounts, information, and internship application progress logic.  |4001|
+|`ss_process_db`|Yes|Student accounts, information, and internship application progress storage.|4011|
+|`ss_offers_ms` |Yes|Existing internship details, contacts, status, and other details logic.    |4002|
+|`ss_offers_db` |Yes|Existing internship details, contacts, status, and other details storage.  |4012|
+|`ss_admin_ms`  |Yes|Administration access for the management of accounts and data. Logic.      |4003|
+|`ss_admin_db`  |Yes|Administration access for the management of accounts and data. Storage.    |4013|
 
-1. Web Frontend (React + Auth0)
-   ├─ UI Components (Forms, Dashboards, Course Views)
-   ├─ Auth Module (via Auth0 SDK)
-   └─ API Client (talks to Next.js SSR endpoints)
+### Decomposition View
 
-2. Mobile Frontend (Flutter)
-   ├─ Cross-platform UI Widgets
-   ├─ Auth Module (via Auth0)
-   └─ API Client (via API Gateway)
+![image](https://github.com/user-attachments/assets/be252b97-2b74-4063-bf18-73d28f32782c)
 
-3. Server-Side Rendering (Next.js)
-   ├─ Routing & Middleware
-   ├─ SSR Pages & Components
-   ├─ Session Management
-   └─ Service Connector Layer
-        ├─ Connects to Student Service
-        ├─ Connects to Business Service
-        └─ Connects to Admin Service
+|Function           |Elements|Description|
+|-|-|-|
+|User access        |User access for student, business, and administrative users.                    |Account and system access, and verification of the type of account and permissions of it.|
+|Manage Offers      |Display listing and, if authorized, provide editing tools for internship offers.|See and manage, if authorized, live internship offers registered to the SPOPA system.|
+|Administrator Tools|Manage registered students.                                                     |See and manage student accounts registered to the SPOPA system.|
+|Student Portal     |Toolbar for the use of students during their internship application process.    |The student portal reffers to the tools exclusively thought for the student to facilitate the process of their application. This includes to track the total progress and information of their specific application, a checklist with all the necessary steps to get faculty approval, and a defined set list of approved proffessors affiliated with the University.|
 
-4. Student Service (Node.js)
-   ├─ API Routes (REST)
-   ├─ NGINX Proxy Integration
-   ├─ Student Logic (enrollment, profiles, etc.)
-   └─ MongoDB Handler (data access)
 
-5. Business Service (Laravel)
-   ├─ Controller Layer (REST endpoints)
-   ├─ Business Logic (billing, course packages)
-   ├─ Database Models (MySQL ORM/Eloquent)
-   └─ Broker Publisher (event-based messages)
+## Quality Attributes
 
-6. Admin Service (Python)
-   ├─ REST API (e.g., Flask / FastAPI)
-   ├─ Admin Operations Logic (reporting, moderation)
-   ├─ MongoDB ORM Layer
-   └─ Broker Publisher (async tasks/events)
+### Security
+#### Scenarios
+In scenario 1: the software system must implement the Secure Channel Pattern.
+In scenario 2: the software system must implement the Reverse Proxy Pattern.
+In scenario 3: the software system must implement the Network Segmentation Pattern.
+In scenario 4: the software system must implement a pattern deffined by the team.
 
-7. Brokers
-   ├─ Queues for async processing
-   └─ Receives events from Business/Admin services
+#### Applied patterns and tactics
 
-8. Databases
-   ├─ MongoDB [Students, Admin]
-   └─ MySQL [Business Data]
-```
+### Performance and Scalability
+#### Scenarios
+In scenario 1: the software system must implement the Load Balancer Pattern.
+In scenario 2: the software system must implement a pattern deffined by the team.
 
-# System Architecture Overview
+#### Applied patterns and tactics
 
-## Architectural Styles Used
+## Testing (Analysis and Results)
 
-### 1. Microservices Architecture
+## System Architecture Overview
+
+### Architectural Styles Used
+
+#### 1. Microservices Architecture
 - The system follows the microservices pattern, where each service encapsulates a specific business domain.
 - Services are independently deployable, scalable, and loosely coupled, with separate databases.
 
-### 2. API Gateway Pattern
+#### 2. API Gateway Pattern
 - An API Gateway serves as a single entry point for mobile clients, handling routing and orchestration.
 - For web clients, routing is handled by Server-Side Rendering (Next.js), which communicates directly with internal services.
 
-### 3. Polyglot Persistence
+#### 3. Polyglot Persistence
 - The system employs different database technologies to suit varying data needs:
   - MySQL: Used by the Business Service for relational and transactional data.
   - MongoDB: Used by the Student and Admin Services for flexible, semi-structured data.
 
-## Architectural Elements and Relations
+### Architectural Elements and Relations
 
-### Presentation Layer
+#### Presentation Layer
 
 - **Web Frontend (React + Next.js)**
   - Responsive user interface for students and companies.
@@ -208,14 +169,14 @@ System: Learning Platform (High-Level Decomposition)
   - Communicates exclusively via the API Gateway.
   - Secured using Auth0 tokens.
 
-### Interface / Gateway Layer
+#### Interface / Gateway Layer
 
 - **API Gateway (Node.js / Express)**
   - Single entry point for mobile traffic.
   - Routes and orchestrates requests to the correct microservice (Student, Business, Admin).
   - Handles token verification and basic access control.
 
-### Application Logic Layer (Microservices)
+#### Application Logic Layer (Microservices)
 
 - **Student Service (Node.js)**
   - Manages student profiles, preferences, and applications.
@@ -232,7 +193,7 @@ System: Learning Platform (High-Level Decomposition)
   - Handles admin features: user moderation, data curation, reporting.
   - Uses MongoDB and communicates via a Broker for event-driven tasks.
 
-### Data Layer
+#### Data Layer
 
 - **MongoDB [Students]**
   - Stores student-related data (profiles, applications).

@@ -15,7 +15,8 @@ app = FastAPI(
 # pueda hacer solicitudes a el backend (FastAPI en localhost:8000).
 # Sin esto, el navegador bloquearía las solicitudes por seguridad.
 origins = [
-    "http://localhost:3000",  # Permite solicitudes desde  frontend React
+    "http://localhost:3000",
+    "https://localhost:3443",   # Permite solicitudes desde  frontend React
     # Si el frontend se despliega en otro dominio o puerto, toca añádirlo aquí:
     # "http://otro-dominio.com",
 ]

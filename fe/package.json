@@ -6,6 +6,7 @@
     "start": "npm-run-all --parallel spa session-server",
     "spa": "react-scripts start",
     "session-server": "node api-session-server.js",
+    "build": "react-scripts build",
     "session-server:dev": "nodemon api-session-server.js",
     "dev": "npm-run-all --parallel spa session-server:dev api-server:dev",
     "test-session": "curl http://localhost:3001/api/test"
