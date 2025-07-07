@@ -108,55 +108,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Decomposition View
 
-```
-System: Learning Platform (High-Level Decomposition)
-─────────────────────────────────────────────────────
-
-1. Web Frontend (React + Auth0)
-   ├─ UI Components (Forms, Dashboards, Course Views)
-   ├─ Auth Module (via Auth0 SDK)
-   └─ API Client (talks to Next.js SSR endpoints)
-
-2. Mobile Frontend (Flutter)
-   ├─ Cross-platform UI Widgets
-   ├─ Auth Module (via Auth0)
-   └─ API Client (via API Gateway)
-
-3. Server-Side Rendering (Next.js)
-   ├─ Routing & Middleware
-   ├─ SSR Pages & Components
-   ├─ Session Management
-   └─ Service Connector Layer
-        ├─ Connects to Student Service
-        ├─ Connects to Business Service
-        └─ Connects to Admin Service
-
-4. Student Service (Node.js)
-   ├─ API Routes (REST)
-   ├─ NGINX Proxy Integration
-   ├─ Student Logic (enrollment, profiles, etc.)
-   └─ MongoDB Handler (data access)
-
-5. Business Service (Laravel)
-   ├─ Controller Layer (REST endpoints)
-   ├─ Business Logic (billing, course packages)
-   ├─ Database Models (MySQL ORM/Eloquent)
-   └─ Broker Publisher (event-based messages)
-
-6. Admin Service (Python)
-   ├─ REST API (e.g., Flask / FastAPI)
-   ├─ Admin Operations Logic (reporting, moderation)
-   ├─ MongoDB ORM Layer
-   └─ Broker Publisher (async tasks/events)
-
-7. Brokers
-   ├─ Queues for async processing
-   └─ Receives events from Business/Admin services
-
-8. Databases
-   ├─ MongoDB [Students, Admin]
-   └─ MySQL [Business Data]
-```
+![image](https://github.com/user-attachments/assets/be252b97-2b74-4063-bf18-73d28f32782c)
 
 ## Quality Attributes
 
