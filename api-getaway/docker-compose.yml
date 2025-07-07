@@ -1,9 +1,20 @@
 services:
+  #Firewall
+  waf:
+    build: ./waf
+    ports:
+      - "80:8080"
+    depends_on:
+      - api-gateway
+    networks:
+      - spopa-network
   # API Gateway
   api-gateway:
     build: .
-    ports:
-      - "3010:3010"
+    #ports:
+    #  - "3010:3010"
+    expose:
+      - "3010"
     environment:
       - PORT=3010
       - USERS_SERVICE_URL=http://users-service:4001
