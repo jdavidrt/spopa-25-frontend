@@ -67,9 +67,11 @@ app.use('/api/internships', createProxyMiddleware({
 
 // Frontend estático (opcional)
 app.use('/', createProxyMiddleware({
-  target: 'http://localhost:3001',
-  changeOrigin: true
+  target: 'https://localhost:3443',
+  changeOrigin: true,
+  secure: false // permite proxy a servidores con certificados autofirmados 
 }));
+
 
 const PORT = process.env.PORT || 3010;
 app.listen(PORT, () => {
