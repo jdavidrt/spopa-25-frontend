@@ -235,8 +235,17 @@ process.on('SIGTERM', () => {
   });
 });
 
-const server = app.listen(port, () => {
-  console.log(`🚀 SPOPA Server listening on port ${port}`);
+const https = require('https');
+
+const sslOptions = {
+  key: fs.readFileSync(join(__dirname, 'ssl', 'key.pem')),
+  cert: fs.readFileSync(join(__dirname, 'ssl', 'cert.pem'))
+};
+
+const httpsPort = 3443;
+
+const server = https.createServer(sslOptions, app).listen(httpsPort, () => {
+  console.log(`🚀 SPOPA HTTPS Server listening on https://localhost:${httpsPort}`);
   console.log(`🔒 Session management enabled`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📋 Available endpoints:`);
@@ -248,5 +257,6 @@ const server = app.listen(port, () => {
   console.log(`   - DELETE /api/session`);
   console.log(`   - GET  /api/session/test`);
 });
+
 
 module.exports = app;
