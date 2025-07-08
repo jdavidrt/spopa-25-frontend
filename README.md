@@ -132,6 +132,9 @@ The structure of the project divides the services it allows access to by the rol
 #### Scenario 4: the software system must implement the API Gateway Pattern for security purposes.
 The architecture integrates an API Gateway as the single entry point for all external client requests. The gateway enforces authentication and authorization, input validation, and rate limiting before forwarding requests to internal services. This centralization of security responsibilities helps prevent unauthorized access, mitigates denial-of-service attacks, and shields internal microservices from direct exposure.
 
+![complete_quality_scenarios](https://github.com/user-attachments/assets/f6e2b62b-40d1-4036-acfe-f2e8ca8d3d2b)
+
+
 #### Applied patterns and tactics
 Patterns:
 |Pattern|Description|
