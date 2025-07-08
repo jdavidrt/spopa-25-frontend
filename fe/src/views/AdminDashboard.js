@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 // --- Constante para la URL base de la API de FastAPI ---
-const API_BASE_URL = 'https://localhost:8000/api'; 
+const API_BASE_URL = 'http://localhost:8000/api';
 
 // Componente de formulario genérico para añadir/editar ofertas
 // Ahora 'offer' puede ser null (para creación) o un objeto de oferta (para edición)

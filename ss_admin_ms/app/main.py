@@ -1,57 +1,82 @@
-from fastapi import FastAPI # Importa la clase principal de FastAPI
-from fastapi.middleware.cors import CORSMiddleware # ¡Importación crucial para permitir la comunicación con el frontend!
-from app.controllers import offer_controller # Importa el router de ofertas desde el módulo de controladores
+# app/main.py - Complete corrected version
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.controllers import offer_controller
+import os
+import asyncio
 
-# Crea la instancia de la aplicación FastAPI.
-# Este es el punto de entrada principal para tu API.
+# Import the seeding function
+from app.database.seed_data import initialize_test_data
+
 app = FastAPI(
-    title="Backfront de Admin", # Título para la documentación de la API (Swagger UI)
-    description="Una API para gestionar el back del componenete de admin.", # Descripción para la documentación
-    version="1.0.0", # Versión de la API
+    title="SPOPA Admin Backend",
+    description="API for managing internship offers with automated test data seeding",
+    version="1.0.0",
 )
 
-# --- Configuración CORS (Cross-Origin Resource Sharing) ---
-# Esta configuración es esencial para permitir que el frontend (ej. React en localhost:3000)
-# pueda hacer solicitudes a el backend (FastAPI en localhost:8000).
-# Sin esto, el navegador bloquearía las solicitudes por seguridad.
+# CORS configuration
 origins = [
     "http://localhost:3000",
-    "https://localhost:3443",   # Permite solicitudes desde  frontend React
-    # Si el frontend se despliega en otro dominio o puerto, toca añádirlo aquí:
-    # "http://otro-dominio.com",
+    "https://localhost:3443",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # Lista de orígenes permitidos
-    allow_credentials=True,         # Permite cookies de origen cruzado
-    allow_methods=["*"],            # Permite todos los métodos HTTP (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],            # Permite todos los encabezados HTTP
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-# --- Fin Configuración CORS ---
 
-# Incluye el router de ofertas en la aplicación FastAPI.
-# - 'prefix="/api"': Todas las rutas definidas en 'offer_controller' tendrán el prefijo '/api'.
-#                    Ej. '/offers' se convierte en '/api/offers'.
-# - 'tags=["Offers"]': Agrupa las operaciones relacionadas con ofertas en la documentación (Swagger UI).
+# Include routers
 app.include_router(offer_controller.router, prefix="/api", tags=["Offers"])
 
-@app.get("/", summary="Punto de entrada de la API")
-async def root():
+@app.on_event("startup")
+async def startup_event():
     """
-    Endpoint raíz de la API.
-    Retorna un mensaje de bienvenida.
+    Application startup tasks
     """
-    return {"message": "Back API para administradores."}
+    print("🚀 Starting SPOPA Admin Service...")
+    
+    # Initialize test data if in development/testing environment
+    environment = os.getenv("ENVIRONMENT", "development")
+    print(f"📋 Environment: {environment}")
+    
+    if environment in ["development", "testing"]:
+        print("🌱 Initializing test data for development environment...")
+        try:
+            await initialize_test_data()
+        except Exception as e:
+            print(f"❌ Error during seeding: {e}")
+            import traceback
+            traceback.print_exc()
+    else:
+        print("🏭 Production environment detected. Skipping test data seeding.")
 
-# Define un evento que se ejecuta cuando la aplicación FastAPI se cierra (shutdown).
+@app.get("/", summary="API Health Check")
+async def root():
+    return {
+        "message": "SPOPA Admin API is running",
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "test_data_enabled": os.getenv("SEED_TEST_DATA", "true")
+    }
+
+@app.get("/api/seed", summary="Manual Database Seeding")
+async def manual_seed():
+    """
+    Endpoint to manually trigger database seeding
+    """
+    try:
+        await initialize_test_data()
+        return {"message": "Database seeding completed successfully"}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": f"Seeding failed: {str(e)}"}
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    """
-    Cierra la conexión con la base de datos MongoDB cuando la aplicación se apaga.
-    """
-    # Importa _mongo_client directamente desde app.config para acceder a la instancia global del cliente.
     from app.config import _mongo_client
     if _mongo_client:
-        _mongo_client.close() # Cierra la conexión del cliente de MongoDB
-        print("Conexión a MongoDB cerrada.")
+        _mongo_client.close()
+        print("🔌 MongoDB connection closed")
