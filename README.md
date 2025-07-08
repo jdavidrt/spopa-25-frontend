@@ -38,7 +38,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 | Connector       | Component                           |Description                                         |
 | --------------- | ----------------------------------- |----------------------------------------------------|
-| **HTTSP**        | `web browser` ↔ `fe`               |Expected user contact device                        |
+| **HTTPS**        | `web browser` ↔ `fe`               |Expected user contact device                        |
 | **HTTPS**        | `mobile app` ↔ `fe_app`            |Expected user contact device                        |
 | **SSR**         | `fe` ↔ `fe_server`                  |Web front end contact with server service           |
 | **GraphQL**     | `fe_app` ↔ `process_px`             |Proxy divider between public and private net        |
