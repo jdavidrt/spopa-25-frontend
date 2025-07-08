@@ -3,9 +3,8 @@ import React, { useState, useEffect } from "react";
 
 class SessionManager {
     constructor() {
-        // Apuntar directamente al servidor de sesiones
-        this.baseUrl = 'http://localhost:3001'; // Session server directo
-
+        // Usar HTTPS y el puerto 3443 donde el servidor HTTPS está escuchando
+        this.baseUrl = "https://localhost:3443"; 
         this.listeners = new Set();
         this.currentSession = this.getInitialSession();
 
@@ -65,7 +64,7 @@ class SessionManager {
         };
 
         if (this.debug) {
-            console.log(`🌐 Making direct request: ${options.method || 'GET'} ${url}`, {
+            console.log(`🌐 Making request: ${options.method || 'GET'} ${url}`, {
                 options: { ...defaultOptions, ...options }
             });
         }
@@ -100,7 +99,7 @@ class SessionManager {
 
             // Provide helpful error messages
             if (error.message.includes('fetch')) {
-                throw new Error('Session server not responding. Make sure it\'s running on port 3001');
+                throw new Error('Session server not responding. Make sure the HTTPS server is running on port 3443');
             }
 
             throw error;
@@ -122,7 +121,7 @@ class SessionManager {
         } catch (error) {
             if (this.debug) {
                 console.error('❌ Session server connection test failed:', error.message);
-                console.log('💡 Make sure to run: npm run session-server');
+                console.log('💡 Make sure to run the HTTPS server: node server.js');
             }
             return false;
         }
@@ -308,7 +307,7 @@ export const useSession = () => {
                 // Test API connection first
                 const connectionOk = await sessionManager.testConnection();
                 if (!connectionOk) {
-                    throw new Error('Session server connection failed. Make sure the session server is running on port 3001.');
+                    throw new Error('Session server connection failed. Make sure the HTTPS server is running on port 3443.');
                 }
 
                 // Get fresh session data

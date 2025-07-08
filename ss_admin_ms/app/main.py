@@ -1,23 +1,24 @@
-# app/main.py - Complete corrected version
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.controllers import offer_controller
+import uvicorn
+import ssl
 import os
-import asyncio
 
-# Import the seeding function
-from app.database.seed_data import initialize_test_data
-
+# Crea la instancia de la aplicación FastAPI
 app = FastAPI(
-    title="SPOPA Admin Backend",
-    description="API for managing internship offers with automated test data seeding",
+    title="Backfront de Admin",
+    description="Una API para gestionar el back del componente de admin.",
     version="1.0.0",
 )
 
-# CORS configuration
+# Configuración CORS
 origins = [
     "http://localhost:3000",
     "https://localhost:3443",
+    "http://localhost:3001",
+    "https://localhost:3001",
+    "http://localhost:3010",
 ]
 
 app.add_middleware(
@@ -28,55 +29,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Incluye el router de ofertas
 app.include_router(offer_controller.router, prefix="/api", tags=["Offers"])
 
-@app.on_event("startup")
-async def startup_event():
-    """
-    Application startup tasks
-    """
-    print("🚀 Starting SPOPA Admin Service...")
-    
-    # Initialize test data if in development/testing environment
-    environment = os.getenv("ENVIRONMENT", "development")
-    print(f"📋 Environment: {environment}")
-    
-    if environment in ["development", "testing"]:
-        print("🌱 Initializing test data for development environment...")
-        try:
-            await initialize_test_data()
-        except Exception as e:
-            print(f"❌ Error during seeding: {e}")
-            import traceback
-            traceback.print_exc()
-    else:
-        print("🏭 Production environment detected. Skipping test data seeding.")
-
-@app.get("/", summary="API Health Check")
+@app.get("/", summary="Punto de entrada de la API")
 async def root():
-    return {
-        "message": "SPOPA Admin API is running",
-        "environment": os.getenv("ENVIRONMENT", "development"),
-        "test_data_enabled": os.getenv("SEED_TEST_DATA", "true")
-    }
-
-@app.get("/api/seed", summary="Manual Database Seeding")
-async def manual_seed():
-    """
-    Endpoint to manually trigger database seeding
-    """
-    try:
-        await initialize_test_data()
-        return {"message": "Database seeding completed successfully"}
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return {"error": f"Seeding failed: {str(e)}"}
+    return {"message": "Back API para administradores."}
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
     from app.config import _mongo_client
     if _mongo_client:
         _mongo_client.close()
-        print("🔌 MongoDB connection closed")
+        print("Conexión a MongoDB cerrada.")
+
+if __name__ == "__main__":
+    # Configuración para desarrollo local con HTTPS
+    ssl_context = None
+    
+    # Intentar cargar certificados SSL si existen
+    if os.path.exists("/app/ssl/cert.pem") and os.path.exists("/app/ssl/key.pem"):
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain("/app/ssl/cert.pem", "/app/ssl/key.pem")
+        print("🔒 SSL certificates loaded - HTTPS enabled")
+    else:
+        print("⚠️ No SSL certificates found - HTTP only")
+    
+    # Ejecutar servidor
+    if ssl_context:
+        uvicorn.run(
+            "app.main:app",
+            host="0.0.0.0",
+            port=8443,
+            ssl_context=ssl_context,
+            reload=True
+        )
+    else:
+        uvicorn.run(
+            "app.main:app",
+            host="0.0.0.0",
+            port=8000,
+            reload=True
+        )

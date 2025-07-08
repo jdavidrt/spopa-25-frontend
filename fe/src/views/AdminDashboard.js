@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-// --- Constante para la URL base de la API de FastAPI ---
-const API_BASE_URL = 'http://localhost:8000/api';
+// --- 🔧 Cambiar la URL para usar el API Gateway ---
+const API_BASE_URL = 'http://localhost:3010/api/admin'; // ✅ Ahora usa el API Gateway
 
 // Componente de formulario genérico para añadir/editar ofertas
 // Ahora 'offer' puede ser null (para creación) o un objeto de oferta (para edición)
@@ -200,14 +200,16 @@ export default function AdminDashboard() {
 
   const fetchOffers = async () => {
     try {
+      console.log('🔄 Fetching offers from:', `${API_BASE_URL}/offers`);
       const response = await fetch(`${API_BASE_URL}/offers`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log('✅ Ofertas obtenidas:', data);
       setOffers(data);
     } catch (error) {
-      console.error('Error al obtener las ofertas:', error);
+      console.error('❌ Error al obtener las ofertas:', error);
       // Podrías mostrar una notificación al usuario aquí
     }
   };
@@ -221,12 +223,14 @@ export default function AdminDashboard() {
     try {
       let response;
       if (offerData._id) { // Si la oferta tiene un _id, es una actualización
+        console.log('🔄 Actualizando oferta:', offerData._id);
         response = await fetch(`${API_BASE_URL}/offers/${offerData._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(offerData),
         });
       } else { // Si no tiene _id, es una nueva creación
+        console.log('🔄 Creando nueva oferta');
         response = await fetch(`${API_BASE_URL}/offers`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -240,33 +244,36 @@ export default function AdminDashboard() {
       }
 
       const savedOffer = await response.json();
+      console.log('✅ Oferta guardada:', savedOffer);
       fetchOffers(); // Refresca la lista completa de ofertas
       setEditingOffer(null); // Cierra el formulario de edición
       setShowCreateForm(false); // Cierra el formulario de creación
     } catch (error) {
-      console.error('Error al guardar la oferta:', error);
+      console.error('❌ Error al guardar la oferta:', error);
       alert(`Error al guardar la oferta: ${error.message}`); // Mensaje de error al usuario
     }
   };
 
   const handleDelete = async (id) => {
     if (!id) {
-      console.error('Error: No se puede eliminar una oferta sin ID.');
+      console.error('❌ Error: No se puede eliminar una oferta sin ID.');
       return;
     }
     if (!window.confirm('¿Está seguro de que desea eliminar esta oferta?')) {
       return;
     }
     try {
+      console.log('🔄 Eliminando oferta:', id);
       const response = await fetch(`${API_BASE_URL}/offers/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      console.log('✅ Oferta eliminada');
       setOffers((prev) => prev.filter((o) => o._id !== id)); // Filtra usando _id
     } catch (error) {
-      console.error('Error al eliminar la oferta:', error);
+      console.error('❌ Error al eliminar la oferta:', error);
       alert('Error al eliminar la oferta. Por favor, intente de nuevo.');
     }
   };
@@ -274,6 +281,7 @@ export default function AdminDashboard() {
   return (
     <div style={{ padding: 20, fontFamily: 'Arial, sans-serif' }}>
       <h2 style={{ color: '#333' }}>Panel de Administrador</h2>
+
 
       <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: 10, marginTop: 30 }}>Estudiantes Registrados</h3>
       <StudentTable students={students} />

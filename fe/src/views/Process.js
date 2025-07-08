@@ -1,7 +1,8 @@
 // frontend/src/components/Procesos.js
 import React, { useEffect, useState } from "react";
 
-const API_URL = process.env.REACT_APP_PROCESS_API || "https://localhost:4000/api/process";
+const API_URL = process.env.REACT_APP_PROCESS_API || "http://localhost:3010/api/process";
+
 console.log("🪼🪼🪼🪼🪼🪼", API_URL)
 function Process() {
   const [process, setProcesos] = useState([]);
