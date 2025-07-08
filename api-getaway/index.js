@@ -7,30 +7,38 @@ require('dotenv').config();
 
 const app = express();
 
+// ✅ Configuración explícita de CORS
+const corsOptions = {
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ✅ Soporte para preflight (OPTIONS)
+
 // Middleware de seguridad y logging
 app.use(helmet());
 app.use(morgan('combined'));
-app.use(cors());
 app.use(express.json());
 
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     services: ['process', 'users', 'internships', 'admin']
   });
 });
 
-// Rutas existentes (manteniendo tu estructura actual)
+// Rutas locales
 app.use('/users', require('./routes/users'));
 app.use('/internships', require('./routes/internships'));
 
-// 🆕 Proxy para el microservicio de administración
+// 🔁 Proxy para el microservicio de administración
 app.use('/api/admin', createProxyMiddleware({
   target: 'http://api:8000',
   changeOrigin: true,
-  pathRewrite: { '^/api/admin': '/api' }, // Reescribe /api/admin/offers -> /api/offers
+  pathRewrite: { '^/api/admin': '/api' },
   onProxyReq: (proxyReq, req, res) => {
     console.log('🔄 Proxy Admin: Enviando petición a microservicio de administración');
   },
@@ -43,7 +51,7 @@ app.use('/api/admin', createProxyMiddleware({
   }
 }));
 
-// 🎯 Proxy simple al microservicio independiente
+// Proxy al microservicio independiente de procesos
 app.use('/api/process', createProxyMiddleware({
   target: 'http://process-ms:4000',
   changeOrigin: true,
@@ -60,7 +68,7 @@ app.use('/api/process', createProxyMiddleware({
   }
 }));
 
-// Resto de rutas
+// Proxy para users
 app.use('/api/users', createProxyMiddleware({
   target: 'http://users-service:4001',
   changeOrigin: true,
@@ -71,6 +79,7 @@ app.use('/api/users', createProxyMiddleware({
   }
 }));
 
+// Proxy para internships
 app.use('/api/internships', createProxyMiddleware({
   target: 'http://internships-service:4002',
   changeOrigin: true,
@@ -81,11 +90,11 @@ app.use('/api/internships', createProxyMiddleware({
   }
 }));
 
-// Frontend estático (opcional)
+// Proxy para frontend (opcional)
 app.use('/', createProxyMiddleware({
   target: 'https://localhost:3443',
   changeOrigin: true,
-  secure: false // permite proxy a servidores con certificados autofirmados 
+  secure: false
 }));
 
 const PORT = process.env.PORT || 3010;
