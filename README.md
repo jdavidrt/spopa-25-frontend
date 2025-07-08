@@ -32,14 +32,14 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Component and Connector View
 
-![image](https://github.com/user-attachments/assets/2bd62e8d-d200-4293-ad45-f3858c5ce585)
+![image](https://github.com/user-attachments/assets/04aa1ece-493f-4a0b-b842-f1c09434278e)
 
 ### Components
 
 | Connector       | Component                           |Description                                         |
 | --------------- | ----------------------------------- |----------------------------------------------------|
-| **HTTP**        | `web browser` ↔ `fe`                |Expected user contact device                        |
-| **HTTP**        | `mobile app` ↔ `fe_app`             |Expected user contact device                        |
+| **HTTSP**        | `web browser` ↔ `fe`               |Expected user contact device                        |
+| **HTTPS**        | `mobile app` ↔ `fe_app`            |Expected user contact device                        |
 | **SSR**         | `fe` ↔ `fe_server`                  |Web front end contact with server service           |
 | **GraphQL**     | `fe_app` ↔ `process_px`             |Proxy divider between public and private net        |
 | **HTTP**        | `fe_server` ↔ `process_px`          |Proxy divider between public and private net        |
@@ -47,8 +47,8 @@ Spopa is a distributed platform designed to connect university students with pro
 | **REST**        | `API Gateway` ↔ `process_px`        |API Gateway communication with backend microservices|
 | **REST**        | `API Gateway` ↔ `ss_offers_ms`      |API Gateway communication with backend microservices|
 | **REST**        | `API Gateway` ↔ `ss_admin_ms`       |API Gateway communication with backend microservices|
-| **MDBProtocol** | `ss_process_ms` ↔ `students_db`     |Microservice communication with it's database       |
-| **MYSQLProtocol** | `ss_offers_ms` ↔ `business_db`    |Microservice communication with it's database       |
+| **MDBProtocol** | `ss_process_ms` ↔ `process_db`     |Microservice communication with it's database       |
+| **MYSQLProtocol** | `ss_users_ms` ↔ `users_db`    |Microservice communication with it's database       |
 | **MDBProtocol** | `ss_admin_ms` ↔ `admin_db`          |Microservice communication with it's database       |
 
 ### Connectors
@@ -56,6 +56,7 @@ Spopa is a distributed platform designed to connect university students with pro
 |Connector       |Description                                                          |
 |----------------|---------------------------------------------------------------------|
 |**HTTP**        |Standard communication protocol                                      |
+|**HTTPS**       |Hypertext Transfer Protocol Secure                                   |
 |**GraphQL**     |Query communication protocol                                         |
 |**REST**        |Format of HTTP(S) request that process requests using RESTful principles (GET, POST, PUT, DELETE, etc.)|
 |**DB Protocol** |Low level protocol and format that varies depending on the database it communicates with.|
@@ -78,7 +79,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Layered View
 
-![image](https://github.com/user-attachments/assets/860d21d4-31a2-4ac0-92a5-851d62e360d4)
+![image](https://github.com/user-attachments/assets/36658636-9167-4e17-8ab6-d08721e1b0b5)
 
 |Layer        |Description                                                                 |Elements|
 |-------------|----------------------------------------------------------------------------|-|
@@ -90,7 +91,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Deployment View
 
-![image](https://github.com/user-attachments/assets/4c8c2791-2dcf-4798-93ae-28eb8d4bd1e1)
+![image](https://github.com/user-attachments/assets/e4aa465e-f8a8-42a8-b23b-bc823ccee080)
 
 |Container|In-Private Network?|Description|Port|
 |-|-|-|-|
@@ -100,11 +101,11 @@ Spopa is a distributed platform designed to connect university students with pro
 |`process_px`   |No |Network direction divider.                 |3002|
 |`api-gateway`  |Yes|Load balancer and microservice coordinator.|3010|
 |`ss_process_ms`|Yes|Student accounts, information, and internship application progress logic.  |4001|
-|`ss_process_db`|Yes|Student accounts, information, and internship application progress storage.|4011|
-|`ss_offers_ms` |Yes|Existing internship details, contacts, status, and other details logic.    |4002|
-|`ss_offers_db` |Yes|Existing internship details, contacts, status, and other details storage.  |4012|
+|`process_db`|Yes|Student accounts, information, and internship application progress storage.|4011|
+|`ss_users_ms` |Yes|Existing internship details, contacts, status, and other details logic.    |4002|
+|`users_db` |Yes|Existing internship details, contacts, status, and other details storage.  |4012|
 |`ss_admin_ms`  |Yes|Administration access for the management of accounts and data. Logic.      |4003|
-|`ss_admin_db`  |Yes|Administration access for the management of accounts and data. Storage.    |4013|
+|`admin_db`  |Yes|Administration access for the management of accounts and data. Storage.    |4013|
 
 ### Decomposition View
 
