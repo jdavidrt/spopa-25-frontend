@@ -171,6 +171,39 @@ To handle increased demand and ensure system availability, the architecture supp
 
 ## Testing (Analysis and Results)
 
+![image](https://github.com/user-attachments/assets/e5dcb3c4-ea7b-4395-b833-c08cfe839aa3)
+
+We tried to make the test with the tool used on the laboratory, however, since Jmeter is not compatible in a friendly manner with Mongo and FastAPI, we decided to run the tests directly in PowerShell,.
+We conducted a series of load tests on our load-balanced microservices architecture, focusing on scalability, throughput, and stability. Below are the key results:
+
+#### 1. Scalability
+
+- Response time increased from *29.7ms to 76.7ms* when scaling from 1 to 2000 concurrent users — a *158% increase*, well below typical degradation levels.
+- The system scaled smoothly with *no knee point* observed.
+
+---
+
+#### 2. Load Balancing Effectiveness
+
+- Response times remained under *85ms* at all load levels.  
+- *Low variance* across test runs confirms consistent and predictable performance.  
+- Load was evenly distributed across all instances, with *no bottlenecks* detected.
+
+---
+
+#### 3. Throughput
+
+- Throughput improved linearly: *363.3 → 618.3 transactions/min* (*+70%*).
+- Performance peaked at 2000 users, indicating potential for handling higher traffic.
+
+---
+
+#### Key Technical Findings
+
+- *The algorithm strategy* proved effective across three service instances.
+- *API Gateway* introduced minimal overhead.
+- System remained stable across all scenarios: *no memory leaks, **no connection issues*.
+
 ## System Architecture Overview
 
 ### Architectural Styles Used
