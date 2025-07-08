@@ -4,22 +4,24 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
-
 const app = express();
 
-// ✅ Configuración explícita de CORS
+// ✅ Body parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ CORS completo con soporte preflight
 const corsOptions = {
-  origin: '*', 
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // ✅ Soporte para preflight (OPTIONS)
+app.options('*', cors(corsOptions));
 
-// Middleware de seguridad y logging
+// Seguridad y logs
 app.use(helmet());
 app.use(morgan('combined'));
-app.use(express.json());
 
 // Health check
 app.get('/health', (req, res) => {
@@ -34,13 +36,21 @@ app.get('/health', (req, res) => {
 app.use('/users', require('./routes/users'));
 app.use('/internships', require('./routes/internships'));
 
-// 🔁 Proxy para el microservicio de administración
+// 🔁 Proxy: Admin microservice
 app.use('/api/admin', createProxyMiddleware({
-  target: 'http://api:8000',
+  // target: 'http://api:8000', // ← Si se usa Docker Compose con "api", déjarlo. Si no, usar el nombre del contenedor:
+  target: 'http://ss_admin_ms-api-1:8000',
   changeOrigin: true,
   pathRewrite: { '^/api/admin': '/api' },
   onProxyReq: (proxyReq, req, res) => {
-    console.log('🔄 Proxy Admin: Enviando petición a microservicio de administración');
+    console.log(`🔄 Proxy Admin: Enviando ${req.method} a ${req.url}`);
+    if (req.body && Object.keys(req.body).length) {
+      console.log('📦 Cuerpo de la solicitud:', req.body);
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+    }
   },
   onProxyRes: (proxyRes, req, res) => {
     console.log(`📥 Proxy Admin: Respuesta recibida - Status: ${proxyRes.statusCode}`);
@@ -51,7 +61,7 @@ app.use('/api/admin', createProxyMiddleware({
   }
 }));
 
-// Proxy al microservicio independiente de procesos
+// 🔁 Proxy: Process
 app.use('/api/process', createProxyMiddleware({
   target: 'http://process-ms:4000',
   changeOrigin: true,
@@ -68,29 +78,29 @@ app.use('/api/process', createProxyMiddleware({
   }
 }));
 
-// Proxy para users
+// 🔁 Proxy: Users
 app.use('/api/users', createProxyMiddleware({
   target: 'http://users-service:4001',
   changeOrigin: true,
   pathRewrite: { '^/api/users': '/api/users' },
   onError: (err, req, res) => {
-    console.error('❌ Error en users:', err);
+    console.error('❌ Error en users:', err.message);
     res.status(503).json({ error: 'Servicio no disponible' });
   }
 }));
 
-// Proxy para internships
+// 🔁 Proxy: Internships
 app.use('/api/internships', createProxyMiddleware({
   target: 'http://internships-service:4002',
   changeOrigin: true,
   pathRewrite: { '^/api/internships': '/api/internships' },
   onError: (err, req, res) => {
-    console.error('❌ Error en internships:', err);
+    console.error('❌ Error en internships:', err.message);
     res.status(503).json({ error: 'Servicio no disponible' });
   }
 }));
 
-// Proxy para frontend (opcional)
+// 🔁 Proxy: Frontend (React o similar)
 app.use('/', createProxyMiddleware({
   target: 'https://localhost:3443',
   changeOrigin: true,

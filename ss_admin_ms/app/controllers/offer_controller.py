@@ -19,13 +19,15 @@ async def get_all_offers(offer_service: OfferService = Depends(get_offer_service
     """
     return await offer_service.get_all_offers()
 
-@router.post("/offers", response_model=Offer, status_code=status.HTTP_201_CREATED, summary="Crea una nueva oferta")
+@router.post("/offers", response_model=Offer, status_code=status.HTTP_201_CREATED)
 async def create_offer(offer: Offer, offer_service: OfferService = Depends(get_offer_service_dependency)):
+    print("📥 Solicitud recibida para crear oferta:", offer)
     """
     Crea una nueva oferta de empleo en la base de datos.
     Retorna el objeto Offer creado con su ID generado por MongoDB.
     """
     return await offer_service.create_offer(offer)
+
 
 @router.get("/offers/{offer_id}", response_model=Offer, summary="Recupera una oferta por ID")
 async def get_offer_by_id(offer_id: str, offer_service: OfferService = Depends(get_offer_service_dependency)):
