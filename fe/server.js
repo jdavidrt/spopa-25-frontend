@@ -62,7 +62,8 @@ app.use(helmet({
         "https://dev-csthezp5ifz25yr6.us.auth0.com",
         "http://localhost:8000",
         "http://localhost:8010",
-        "http://localhost:4000"
+        "http://localhost:4000",
+        "http://localhost:3010",
       ],
       frameSrc: [
         "'self'",
@@ -76,7 +77,7 @@ app.use(helmet({
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
     ? process.env.FRONTEND_URL
-    : ['http://localhost:3000', 'http://localhost:3001', 'https://localhost:3443', 'http://localhost:3443'],
+    : ['http://localhost:3000', 'http://localhost:3001', 'https://localhost:3443', 'http://localhost:3443', 'http://localhost:8000', 'http://localhost:8010', 'http://localhost:4000', 'http://localhost:3010'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']

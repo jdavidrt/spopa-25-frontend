@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   admin_db:
     image: mongo
@@ -6,6 +7,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - spopa-network  
 
   api:
     build: .
@@ -15,6 +18,12 @@ services:
       - admin_db
     volumes:
       - .:/app
+    networks:
+      - spopa-network  
 
 volumes:
   mongo_data:
+
+networks:
+  spopa-network:
+    external: true  

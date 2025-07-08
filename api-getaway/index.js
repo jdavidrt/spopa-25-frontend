@@ -18,7 +18,7 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    services: ['process', 'users', 'internships']
+    services: ['process', 'users', 'internships', 'admin']
   });
 });
 
@@ -26,10 +26,26 @@ app.get('/health', (req, res) => {
 app.use('/users', require('./routes/users'));
 app.use('/internships', require('./routes/internships'));
 
+// 🆕 Proxy para el microservicio de administración
+app.use('/api/admin', createProxyMiddleware({
+  target: 'http://api:8000',
+  changeOrigin: true,
+  pathRewrite: { '^/api/admin': '/api' }, // Reescribe /api/admin/offers -> /api/offers
+  onProxyReq: (proxyReq, req, res) => {
+    console.log('🔄 Proxy Admin: Enviando petición a microservicio de administración');
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    console.log(`📥 Proxy Admin: Respuesta recibida - Status: ${proxyRes.statusCode}`);
+  },
+  onError: (err, req, res) => {
+    console.error('❌ Error en servicio de admin:', err.message);
+    res.status(503).json({ error: 'Servicio de administración no disponible' });
+  }
+}));
 
 // 🎯 Proxy simple al microservicio independiente
 app.use('/api/process', createProxyMiddleware({
-  target: 'http://process-ms:4000',  // 👈 Nombre del servicio en la red
+  target: 'http://process-ms:4000',
   changeOrigin: true,
   pathRewrite: { '^/api/process': '/api/process' },
   onProxyReq: (proxyReq, req, res) => {
@@ -72,9 +88,9 @@ app.use('/', createProxyMiddleware({
   secure: false // permite proxy a servidores con certificados autofirmados 
 }));
 
-
 const PORT = process.env.PORT || 3010;
 app.listen(PORT, () => {
   console.log(`🚀 API Gateway running on port ${PORT}`);
   console.log(`📊 Proxy configurado para microservicio independiente`);
+  console.log(`🔧 Proxy configurado para microservicio de administración`);
 });

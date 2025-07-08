@@ -1,5 +1,7 @@
+# docker-compose.yml for API Gateway (api-getaway project)
+
 services:
-  #Firewall
+  # Firewall
   waf:
     build: ./waf
     ports:
@@ -8,17 +10,19 @@ services:
       - api-gateway
     networks:
       - spopa-network
+
   # API Gateway
   api-gateway:
     build: .
-    #ports:
-    #  - "3010:3010"
+    ports:
+      - "3010:3010"
     expose:
       - "3010"
     environment:
       - PORT=3010
       - USERS_SERVICE_URL=http://users-service:4001
       - INTERNSHIPS_SERVICE_URL=http://internships-service:4002
+      - ADMIN_SERVICE_URL=http://api:8000 # This is correct now!
     volumes:
       - ./routes:/app/routes
       - ./.env:/app/.env
@@ -44,7 +48,10 @@ services:
 
 networks:
   spopa-network:
-    driver: bridge
+    # --- THIS IS THE CHANGE YOU NEED TO MAKE ---
+    external: true
+    # Remove 'driver: bridge' as it conflicts with 'external: true'
+# --- END OF CHANGE ---
 
 volumes:
   gateway_data:

@@ -1,57 +1,73 @@
-from fastapi import FastAPI # Importa la clase principal de FastAPI
-from fastapi.middleware.cors import CORSMiddleware # ¡Importación crucial para permitir la comunicación con el frontend!
-from app.controllers import offer_controller # Importa el router de ofertas desde el módulo de controladores
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.controllers import offer_controller
+import uvicorn
+import ssl
+import os
 
-# Crea la instancia de la aplicación FastAPI.
-# Este es el punto de entrada principal para tu API.
+# Crea la instancia de la aplicación FastAPI
 app = FastAPI(
-    title="Backfront de Admin", # Título para la documentación de la API (Swagger UI)
-    description="Una API para gestionar el back del componenete de admin.", # Descripción para la documentación
-    version="1.0.0", # Versión de la API
+    title="Backfront de Admin",
+    description="Una API para gestionar el back del componente de admin.",
+    version="1.0.0",
 )
 
-# --- Configuración CORS (Cross-Origin Resource Sharing) ---
-# Esta configuración es esencial para permitir que el frontend (ej. React en localhost:3000)
-# pueda hacer solicitudes a el backend (FastAPI en localhost:8000).
-# Sin esto, el navegador bloquearía las solicitudes por seguridad.
+# Configuración CORS
 origins = [
     "http://localhost:3000",
-    "https://localhost:3443",   # Permite solicitudes desde  frontend React
-    # Si el frontend se despliega en otro dominio o puerto, toca añádirlo aquí:
-    # "http://otro-dominio.com",
+    "https://localhost:3443",
+    "http://localhost:3001",
+    "https://localhost:3001",
+    "http://localhost:3010",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # Lista de orígenes permitidos
-    allow_credentials=True,         # Permite cookies de origen cruzado
-    allow_methods=["*"],            # Permite todos los métodos HTTP (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],            # Permite todos los encabezados HTTP
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-# --- Fin Configuración CORS ---
 
-# Incluye el router de ofertas en la aplicación FastAPI.
-# - 'prefix="/api"': Todas las rutas definidas en 'offer_controller' tendrán el prefijo '/api'.
-#                    Ej. '/offers' se convierte en '/api/offers'.
-# - 'tags=["Offers"]': Agrupa las operaciones relacionadas con ofertas en la documentación (Swagger UI).
+# Incluye el router de ofertas
 app.include_router(offer_controller.router, prefix="/api", tags=["Offers"])
 
 @app.get("/", summary="Punto de entrada de la API")
 async def root():
-    """
-    Endpoint raíz de la API.
-    Retorna un mensaje de bienvenida.
-    """
     return {"message": "Back API para administradores."}
 
-# Define un evento que se ejecuta cuando la aplicación FastAPI se cierra (shutdown).
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    """
-    Cierra la conexión con la base de datos MongoDB cuando la aplicación se apaga.
-    """
-    # Importa _mongo_client directamente desde app.config para acceder a la instancia global del cliente.
     from app.config import _mongo_client
     if _mongo_client:
-        _mongo_client.close() # Cierra la conexión del cliente de MongoDB
+        _mongo_client.close()
         print("Conexión a MongoDB cerrada.")
+
+if __name__ == "__main__":
+    # Configuración para desarrollo local con HTTPS
+    ssl_context = None
+    
+    # Intentar cargar certificados SSL si existen
+    if os.path.exists("/app/ssl/cert.pem") and os.path.exists("/app/ssl/key.pem"):
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain("/app/ssl/cert.pem", "/app/ssl/key.pem")
+        print("🔒 SSL certificates loaded - HTTPS enabled")
+    else:
+        print("⚠️ No SSL certificates found - HTTP only")
+    
+    # Ejecutar servidor
+    if ssl_context:
+        uvicorn.run(
+            "app.main:app",
+            host="0.0.0.0",
+            port=8443,
+            ssl_context=ssl_context,
+            reload=True
+        )
+    else:
+        uvicorn.run(
+            "app.main:app",
+            host="0.0.0.0",
+            port=8000,
+            reload=True
+        )
