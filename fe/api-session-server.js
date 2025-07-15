@@ -72,7 +72,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // Get current session
-app.get('/api/session',async (req, res) => {
+app.get('/api/session', async (req, res) => {
     console.log('GET /api/session - Session data:', req.session);
 
     /*if (!req.session.user) {
@@ -104,7 +104,7 @@ app.get('/api/session',async (req, res) => {
 });
 
 // Initialize session
-app.post('/api/session/init', (req, res) => {
+app.post('/api/session/init', async (req, res) => {
     console.log('POST /api/session/init - Body:', req.body);
 
     try {
@@ -116,6 +116,36 @@ app.post('/api/session/init', (req, res) => {
             });
         }
 
+        // Step 1: Check if user exists in the microservice
+        let existingUser = null;
+        let isRegistered = false;
+
+        try {
+            const response = await axios.get(`http://localhost:4010/api/users/${user.sub}`);
+            existingUser = response.data;
+            isRegistered = true;
+            console.log('✅ User found in microservice:', existingUser);
+        } catch (err) {
+            if (err.response && err.response.status === 404) {
+                console.log('ℹ️ User not found in microservice, needs registration');
+                isRegistered = false;
+            } else {
+                console.error('❌ Error checking user existence:', err.message);
+                return res.status(500).json({ error: 'Failed to check user status' });
+            }
+        }
+
+        // Step 2: If user exists, use their role; if not, mark as needing registration
+        let finalUserType = null;
+
+        if (isRegistered && existingUser) {
+            finalUserType = existingUser.role;
+            console.log('✅ Using existing user role:', finalUserType);
+        } else {
+            // User needs registration, don't set a role yet
+            console.log('⚠️ User needs registration');
+        }
+
         // Store user in session
         req.session.user = {
             sub: user.sub,
@@ -125,30 +155,11 @@ app.post('/api/session/init', (req, res) => {
             email_verified: user.email_verified
         };
 
-        if (userType) {
-            req.session.userType = userType || 'Estudiante';
-        }
-
-        // Registrar/actualizar en ss_user_ms
-        const registerUser = async () => {
-            try {
-                const response = await axios.post('http://localhost:4010/api/users', {
-                    sub: user.sub,
-                    name: user.name,
-                    email: user.email,
-                    picture: user.picture,
-                    email_verified: user.email_verified,
-                    role: userType || 'Estudiante'
-                });
-
-                console.log('Usuario registrado/actualizado en microservicio', response.data);
-            } catch (err) {
-                console.error('Error al registrar usuario en microservicio:', err.message);
-            }
-        };
+        req.session.userType = finalUserType;
+        req.session.isRegistered = isRegistered;
 
         // Save session
-        req.session.save(async(err) => {
+        req.session.save((err) => {
             if (err) {
                 console.error('Session save error:', err);
                 return res.status(500).json({
@@ -158,14 +169,13 @@ app.post('/api/session/init', (req, res) => {
 
             console.log('✅ Session saved successfully');
 
-            await registerUser();
-
             res.json({
                 success: true,
                 message: 'Session initialized successfully',
                 sessionId: req.sessionID,
                 user: req.session.user,
-                userType: req.session.userType
+                userType: req.session.userType,
+                isRegistered: req.session.isRegistered
             });
         });
 
@@ -176,7 +186,6 @@ app.post('/api/session/init', (req, res) => {
         });
     }
 });
-
 // Update user type
 app.put('/api/session/usertype', (req, res) => {
     if (!req.session.user) {
@@ -230,6 +239,83 @@ app.delete('/api/session', (req, res) => {
         });
     });
 });
+
+// Add new endpoint for user registration
+app.post('/api/session/register', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({
+            error: 'No active session'
+        });
+    }
+
+    const { userType } = req.body;
+    const validUserTypes = ['Estudiante', 'Administrativo', 'Empresa'];
+
+    if (!userType || !validUserTypes.includes(userType)) {
+        return res.status(400).json({
+            error: 'Invalid user type provided',
+            validTypes: validUserTypes
+        });
+    }
+
+    try {
+        // Register user in microservice
+        const registrationData = {
+            user: req.session.user,
+            userType: userType
+        };
+
+        const response = await axios.post(`http://localhost:4010/api/users/${req.session.user.sub}`, registrationData);
+        console.log('✅ User registered in microservice:', response.data);
+
+        // Update session
+        req.session.userType = userType;
+        req.session.isRegistered = true;
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session update error:', err);
+                return res.status(500).json({
+                    error: 'Failed to update session'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'User registered successfully',
+                userType: req.session.userType,
+                isRegistered: req.session.isRegistered
+            });
+        });
+
+    } catch (error) {
+        console.error('User registration error:', error);
+        res.status(500).json({
+            error: 'Failed to register user'
+        });
+    }
+});
+
+// Update get session endpoint to include registration status
+app.get('/api/session', (req, res) => {
+    console.log('GET /api/session - Session data:', req.session);
+
+    if (!req.session.user) {
+        return res.status(401).json({
+            authenticated: false,
+            message: 'No active session'
+        });
+    }
+
+    res.json({
+        authenticated: true,
+        user: req.session.user,
+        userType: req.session.userType,
+        isRegistered: req.session.isRegistered || false,
+        sessionId: req.sessionID
+    });
+});
+
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 
 class SessionManager {
     constructor() {
-        // Usar HTTPS y el puerto 3443 donde el servidor HTTPS está escuchando
-        this.baseUrl = "https://localhost:3443"; 
+        // Use HTTP for development to avoid SSL issues
+        this.baseUrl = process.env.NODE_ENV === 'production'
+            ? "https://localhost:3443"
+            : "http://localhost:3001";
         this.listeners = new Set();
         this.currentSession = this.getInitialSession();
 
@@ -30,7 +32,8 @@ class SessionManager {
         return {
             authenticated: false,
             user: null,
-            userType: null
+            userType: null,
+            isRegistered: false
         };
     }
 
@@ -75,8 +78,7 @@ class SessionManager {
             if (this.debug) {
                 console.log(`📡 Response: ${response.status} ${response.statusText}`, {
                     ok: response.ok,
-                    url: response.url,
-                    headers: Object.fromEntries(response.headers.entries())
+                    url: response.url
                 });
             }
 
@@ -94,12 +96,14 @@ class SessionManager {
             return response.json();
         } catch (error) {
             if (this.debug) {
-                console.error(`❌ Request failed: ${options.method || 'GET'} ${url}`, error);
+                console.warn(`⚠️ Request failed: ${options.method || 'GET'} ${url}`, error.message);
             }
 
-            // Provide helpful error messages
-            if (error.message.includes('fetch')) {
-                throw new Error('Session server not responding. Make sure the HTTPS server is running on port 3443');
+            // Don't throw errors for connection issues during initial load
+            // This allows Auth0 to work independently
+            if (error.message.includes('fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+                console.warn('Session server not available, Auth0 login will still work');
+                return null;
             }
 
             throw error;
@@ -114,14 +118,16 @@ class SessionManager {
             }
 
             const response = await this.makeRequest('/test');
-            if (this.debug) {
-                console.log('✅ Session server connection test successful:', response);
+            if (response) {
+                if (this.debug) {
+                    console.log('✅ Session server connection test successful:', response);
+                }
+                return true;
             }
-            return true;
+            return false;
         } catch (error) {
             if (this.debug) {
-                console.error('❌ Session server connection test failed:', error.message);
-                console.log('💡 Make sure to run the HTTPS server: node server.js');
+                console.warn('⚠️ Session server connection test failed, but Auth0 will still work');
             }
             return false;
         }
@@ -135,32 +141,37 @@ class SessionManager {
             }
 
             const data = await this.makeRequest('/session');
-            this.currentSession = {
-                authenticated: data.authenticated,
-                user: data.user,
-                userType: data.userType,
-                sessionId: data.sessionId
-            };
+            if (data) {
+                this.currentSession = {
+                    authenticated: data.authenticated,
+                    user: data.user,
+                    userType: data.userType,
+                    isRegistered: data.isRegistered || false,
+                    sessionId: data.sessionId
+                };
 
-            if (this.debug) {
-                console.log('✅ Session retrieved:', this.currentSession);
+                if (this.debug) {
+                    console.log('✅ Session retrieved:', this.currentSession);
+                }
+
+                this.notifyListeners();
+                return this.currentSession;
             }
-
-            this.notifyListeners();
-            return this.currentSession;
         } catch (error) {
             if (this.debug) {
-                console.warn('⚠️  Failed to get session (user may not be logged in):', error.message);
+                console.warn('⚠️ Failed to get session, using default state');
             }
-
-            this.currentSession = {
-                authenticated: false,
-                user: null,
-                userType: null
-            };
-            this.notifyListeners();
-            return this.currentSession;
         }
+
+        // Always return a valid session state
+        this.currentSession = {
+            authenticated: false,
+            user: null,
+            userType: null,
+            isRegistered: false
+        };
+        this.notifyListeners();
+        return this.currentSession;
     }
 
     // Initialize session after Auth0 authentication
@@ -175,21 +186,64 @@ class SessionManager {
                 body: JSON.stringify({ user, userType })
             });
 
-            this.currentSession = {
-                authenticated: true,
-                user: data.user,
-                userType: data.userType,
-                sessionId: data.sessionId
-            };
+            if (data) {
+                this.currentSession = {
+                    authenticated: true,
+                    user: data.user,
+                    userType: data.userType,
+                    isRegistered: data.isRegistered || false,
+                    sessionId: data.sessionId
+                };
 
-            if (this.debug) {
-                console.log('✅ Session initialized:', this.currentSession);
+                if (this.debug) {
+                    console.log('✅ Session initialized:', this.currentSession);
+                }
+
+                this.notifyListeners();
+                return this.currentSession;
             }
-
-            this.notifyListeners();
-            return this.currentSession;
         } catch (error) {
             console.error('❌ Failed to initialize session:', error);
+            // Don't throw - allow the app to continue working
+            this.currentSession = {
+                authenticated: false,
+                user: null,
+                userType: null,
+                isRegistered: false
+            };
+            this.notifyListeners();
+        }
+        return this.currentSession;
+    }
+
+    // Register user in microservice
+    async registerUser(userType) {
+        try {
+            if (this.debug) {
+                console.log('📝 Registering user with type:', userType);
+            }
+
+            const data = await this.makeRequest('/session/register', {
+                method: 'POST',
+                body: JSON.stringify({ userType })
+            });
+
+            if (data) {
+                this.currentSession = {
+                    ...this.currentSession,
+                    userType: data.userType,
+                    isRegistered: data.isRegistered
+                };
+
+                if (this.debug) {
+                    console.log('✅ User registered successfully:', this.currentSession);
+                }
+
+                this.notifyListeners();
+                return this.currentSession;
+            }
+        } catch (error) {
+            console.error('❌ Failed to register user:', error);
             throw error;
         }
     }
@@ -206,17 +260,19 @@ class SessionManager {
                 body: JSON.stringify({ userType })
             });
 
-            this.currentSession = {
-                ...this.currentSession,
-                userType: data.userType
-            };
+            if (data) {
+                this.currentSession = {
+                    ...this.currentSession,
+                    userType: data.userType
+                };
 
-            if (this.debug) {
-                console.log('✅ User type updated:', this.currentSession);
+                if (this.debug) {
+                    console.log('✅ User type updated:', this.currentSession);
+                }
+
+                this.notifyListeners();
+                return this.currentSession;
             }
-
-            this.notifyListeners();
-            return this.currentSession;
         } catch (error) {
             console.error('❌ Failed to update user type:', error);
             throw error;
@@ -227,35 +283,29 @@ class SessionManager {
     async destroySession() {
         try {
             if (this.debug) {
-                console.log('🗑️  Destroying session...');
+                console.log('🗑️ Destroying session...');
             }
 
             await this.makeRequest('/session', {
                 method: 'DELETE'
             });
 
-            this.currentSession = {
-                authenticated: false,
-                user: null,
-                userType: null
-            };
-
             if (this.debug) {
                 console.log('✅ Session destroyed');
             }
-
-            this.notifyListeners();
-            return this.currentSession;
         } catch (error) {
             console.error('❌ Failed to destroy session:', error);
-            // Even if the request fails, clear local session state
-            this.currentSession = {
-                authenticated: false,
-                user: null,
-                userType: null
-            };
-            this.notifyListeners();
+            // Continue with local cleanup even if server request fails
         }
+
+        // Always clear local session state
+        this.currentSession = {
+            authenticated: false,
+            user: null,
+            userType: null,
+            isRegistered: false
+        };
+        this.notifyListeners();
     }
 
     // Get current session state (synchronous)
@@ -278,6 +328,16 @@ class SessionManager {
         return this.currentSession.userType;
     }
 
+    // Check if user is registered
+    isUserRegistered() {
+        return this.currentSession.isRegistered === true;
+    }
+
+    // Check if user needs registration
+    needsRegistration() {
+        return this.currentSession.authenticated && !this.currentSession.isRegistered;
+    }
+
     // Check if user has specific role
     hasRole(role) {
         return this.currentSession.userType === role;
@@ -295,35 +355,35 @@ const sessionManager = new SessionManager();
 // React hook for using session manager
 export const useSession = () => {
     const [session, setSession] = useState(sessionManager.getCurrentSession());
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false); // Changed to false by default
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Test connection and get session on mount
+        // Subscribe to session changes first
+        const unsubscribe = sessionManager.addListener((newSession) => {
+            setSession(newSession);
+        });
+
+        // Test connection but don't block if it fails
         const initializeSession = async () => {
             try {
                 setError(null);
 
-                // Test API connection first
+                // Test API connection first, but don't block on failure
                 const connectionOk = await sessionManager.testConnection();
                 if (!connectionOk) {
-                    throw new Error('Session server connection failed. Make sure the HTTPS server is running on port 3443.');
+                    console.warn('Session server not available, but Auth0 will still work');
                 }
 
-                // Get fresh session data
+                // Try to get existing session, but don't block on failure
                 await sessionManager.getSession();
             } catch (err) {
-                console.error('Session initialization error:', err);
-                setError(err.message);
+                console.warn('Session initialization warning:', err.message);
+                setError(null); // Don't show errors to user for session connectivity
             } finally {
                 setIsLoading(false);
             }
         };
-
-        // Subscribe to session changes
-        const unsubscribe = sessionManager.addListener((newSession) => {
-            setSession(newSession);
-        });
 
         initializeSession();
 
@@ -336,9 +396,12 @@ export const useSession = () => {
         error,
         sessionManager,
         isAuthenticated: session.authenticated,
+        isRegistered: session.isRegistered,
+        needsRegistration: session.authenticated && !session.isRegistered,
         user: session.user,
         userType: session.userType,
         initializeSession: sessionManager.initializeSession.bind(sessionManager),
+        registerUser: sessionManager.registerUser.bind(sessionManager),
         updateUserType: sessionManager.updateUserType.bind(sessionManager),
         destroySession: sessionManager.destroySession.bind(sessionManager),
         hasRole: sessionManager.hasRole.bind(sessionManager),

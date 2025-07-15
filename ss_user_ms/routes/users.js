@@ -66,18 +66,57 @@ router.put('/:auth0Id', async (req, res) => {
   }
 });
 
+router.post('/:auth0Id', async (req, res) => {
+  const { auth0Id } = req.params;
+  const { user, userType } = req.body;
+
+  // Validate that URL auth0Id matches body user.sub
+  if (auth0Id !== user.sub) {
+    return res.status(400).json({ error: 'Auth0 ID mismatch' });
+  }
+
+  if (!user.sub || !userType || !user.email) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const validRoles = ['Estudiante', 'Administrativo', 'Empresa'];
+  if (!validRoles.includes(userType)) {
+    return res.status(400).json({ error: 'Invalid role' });
+  }
+
+  try {
+    const newUser = await User.findOneAndUpdate(
+      { auth0Id: user.sub },
+      {
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        email_verified: user.email_verified,
+        role: userType
+      },
+      { upsert: true, new: true }
+    );
+    res.status(201).json(newUser);
+  } catch (err) {
+    console.error('Registration error:', err);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
 // Eliminar usuario por Auth0 ID
-router.delete('/:auth0Id', async (req,res) => {
-  try{
-    const deletedUser = await User.findOneAndDelete({auth0Id: req.params.auth0Id});
-    if (!deletedUser){
-      return res.status(404).json({ error: 'User not found'});
+router.delete('/:auth0Id', async (req, res) => {
+  try {
+    const deletedUser = await User.findOneAndDelete({ auth0Id: req.params.auth0Id });
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
     }
     return res.status(200).json({ message: 'User deleted Succesfully' });
-  } catch(err){
+  } catch (err) {
     console.error('Error deleting user: ', err);
     return res.status(500).json({ error: 'Failed to delete the user' });
   }
 });
+
+
 
 module.exports = router;

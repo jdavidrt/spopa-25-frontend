@@ -33,6 +33,7 @@ const NavBar = () => {
   const {
     session,
     isAuthenticated: sessionAuthenticated,
+    needsRegistration,
     destroySession
   } = useSession();
 
@@ -60,10 +61,11 @@ const NavBar = () => {
     }
   };
 
-  // Use session authentication state, fallback to Auth0 state
-  const isAuthenticated = sessionAuthenticated || auth0Authenticated;
+  // Use session authentication state, but prevent navigation if registration needed
+  const isFullyAuthenticated = sessionAuthenticated && !needsRegistration;
   const currentUser = session.user || user;
   const userType = session.userType;
+  const showRegistrationWarning = sessionAuthenticated && needsRegistration;
 
   return (
     <div className="nav-container">
@@ -94,8 +96,18 @@ const NavBar = () => {
                 </NavLink>
               </NavItem>
 
-              {/* Student Routes */}
-              {isAuthenticated && userType === "Estudiante" && (
+              {/* Show registration warning if user needs to complete registration */}
+              {showRegistrationWarning && (
+                <NavItem>
+                  <NavLink disabled className="text-warning">
+                    <FontAwesomeIcon icon="exclamation-triangle" className="me-1" />
+                    Complete registration to continue
+                  </NavLink>
+                </NavItem>
+              )}
+
+              {/* Student Routes - only show if fully authenticated */}
+              {isFullyAuthenticated && userType === "Estudiante" && (
                 <>
                   <NavItem>
                     <NavLink
@@ -134,14 +146,14 @@ const NavBar = () => {
                       exact
                       activeClassName="router-link-exact-active"
                     >
-                      My Checklist
+                      My Process
                     </NavLink>
                   </NavItem>
                 </>
               )}
 
-              {/* Administrative Routes */}
-              {isAuthenticated && userType === "Administrativo" && (
+              {/* Administrative Routes - only show if fully authenticated */}
+              {isFullyAuthenticated && userType === "Administrativo" && (
                 <NavItem>
                   <NavLink
                     tag={RouterNavLink}
@@ -154,8 +166,8 @@ const NavBar = () => {
                 </NavItem>
               )}
 
-              {/* Business Routes */}
-              {isAuthenticated && userType === "Empresa" && (
+              {/* Business Routes - only show if fully authenticated */}
+              {isFullyAuthenticated && userType === "Empresa" && (
                 <NavItem>
                   <NavLink
                     tag={RouterNavLink}
@@ -167,21 +179,11 @@ const NavBar = () => {
                   </NavLink>
                 </NavItem>
               )}
-
-              {/* Show role selection hint if authenticated but no role selected */}
-              {isAuthenticated && !userType && (
-                <NavItem>
-                  <NavLink disabled className="text-warning">
-                    <FontAwesomeIcon icon="user" className="me-1" />
-                    Please select your role
-                  </NavLink>
-                </NavItem>
-              )}
             </Nav>
 
             {/* Desktop Navigation */}
             <Nav className="d-none d-md-block" navbar>
-              {!isAuthenticated && (
+              {!sessionAuthenticated && (
                 <NavItem>
                   <Button
                     id="qsLoginBtn"
@@ -194,7 +196,7 @@ const NavBar = () => {
                 </NavItem>
               )}
 
-              {isAuthenticated && currentUser && (
+              {sessionAuthenticated && currentUser && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret id="profileDropDown">
                     <img
@@ -221,19 +223,49 @@ const NavBar = () => {
                             </span>
                           </div>
                         )}
+                        {showRegistrationWarning && (
+                          <div>
+                            <span className="badge badge-warning mt-1">
+                              <FontAwesomeIcon icon="exclamation-triangle" className="me-1" />
+                              Registration Required
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem
-                      tag={RouterNavLink}
-                      to="/profile"
-                      className="dropdown-profile"
-                      activeClassName="router-link-exact-active"
-                    >
-                      <FontAwesomeIcon icon="user" className="me-2" />
-                      Profile
-                    </DropdownItem>
-                    <DropdownItem divider />
+
+                    {/* Only show profile link if fully authenticated */}
+                    {isFullyAuthenticated && (
+                      <>
+                        <DropdownItem
+                          tag={RouterNavLink}
+                          to="/profile"
+                          className="dropdown-profile"
+                          activeClassName="router-link-exact-active"
+                        >
+                          <FontAwesomeIcon icon="user" className="me-2" />
+                          Profile
+                        </DropdownItem>
+                        <DropdownItem divider />
+                      </>
+                    )}
+
+                    {/* Show registration hint if needed */}
+                    {showRegistrationWarning && (
+                      <>
+                        <DropdownItem
+                          tag={RouterNavLink}
+                          to="/"
+                          className="text-warning"
+                        >
+                          <FontAwesomeIcon icon="home" className="me-2" />
+                          Complete Registration
+                        </DropdownItem>
+                        <DropdownItem divider />
+                      </>
+                    )}
+
                     <DropdownItem
                       id="qsLogoutBtn"
                       onClick={logoutWithRedirect}
@@ -247,7 +279,7 @@ const NavBar = () => {
             </Nav>
 
             {/* Mobile Navigation */}
-            {!isAuthenticated && (
+            {!sessionAuthenticated && (
               <Nav className="d-md-none" navbar>
                 <NavItem>
                   <Button
@@ -262,7 +294,7 @@ const NavBar = () => {
               </Nav>
             )}
 
-            {isAuthenticated && currentUser && (
+            {sessionAuthenticated && currentUser && (
               <Nav
                 className="d-md-none justify-content-between"
                 navbar
@@ -287,19 +319,46 @@ const NavBar = () => {
                           </span>
                         </div>
                       )}
+                      {showRegistrationWarning && (
+                        <div>
+                          <span className="badge badge-warning mt-1">
+                            <FontAwesomeIcon icon="exclamation-triangle" className="me-1" />
+                            Registration Required
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </NavItem>
-                <NavItem>
-                  <RouterNavLink
-                    to="/profile"
-                    activeClassName="router-link-exact-active"
-                    className="d-flex align-items-center text-decoration-none"
-                  >
-                    <FontAwesomeIcon icon="user" className="me-2" />
-                    Profile
-                  </RouterNavLink>
-                </NavItem>
+
+                {/* Show registration hint for mobile if needed */}
+                {showRegistrationWarning && (
+                  <NavItem>
+                    <RouterNavLink
+                      to="/"
+                      activeClassName="router-link-exact-active"
+                      className="d-flex align-items-center text-decoration-none text-warning"
+                    >
+                      <FontAwesomeIcon icon="home" className="me-2" />
+                      Complete Registration
+                    </RouterNavLink>
+                  </NavItem>
+                )}
+
+                {/* Only show profile link if fully authenticated */}
+                {isFullyAuthenticated && (
+                  <NavItem>
+                    <RouterNavLink
+                      to="/profile"
+                      activeClassName="router-link-exact-active"
+                      className="d-flex align-items-center text-decoration-none"
+                    >
+                      <FontAwesomeIcon icon="user" className="me-2" />
+                      Profile
+                    </RouterNavLink>
+                  </NavItem>
+                )}
+
                 <NavItem>
                   <button
                     className="btn btn-link text-decoration-none d-flex align-items-center"
