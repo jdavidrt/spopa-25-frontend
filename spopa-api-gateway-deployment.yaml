@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spopa-api-gateway
+  namespace: spopa-production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spopa-api-gateway
+  template:
+    metadata:
+      labels:
+        app: spopa-api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: spopa-25-frontend-api-gateway:latest
+        ports:
+        - containerPort: 3010
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spopa-api-gateway-service
+  namespace: spopa-production
+spec:
+  selector:
+    app: spopa-api-gateway
+  ports:
+  - port: 80
+    targetPort: 3010
+  type: ClusterIP

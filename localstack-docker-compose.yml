@@ -1,0 +1,21 @@
+services:
+  localstack:
+    container_name: spopa-localstack
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,lambda,apigateway,iam,sts,ecs,ecr,elbv2
+      - DEBUG=1
+      - PERSISTENCE=0
+      - TMPDIR=/tmp/localstack-tmp
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - spopa-aws
+    tmpfs:
+      - /tmp/localstack-tmp
+
+networks:
+  spopa-aws:
+    driver: bridge
