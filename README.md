@@ -124,13 +124,13 @@ Spopa is a distributed platform designed to connect university students with pro
 ### Security
 #### Scenarios
 #### Scenario 1: the software system must implement the Secure Channel Pattern.
-Codification using the HTTPS (Hypertext Transfer Protocol Secure) protocol is carried out during communication of components to ensure safe traffic.
+Source: External user. Stimulus: User makes a comunication with the system. Artifact: Connection carried out with the use of HTTPS protocol between the user browser and the front end components. Response: Establishment of a secure, encoded connection between the two components.
 #### Scenario 2: the software system must implement the Reverse Proxy Pattern.
-Using `NGINX` the project divides the nets of operation between a private and public net using a reverse proxy that bridges the two.
+Source: Malicious external agent. Stimulus: Agent attempts to establish a direct connection to internal service endpoints, bypassing the reverse proxy. Artifact: Network-level configuration and NGINX reverse proxy restricting access to private internal services. Response: The connection is rejected or dropped, as direct access to internal services is blocked; only requests routed through the reverse proxy on the public interface are accepted.
 #### Scenario 3: the software system must implement the Network Segmentation Pattern.
-The structure of the project divides the services it allows access to by the role of the user, protecting the functions between user types, as well as protecting the system in the case of the compromise or failure of any individual microservice.
+Source: Authenticated user with an unauthorized role. Stimulus: User attempts to access a system resource or service hosted in a restricted network segment. Artifact: Network segmentation rules enforced via firewall policies, private subnets, or service-level access control. Response: The request is denied or blocked at the network or service level. Access is only granted to users whose roles permit communication with the corresponding network segment.
 #### Scenario 4: the software system must implement the API Gateway Pattern for security purposes.
-The architecture integrates an API Gateway as the single entry point for all external client requests. The gateway enforces authentication and authorization, input validation, and rate limiting before forwarding requests to internal services. This centralization of security responsibilities helps prevent unauthorized access, mitigates denial-of-service attacks, and shields internal microservices from direct exposure.
+Source: External user. Stimulus: User sends a request to access backend services. Artifact: API Gateway positioned between the user and internal microservices. Response: The API Gateway authenticates and authorizes the request, applies rate limiting and validation rules, and routes the request to the appropriate internal service. Unauthorized or malformed requests are rejected before reaching internal components.
 
 ![complete_quality_scenarios](https://github.com/user-attachments/assets/f6e2b62b-40d1-4036-acfe-f2e8ca8d3d2b)
 
@@ -154,10 +154,10 @@ Tactics:
 ### Performance and Scalability
 #### Scenarios:
 #### Scenario 1: the software system must implement the Load Balancer Pattern.
-To ensure optimal performance and system scalability under high traffic, the project uses a load balancer that distributes incoming client requests across multiple service instances. This reduces individual server load, minimizes response times, and allows the system to scale horizontally by adding or removing service nodes dynamically as demand changes.
+Source: 2000 concurrent users. Stimulus: Multiple users simultaneously send requests to the system. Artifact: Load balancer positioned in front of a pool of backend service instances. Response: The load balancer distributes incoming requests evenly across available instances, ensuring no single instance is overwhelmed and overall system responsiveness is maintained under high concurrency.
 
 #### Scenario 2: the software system must implement Horizontal Scaling.
-To handle increased demand and ensure system availability, the architecture supports horizontal scaling by deploying multiple instances of key services. These instances can be distributed across containers or virtual machines and are managed by an orchestrator , allowing the system to dynamically add or remove nodes based on resource usage and traffic volume without downtime.
+Source: System administrator. Stimulus: Administrator detects increased traffic load and initiates the addition of more service instances. Artifact: Container orchestration platform or infrastructure layer managing service deployment (e.g., Kubernetes, Docker Swarm, AWS Auto Scaling). Response: The system provisions and deploys additional instances of the affected service, integrates them into the load balancer, and begins routing traffic to them, improving throughput and reducing response time.
 
 #### Applied patterns and tactics
 
