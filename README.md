@@ -1,4 +1,4 @@
-# Project Artifact: SPOPA, Prototype #3.
+# Project Artifact: SPOPA, Prototype #4.
 
 
 ## Team 1E
@@ -128,7 +128,7 @@ Source: External user. Stimulus: User makes a comunication with the system. Arti
 #### Scenario 2: the software system must implement the Reverse Proxy Pattern.
 Source: Malicious external agent. Stimulus: Agent attempts to establish a direct connection to internal service endpoints, bypassing the reverse proxy. Artifact: Network-level configuration and NGINX reverse proxy restricting access to private internal services. Response: The connection is rejected or dropped, as direct access to internal services is blocked; only requests routed through the reverse proxy on the public interface are accepted.
 #### Scenario 3: the software system must implement the Network Segmentation Pattern.
-Source: Authenticated user with an unauthorized role. Stimulus: User attempts to access a system resource or service hosted in a restricted network segment. Artifact: Network segmentation rules enforced via firewall policies, private subnets, or service-level access control. Response: The request is denied or blocked at the network or service level. Access is only granted to users whose roles permit communication with the corresponding network segment.
+Source: Authenticated user with an unauthorized role. Stimulus: User attempts to access a system resource or service hosted in a restricted network segment. Artifact: Network segmentation rules enforced via private subnets. Response: The request is denied or blocked at the network or service level. Access is only granted to users whose roles permit communication with the corresponding network segment.
 #### Scenario 4: the software system must implement the API Gateway Pattern for security purposes.
 Source: External user. Stimulus: User sends a request to access backend services. Artifact: API Gateway positioned between the user and internal microservices. Response: The API Gateway authenticates and authorizes the request, applies rate limiting and validation rules, and routes the request to the appropriate internal service. Unauthorized or malformed requests are rejected before reaching internal components.
 
@@ -157,7 +157,7 @@ Tactics:
 Source: 2000 concurrent users. Stimulus: Multiple users simultaneously send requests to the system. Artifact: Load balancer positioned in front of a pool of backend service instances. Response: The load balancer distributes incoming requests evenly across available instances, ensuring no single instance is overwhelmed and overall system responsiveness is maintained under high concurrency.
 
 #### Scenario 2: the software system must implement Horizontal Scaling.
-Source: System administrator. Stimulus: Administrator detects increased traffic load and initiates the addition of more service instances. Artifact: Container orchestration platform or infrastructure layer managing service deployment (e.g., Kubernetes, Docker Swarm, AWS Auto Scaling). Response: The system provisions and deploys additional instances of the affected service, integrates them into the load balancer, and begins routing traffic to them, improving throughput and reducing response time.
+Source: System administrator. Stimulus: Administrator detects increased traffic load and initiates the addition of more service instances. Artifact: Container orchestration platform or infrastructure layer managing service deployment Kubernetes). Response: The system provisions and deploys additional instances of the affected service, integrates them into the load balancer, and begins routing traffic to them, improving throughput and reducing response time.
 
 #### Applied patterns and tactics
 
@@ -210,7 +210,10 @@ We conducted a series of load tests on our load-balanced microservices architect
 [Ñ]
 ### Reliability
 #### Scenario 1: the software system must implement the Replication Pattern.
+Source: Internal service. Stimulus: A server instance hosting the service fails or becomes unresponsive. Artifact: Replicated service instances distributed across multiple nodes.
+Response: The system reroutes requests to healthy replica instances without interrupting service availability. Failover mechanisms ensure continued operation while the failed instance is either restarted or replaced.
 #### Scenario 2: the software system must implement the Service Discovery Pattern.
+Source: Internal microservice. Stimulus: A microservice attempts to communicate with another service whose location (IP/port) may have changed due to scaling or redeployment. Artifact: Service discovery mechanism (e.g., service registry and discovery client). Response: The discovery client queries the service registry to obtain the current network location of the  target service. If the location has changed, the registry provides the updated endpoint, allowing communication to proceed without manual reconfiguration.
 #### Scenario 3: the software system must implement the Cluster Pattern.
 #### Scenario 4: the software system must implement the Circuit Breaker Pattern(?).
 
