@@ -207,6 +207,16 @@ We conducted a series of load tests on our load-balanced microservices architect
 - *API Gateway* introduced minimal overhead.
 - System remained stable across all scenarios: *no memory leaks, **no connection issues*.
 
+[Ñ]
+### Reliability
+#### Scenario 1: the software system must implement the Replication Pattern.
+#### Scenario 2: the software system must implement the Service Discovery Pattern.
+#### Scenario 3: the software system must implement the Cluster Pattern.
+#### Scenario 4: the software system must implement the Circuit Breaker Pattern(?).
+
+### Interoperability
+#### Scenario 1: the software system must respond to the interoperability scenario of (Resource Metadata/SME/etc)
+
 ## System Architecture Overview
 
 ### Architectural Styles Used
