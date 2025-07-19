@@ -214,6 +214,8 @@ We conducted a series of load tests on our load-balanced microservices architect
 #### Scenario 3: the software system must implement the Cluster Pattern.
 #### Scenario 4: the software system must implement the Circuit Breaker Pattern(?).
 
+<img width="1166" height="541" alt="image" src="https://github.com/user-attachments/assets/49321751-ea91-41fd-9841-a3cca480510f" />
+
 ### Interoperability
 #### Scenario 1: the software system must respond to the interoperability scenario of (Resource Metadata/SME/etc)
 
