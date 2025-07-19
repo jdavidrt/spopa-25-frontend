@@ -217,7 +217,9 @@ We conducted a series of load tests on our load-balanced microservices architect
 <img width="1166" height="541" alt="image" src="https://github.com/user-attachments/assets/49321751-ea91-41fd-9841-a3cca480510f" />
 
 ### Interoperability
-#### Scenario 1: the software system must respond to the interoperability scenario of (Resource Metadata/SME/etc)
+#### Scenario 1: the software system must implement a canonical data model between databases.
+
+<img width="1301" height="415" alt="image" src="https://github.com/user-attachments/assets/f37bc9fd-9d9a-47f9-841c-2a8af5c7c5b5" />
 
 ## System Architecture Overview
 
