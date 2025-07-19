@@ -207,7 +207,6 @@ We conducted a series of load tests on our load-balanced microservices architect
 - *API Gateway* introduced minimal overhead.
 - System remained stable across all scenarios: *no memory leaks, **no connection issues*.
 
-[Ñ]
 ### Reliability
 #### Scenario 1: the software system must implement the Replication Pattern.
 Source: Internal service. Stimulus: A server instance hosting the service fails or becomes unresponsive. Artifact: Replicated service instances distributed across multiple nodes.
@@ -215,9 +214,11 @@ Response: The system reroutes requests to healthy replica instances without inte
 #### Scenario 2: the software system must implement the Service Discovery Pattern.
 Source: Internal microservice. Stimulus: A microservice attempts to communicate with another service whose location (IP/port) may have changed due to scaling or redeployment. Artifact: Service discovery mechanism (e.g., service registry and discovery client). Response: The discovery client queries the service registry to obtain the current network location of the  target service. If the location has changed, the registry provides the updated endpoint, allowing communication to proceed without manual reconfiguration.
 #### Scenario 3: the software system must implement the Cluster Pattern.
+Source: External users. Stimulus: A large volume of concurrent requests is sent to a backend service. Artifact: Cluster of service instances managed under a load balancer or orchestration platform. Response: The load balancer distributes incoming requests evenly across the clustered instances. If an instance becomes unavailable, requests are rerouted to healthy nodes in the cluster, maintaining service continuity.
 #### Scenario 4: the software system must implement the Circuit Breaker Pattern(?).
+Source: Internal microservice. Stimulus: The service attempts repeated calls to a downstream dependency that is experiencing high latency or failure. Artifact: Circuit breaker module integrated into the service communication logic. Response: After a predefined threshold of failures is reached, the circuit breaker transitions to the open state, temporarily halting requests to the failing dependency and returning fallback responses or errors immediately. After a cool-down period, it transitions to a half-open state to test if the dependency has recovered.
 
-<img width="1166" height="541" alt="image" src="https://github.com/user-attachments/assets/49321751-ea91-41fd-9841-a3cca480510f" />
+<img width="769" height="932" alt="image" src="https://github.com/user-attachments/assets/4ce97b69-bb44-4d5d-9347-2a193d3c8e5d" />
 
 ### Interoperability
 #### Scenario 1: the software system must implement a canonical data model between databases.
