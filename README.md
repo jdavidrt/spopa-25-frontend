@@ -222,9 +222,9 @@ Source: Internal microservice. Stimulus: The service attempts repeated calls to 
 
 ### Interoperability
 #### Scenario 1: the software system must implement a canonical data model between databases.
-Source: Internal business service. Stimulus: The service attempts to read data from a MongoDB database and write related information to a MySQL database. Artifact: Canonical Data Model used as an intermediary schema for translating and mapping data between heterogeneous databases. Response: Data is first transformed into a standardized canonical format before being interpreted or written by the target system, ensuring semantic consistency and structural compatibility across both databases.
+Source: Internal business service. Stimulus: A service attempts to read data from a MongoDB database and write related information to a MySQL database. Artifact: Canonical Data Model used as an intermediary schema for translating and mapping data between heterogeneous databases. Response: Data is first transformed into a standardized canonical format before being interpreted or written by the target system, ensuring semantic consistency and structural compatibility across both databases.
 
-<img width="1301" height="415" alt="image" src="https://github.com/user-attachments/assets/f37bc9fd-9d9a-47f9-841c-2a8af5c7c5b5" />
+<img width="1347" height="317" alt="image" src="https://github.com/user-attachments/assets/db8d5f5c-b006-472c-8eba-755f08a53a05" />
 
 ## System Architecture Overview
 
