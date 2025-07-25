@@ -4,8 +4,15 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Puedes dejarlo si necesitas testear local, pero no será público si no abres el puerto EC2
     volumes:
       - .:/app
     environment:
       - MONGODB_URL=mongodb+srv://smottad:spopa123@cluster0.kjmjmxo.mongodb.net/job_offers_db?retryWrites=true&w=majority&appName=Cluster0
+    networks:
+      - spopa-network  
+
+networks:
+  spopa-network:
+    external: true 
+
