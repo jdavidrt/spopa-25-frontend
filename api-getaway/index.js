@@ -39,7 +39,7 @@ app.use('/internships', require('./routes/internships'));
 // 🔁 Proxy: Admin microservice
 app.use('/api/admin', createProxyMiddleware({
   // target: 'http://api:8000', // ← Si se usa Docker Compose con "api", déjarlo. Si no, usar el nombre del contenedor:
-  target: 'http://ss_admin_ms-api-1:8000',
+  target: 'http://admin_ms:8000',
   changeOrigin: true,
   pathRewrite: { '^/api/admin': '/api' },
   onProxyReq: (proxyReq, req, res) => {
