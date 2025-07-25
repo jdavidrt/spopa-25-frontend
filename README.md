@@ -32,16 +32,18 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Component and Connector View
 
-![image](https://github.com/user-attachments/assets/04aa1ece-493f-4a0b-b842-f1c09434278e)
+<img width="1363" height="713" alt="image" src="https://github.com/user-attachments/assets/1e49b874-4758-4354-a57e-19a46e565dfa" />
 
 ### Components
 
 | Connector       | Component                           |Description                                         |
 | --------------- | ----------------------------------- |----------------------------------------------------|
-| **HTTPS**        | `web browser` ↔ `fe`               |Expected user contact device                        |
-| **HTTPS**        | `mobile app` ↔ `fe_app`            |Expected user contact device                        |
-| **SSR**         | `fe` ↔ `fe_server`                  |Web front end contact with server service           |
-| **GraphQL**     | `fe_app` ↔ `process_px`             |Proxy divider between public and private net        |
+| **HTTPS**       | `web browser` ↔ `fe`                |Expected user contact device                        |
+| **HTTPS**       | `mobile app` ↔ `fe_app`             |Expected user contact device                        |
+| **SSR**         | `fe` ↔ `App Load Balancer`          |Contact of public net services with AWS handlers    |
+| **GraphQL**     | `fe_app` ↔ `App Load Balancer`      |Contact of public net services with AWS handlers    |
+| **AWS Service** | `AWS LB` ↔ `KBS Infrastructure`     |Kubernet contact for requests with private net components|
+| **AWS Service** | `KBS Infrastructure` ↔ `fe_server`  |Web front end contact with server service           |
 | **HTTP**        | `fe_server` ↔ `process_px`          |Proxy divider between public and private net        |
 | **HTTP**        | `process_px` ↔ `API Gateway`        |Proxy divider between public and private net        |
 | **REST**        | `API Gateway` ↔ `process_px`        |API Gateway communication with backend microservices|
