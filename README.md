@@ -1,4 +1,4 @@
-# Project Artifact: SPOPA, Prototype #3.
+# Project Artifact: SPOPA, Prototype #4.
 
 
 ## Team 1E
@@ -124,13 +124,13 @@ Spopa is a distributed platform designed to connect university students with pro
 ### Security
 #### Scenarios
 #### Scenario 1: the software system must implement the Secure Channel Pattern.
-Codification using the HTTPS (Hypertext Transfer Protocol Secure) protocol is carried out during communication of components to ensure safe traffic.
+Source: External user. Stimulus: User makes a comunication with the system. Artifact: Connection carried out with the use of HTTPS protocol between the user browser and the front end components. Response: Establishment of a secure, encoded connection between the two components.
 #### Scenario 2: the software system must implement the Reverse Proxy Pattern.
-Using `NGINX` the project divides the nets of operation between a private and public net using a reverse proxy that bridges the two.
+Source: Malicious external agent. Stimulus: Agent attempts to establish a direct connection to internal service endpoints, bypassing the reverse proxy. Artifact: Network-level configuration and NGINX reverse proxy restricting access to private internal services. Response: The connection is rejected or dropped, as direct access to internal services is blocked; only requests routed through the reverse proxy on the public interface are accepted.
 #### Scenario 3: the software system must implement the Network Segmentation Pattern.
-The structure of the project divides the services it allows access to by the role of the user, protecting the functions between user types, as well as protecting the system in the case of the compromise or failure of any individual microservice.
+Source: Authenticated user with an unauthorized role. Stimulus: User attempts to access a system resource or service hosted in a restricted network segment. Artifact: Network segmentation rules enforced via private subnets. Response: The request is denied or blocked at the network or service level. Access is only granted to users whose roles permit communication with the corresponding network segment.
 #### Scenario 4: the software system must implement the API Gateway Pattern for security purposes.
-The architecture integrates an API Gateway as the single entry point for all external client requests. The gateway enforces authentication and authorization, input validation, and rate limiting before forwarding requests to internal services. This centralization of security responsibilities helps prevent unauthorized access, mitigates denial-of-service attacks, and shields internal microservices from direct exposure.
+Source: External user. Stimulus: User sends a request to access backend services. Artifact: API Gateway positioned between the user and internal microservices. Response: The API Gateway authenticates and authorizes the request, applies rate limiting and validation rules, and routes the request to the appropriate internal service. Unauthorized or malformed requests are rejected before reaching internal components.
 
 ![complete_quality_scenarios](https://github.com/user-attachments/assets/f6e2b62b-40d1-4036-acfe-f2e8ca8d3d2b)
 
@@ -154,10 +154,10 @@ Tactics:
 ### Performance and Scalability
 #### Scenarios:
 #### Scenario 1: the software system must implement the Load Balancer Pattern.
-To ensure optimal performance and system scalability under high traffic, the project uses a load balancer that distributes incoming client requests across multiple service instances. This reduces individual server load, minimizes response times, and allows the system to scale horizontally by adding or removing service nodes dynamically as demand changes.
+Source: 2000 concurrent users. Stimulus: Multiple users simultaneously send requests to the system. Artifact: Load balancer positioned in front of a pool of backend service instances. Response: The load balancer distributes incoming requests evenly across available instances, ensuring no single instance is overwhelmed and overall system responsiveness is maintained under high concurrency.
 
 #### Scenario 2: the software system must implement Horizontal Scaling.
-To handle increased demand and ensure system availability, the architecture supports horizontal scaling by deploying multiple instances of key services. These instances can be distributed across containers or virtual machines and are managed by an orchestrator , allowing the system to dynamically add or remove nodes based on resource usage and traffic volume without downtime.
+Source: System administrator. Stimulus: Administrator detects increased traffic load and initiates the addition of more service instances. Artifact: Container orchestration platform or infrastructure layer managing service deployment Kubernetes). Response: The system provisions and deploys additional instances of the affected service, integrates them into the load balancer, and begins routing traffic to them, improving throughput and reducing response time.
 
 #### Applied patterns and tactics
 
@@ -206,6 +206,25 @@ We conducted a series of load tests on our load-balanced microservices architect
 - *The algorithm strategy* proved effective across three service instances.
 - *API Gateway* introduced minimal overhead.
 - System remained stable across all scenarios: *no memory leaks, **no connection issues*.
+
+### Reliability
+#### Scenario 1: the software system must implement the Replication Pattern.
+Source: Internal service. Stimulus: A server instance hosting the service fails or becomes unresponsive. Artifact: Replicated service instances distributed across multiple nodes.
+Response: The system reroutes requests to healthy replica instances without interrupting service availability. Failover mechanisms ensure continued operation while the failed instance is either restarted or replaced.
+#### Scenario 2: the software system must implement the Service Discovery Pattern.
+Source: Internal microservice. Stimulus: A microservice attempts to communicate with another service whose location (IP/port) may have changed due to scaling or redeployment. Artifact: Service discovery mechanism (e.g., service registry and discovery client). Response: The discovery client queries the service registry to obtain the current network location of the  target service. If the location has changed, the registry provides the updated endpoint, allowing communication to proceed without manual reconfiguration.
+#### Scenario 3: the software system must implement the Cluster Pattern.
+Source: External users. Stimulus: A large volume of concurrent requests is sent to a backend service. Artifact: Cluster of service instances managed under a load balancer or orchestration platform. Response: The load balancer distributes incoming requests evenly across the clustered instances. If an instance becomes unavailable, requests are rerouted to healthy nodes in the cluster, maintaining service continuity.
+#### Scenario 4: the software system must implement the Circuit Breaker Pattern(?).
+Source: Internal microservice. Stimulus: The service attempts repeated calls to a downstream dependency that is experiencing high latency or failure. Artifact: Circuit breaker module integrated into the service communication logic. Response: After a predefined threshold of failures is reached, the circuit breaker transitions to the open state, temporarily halting requests to the failing dependency and returning fallback responses or errors immediately. After a cool-down period, it transitions to a half-open state to test if the dependency has recovered.
+
+<img width="769" height="932" alt="image" src="https://github.com/user-attachments/assets/4ce97b69-bb44-4d5d-9347-2a193d3c8e5d" />
+
+### Interoperability
+#### Scenario 1: the software system must implement a canonical data model between databases.
+Source: Internal business service. Stimulus: A service attempts to read data from a MongoDB database and write related information to a MySQL database. Artifact: Canonical Data Model used as an intermediary schema for translating and mapping data between heterogeneous databases. Response: Data is first transformed into a standardized canonical format before being interpreted or written by the target system, ensuring semantic consistency and structural compatibility across both databases.
+
+<img width="1347" height="317" alt="image" src="https://github.com/user-attachments/assets/db8d5f5c-b006-472c-8eba-755f08a53a05" />
 
 ## System Architecture Overview
 
