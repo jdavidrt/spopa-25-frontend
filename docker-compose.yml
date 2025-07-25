@@ -42,7 +42,7 @@ services:
     build: ./NGINX
     container_name: reverse-proxy
     ports:
-      - "8010:8010"
+      - "8010:80"
     depends_on:
       - api-gateway-1
       - api-gateway-2
