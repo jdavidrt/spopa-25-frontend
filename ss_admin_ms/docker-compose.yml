@@ -1,19 +1,11 @@
-﻿services:
-  admin_db:
-    image: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+﻿version: '3.8'
 
+services:
   api:
     build: .
     ports:
       - "8000:8000"
-    depends_on:
-      - admin_db
     volumes:
       - .:/app
-
-volumes:
-  mongo_data:
+    environment:
+      - MONGODB_URL=mongodb+srv://smottad:spopa123@cluster0.kjmjmxo.mongodb.net/job_offers_db?retryWrites=true&w=majority&appName=Cluster0
