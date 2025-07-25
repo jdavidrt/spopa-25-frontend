@@ -32,7 +32,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Component and Connector View
 
-<img width="1363" height="713" alt="image" src="https://github.com/user-attachments/assets/1e49b874-4758-4354-a57e-19a46e565dfa" />
+<img width="1364" height="714" alt="image" src="https://github.com/user-attachments/assets/6ebe204a-8539-47d9-b205-8029c74e8b44" />
 
 ### Components
 
@@ -81,7 +81,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Layered View
 
-![image](https://github.com/user-attachments/assets/36658636-9167-4e17-8ab6-d08721e1b0b5)
+<img width="1329" height="553" alt="image" src="https://github.com/user-attachments/assets/ed60f894-3048-473a-8df0-e1fba9a5251a" />
 
 |Layer        |Description                                                                 |Elements|
 |-------------|----------------------------------------------------------------------------|-|
@@ -93,7 +93,7 @@ Spopa is a distributed platform designed to connect university students with pro
 
 ### Deployment View
 
-![image](https://github.com/user-attachments/assets/e4aa465e-f8a8-42a8-b23b-bc823ccee080)
+<img width="898" height="476" alt="image" src="https://github.com/user-attachments/assets/4f2cd381-c2cd-4208-a340-999fd6560319" />
 
 |Container|In-Private Network?|Description|Port|
 |-|-|-|-|
