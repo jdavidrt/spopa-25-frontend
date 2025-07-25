@@ -15,19 +15,6 @@ services:
       - spopa-network
 
   # Microservicio de procesos
-  process-ms:
-    build: ./ss_process_ms
-    ports:
-      - "4000:4000"
-    environment:
-      - DB_HOST=process-db
-      - DB_USER=usuario
-      - DB_PASS=contraseña
-      - DB_NAME=spopa
-    depends_on:
-      - process-db
-    networks:
-      - spopa-network
 
   # API Gateway
   api-gateway:

@@ -100,12 +100,12 @@ app.use('/api/internships', createProxyMiddleware({
   }
 }));
 
-// 🔁 Proxy: Frontend (React o similar)
-app.use('/', createProxyMiddleware({
-  target: 'https://localhost:3443',
-  changeOrigin: true,
-  secure: false
-}));
+// // 🔁 Proxy: Frontend (React o similar)
+// app.use('/', createProxyMiddleware({
+//   target: 'https://localhost:3443',
+//   changeOrigin: true,
+//   secure: false
+// }));
 
 const PORT = process.env.PORT || 3010;
 app.listen(PORT, () => {
